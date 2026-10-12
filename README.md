@@ -12,6 +12,7 @@ BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery webs
 - `supabase/schema.sql` — core database tables, indexes, triggers, grants, and row-level security (RLS) policies.
 - `supabase/feed-engagement.sql` — additional RLS-protected tables and RPC for shared post likes/comment counts; run after the core schema.
 - `supabase/newsletter-signups.sql` — private email signup table with public insert-only access; run after the core schema.
+- `supabase/launch-hardening.sql` — restricts direct execution of trigger-only functions, optimizes moderator RLS expressions, and adds foreign-key indexes.
 - `supabase/functions/delete-account/index.ts` — server-side account deletion function; deploy it before advertising account deletion as available.
 - `bloom_kpop_community_launch_preview (1).html` and `bloom_ceo_dashboard.html` — original files retained.
 
@@ -47,7 +48,7 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 1. If you have not already done so, create a Supabase project in an account you control. Confirm that the project URL in `bloom-config.js` is the project you intend to use.
 2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then run `supabase/feed-engagement.sql` to enable shared likes and comments. Re-run neither by copying partial snippets; use the complete files in order.
 3. In **Authentication → URL Configuration**, set the Site URL to your published GitHub Pages URL and add that exact URL to the allowed redirect URLs.
-4. In **Authentication → Providers / Email**, enable email sign-up and verification. Configure a real SMTP provider for launch; default/testing email delivery is not a production mail service. Set a suitable minimum password length (at least 10 characters) and enable available password/security protections.
+4. In **Authentication → Providers / Email**, enable email sign-up and verification. Configure a real SMTP provider for launch; default/testing email delivery is not a production mail service. Set a suitable minimum password length (at least 10 characters) and enable leaked-password protection in the Auth password/security settings. This is a Dashboard setting and must be confirmed there before launch.
 5. In the **SQL Editor**, run `supabase/newsletter-signups.sql` after the core schema. The newsletter form then records explicit signups in a table that public visitors can insert into but cannot read. This does **not** send newsletter emails by itself: connect an email delivery/newsletter provider, set up consent and unsubscribe handling, and test delivery before promising inbox updates.
 6. In **Project Settings → API**, confirm `bloom-config.js` contains that project's Project URL and public publishable/anon key. These are browser-visible values; RLS must be enabled as in the SQL files. **Never put a service-role/secret key in any frontend file or GitHub Pages.**
 7. Deploy the account-deletion Edge Function with the Supabase CLI. From a trusted local development environment, link the project and set the server-side secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, then deploy `supabase/functions/delete-account`. Keep the service-role key only in Supabase's server-side function secrets.
