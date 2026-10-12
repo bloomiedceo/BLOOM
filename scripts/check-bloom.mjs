@@ -19,8 +19,8 @@ assert.match(html, /id="safety"[^>]*>/, 'Launch checklist target must exist');
 assert.match(css, /\.safety-modal-grid/, 'Safety Center must have responsive styling');
 
 assert.match(html, /src="bloom-launch-upgrades\.js"/, 'Feed and marketplace upgrade script must be loaded');
-assert.match(upgrades, /Find on Shopee/, 'Marketplace cards must have real marketplace search destinations');
-assert.match(upgrades, /Find on Lazada/, 'Marketplace cards must include a second destination');
+assert.match(upgrades, /Shopee/, 'Marketplace cards must have real marketplace destinations');
+assert.match(upgrades, /Search Lazada/, 'Marketplace cards must include a second destination');
 assert.match(upgrades, /bloom-feed-comments/, 'Feed comments must have a persistence key for local preview');
 assert.match(enhancements, /\$\$\('\.feed-card',grid\)\.forEach/, 'Feed cards must be iterated as a collection');
 assert.doesNotMatch(enhancements, /(?<!\$)\$\([^\n)]*,\s*(?:grid|section|controls|roomList)\)\.forEach/, 'Single-element querySelector result must not be treated as a collection');
