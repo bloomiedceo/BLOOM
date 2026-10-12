@@ -77,7 +77,7 @@
       secondary.append(lazada);
     });
     const disclosure = $('#affiliate-note');
-    if (disclosure) disclosure.textContent = 'Marketplace links open Shopee Malaysia and Lazada Malaysia search results for similar items. BLOOM has not verified individual sellers, stock, or prices, and these are not affiliate links. Check seller ratings, shipping, and final price before buying.';
+    if (disclosure) disclosure.textContent = 'Links open the official Weverse listing, a Shopee product listing, or Shopee/Lazada search results depending on the card. BLOOM has not verified every seller, current stock, shipping, or final price. These are not affiliate links. Check seller ratings and checkout details before buying.';
   }
 
   let activePostId = null;
