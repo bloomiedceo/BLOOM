@@ -11,6 +11,7 @@ BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery webs
 - `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
 - `supabase/schema.sql` — core database tables, indexes, triggers, grants, and row-level security (RLS) policies.
 - `supabase/feed-engagement.sql` — additional RLS-protected tables and RPC for shared post likes/comment counts; run after the core schema.
+- `supabase/newsletter-signups.sql` — private email signup table with public insert-only access; run after the core schema.
 - `supabase/functions/delete-account/index.ts` — server-side account deletion function; deploy it before advertising account deletion as available.
 - `bloom_kpop_community_launch_preview (1).html` and `bloom_ceo_dashboard.html` — original files retained.
 
@@ -47,10 +48,11 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then run `supabase/feed-engagement.sql` to enable shared likes and comments. Re-run neither by copying partial snippets; use the complete files in order.
 3. In **Authentication → URL Configuration**, set the Site URL to your published GitHub Pages URL and add that exact URL to the allowed redirect URLs.
 4. In **Authentication → Providers / Email**, enable email sign-up and verification. Configure a real SMTP provider for launch; default/testing email delivery is not a production mail service. Set a suitable minimum password length (at least 10 characters) and enable available password/security protections.
-5. In **Project Settings → API**, confirm `bloom-config.js` contains that project's Project URL and public publishable/anon key. These are browser-visible values; RLS must be enabled as in the SQL files. **Never put a service-role/secret key in any frontend file or GitHub Pages.**
-6. Deploy the account-deletion Edge Function with the Supabase CLI. From a trusted local development environment, link the project and set the server-side secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, then deploy `supabase/functions/delete-account`. Keep the service-role key only in Supabase's server-side function secrets.
-7. In a trusted admin workflow, assign `app_metadata.role = "moderator"` to approved moderator accounts. Never let users grant themselves moderator privileges through editable profile metadata.
-8. After reviewing the draft changes, merge the pull request into `main` and wait for GitHub Pages to redeploy. Do not treat the site as a production-ready community until the checks below pass.
+5. In the **SQL Editor**, run `supabase/newsletter-signups.sql` after the core schema. The newsletter form then records explicit signups in a table that public visitors can insert into but cannot read. This does **not** send newsletter emails by itself: connect an email delivery/newsletter provider, set up consent and unsubscribe handling, and test delivery before promising inbox updates.
+6. In **Project Settings → API**, confirm `bloom-config.js` contains that project's Project URL and public publishable/anon key. These are browser-visible values; RLS must be enabled as in the SQL files. **Never put a service-role/secret key in any frontend file or GitHub Pages.**
+7. Deploy the account-deletion Edge Function with the Supabase CLI. From a trusted local development environment, link the project and set the server-side secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, then deploy `supabase/functions/delete-account`. Keep the service-role key only in Supabase's server-side function secrets.
+8. In a trusted admin workflow, assign `app_metadata.role = "moderator"` to approved moderator accounts. Never let users grant themselves moderator privileges through editable profile metadata.
+9. After reviewing the draft changes, merge the pull request into `main` and wait for GitHub Pages to redeploy. Do not treat the site as a production-ready community until the checks below pass.
 
 ### What the starter backend includes
 
@@ -92,4 +94,5 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Test account deletion after deploying the Edge Function and confirm related data is removed.
 - [ ] Verify RLS for every table and test unauthorized reads/writes; never use the service-role key in the browser.
 - [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
+- [ ] Run `supabase/newsletter-signups.sql`, test signup persistence, connect a newsletter/email provider, and implement verified opt-in and unsubscribe handling before sending updates.
 - [ ] Configure production email delivery, abuse controls, backups, monitoring, and a real moderation rota before announcing launch.
