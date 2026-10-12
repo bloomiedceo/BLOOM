@@ -45,6 +45,7 @@
 
   function marketplace() {
     const products = [
+      { match: /official bts lightstick|bts official light stick/i, query: 'BTS OFFICIAL LIGHT STICK VER.4', directUrl: 'https://shop.weverse.io/en/shop/USD/artists/2/sales/54189', official: true },
       { match: /album display|album/i, query: 'K-pop album display shelf' },
       { match: /off-duty idol|hoodie|streetwear/i, query: 'K-pop oversized hoodie streetwear' },
       { match: /photocard|binder/i, query: 'K-pop photocard binder sleeves', directUrl: 'https://shopee.com.my/Korean-Card-holder-Card-Album-Photocard-Binder-i.67848659.10411395331' },
@@ -59,8 +60,8 @@
       const primary = links[0], query = encodeURIComponent(product.query);
       primary.href = product.directUrl || ('https://shopee.com.my/search?keyword=' + query);
       primary.target = '_blank'; primary.rel = 'noopener noreferrer';
-      primary.removeAttribute('onclick'); primary.textContent = product.directUrl ? 'View Shopee listing ↗' : 'Search Shopee ↗';
-      primary.setAttribute('aria-label', 'Search Shopee Malaysia for ' + name);
+      primary.removeAttribute('onclick'); primary.textContent = product.official ? 'View official Weverse listing ↗' : product.directUrl ? 'View Shopee listing ↗' : 'Search Shopee ↗';
+      primary.setAttribute('aria-label', product.official ? 'Open official Weverse listing for ' + name : product.directUrl ? 'Open Shopee listing for ' + name : 'Search Shopee Malaysia for ' + name);
       let secondary = $('.bloom-market-links', card);
       if (!secondary) {
         secondary = document.createElement('div'); secondary.className = 'bloom-market-links';
