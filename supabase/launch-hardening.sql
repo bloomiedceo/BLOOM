@@ -5,7 +5,13 @@
 
 revoke all on function public.bloom_create_profile() from public, anon, authenticated;
 revoke all on function public.bloom_add_group_owner() from public, anon, authenticated;
-revoke all on function public.rls_auto_enable() from public, anon, authenticated;
+do $
+begin
+  if to_regprocedure('public.rls_auto_enable()') is not null then
+    execute 'revoke all on function public.rls_auto_enable() from public, anon, authenticated';
+  end if;
+end;
+$;
 
 alter policy "posts update own or moderator" on public.posts
   using (author_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator')
