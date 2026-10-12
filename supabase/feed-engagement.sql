@@ -114,6 +114,7 @@ as $$
   left join public.post_likes l on l.post_id = p.id
   left join public.post_comments c on c.post_id = p.id
   where p.id = any(target_post_ids)
+    and cardinality(target_post_ids) between 1 and 100
     and p.status = 'published'
     and (
       p.author_id = (select auth.uid())
