@@ -10,6 +10,7 @@ const config = read('../bloom-config.js');
 const schema = read('../supabase/schema.sql');
 const newsletterSchema = read('../supabase/newsletter-signups.sql');
 const hardeningSchema = read('../supabase/launch-hardening.sql');
+const engagementSchema = read('../supabase/feed-engagement.sql');
 const css = read('../bloom-enhancements.css');
 
 assert.match(html, /id="safety-modal"[^>]*role="dialog"[^>]*aria-modal="true"/, 'Safety Center dialog must exist and expose dialog semantics');
@@ -53,6 +54,10 @@ assert.match(schema, /\(select auth\.jwt\(\)\) -> 'app_metadata' ->> 'role'/, 'M
 assert.match(hardeningSchema, /revoke all on function public\.bloom_create_profile\(\) from public, anon, authenticated/i, 'Profile trigger function must not be exposed as an RPC');
 assert.match(hardeningSchema, /revoke all on function public\.bloom_add_group_owner\(\) from public, anon, authenticated/i, 'Group owner trigger function must not be exposed as an RPC');
 assert.match(hardeningSchema, /alter policy .*\(select auth\.jwt\(\)\)/s, 'Hardening migration must use stable JWT expressions in moderator policies');
+assert.match(engagementSchema, /cardinality\(target_post_ids\) between 1 and 100/, 'Engagement RPC must cap request size');
+for (const table of ['post_likes','post_comments']) {
+  assert.ok(engagementSchema.includes('alter table public.' + table + ' enable row level security;'), 'RLS must be enabled on ' + table);
+}
 for (const index of ['bloom_groups_owner_idx','bloom_messages_author_idx','bloom_post_comments_author_idx','bloom_post_likes_user_idx','bloom_posts_author_idx','bloom_reports_reporter_idx','bloom_reports_reviewed_by_idx']) {
   assert.match(hardeningSchema, new RegExp('create index if not exists ' + index), 'Missing foreign-key index ' + index);
 }
