@@ -8,6 +8,7 @@ const upgrades = read('../bloom-launch-upgrades.js');
 const backend = read('../bloom-backend.js');
 const config = read('../bloom-config.js');
 const schema = read('../supabase/schema.sql');
+const newsletterSchema = read('../supabase/newsletter-signups.sql');
 const css = read('../bloom-enhancements.css');
 
 assert.match(html, /id="safety-modal"[^>]*role="dialog"[^>]*aria-modal="true"/, 'Safety Center dialog must exist and expose dialog semantics');
@@ -19,6 +20,10 @@ assert.match(html, /id="safety"[^>]*>/, 'Launch checklist target must exist');
 assert.match(css, /\.safety-modal-grid/, 'Safety Center must have responsive styling');
 
 assert.match(html, /src="bloom-launch-upgrades\.js"/, 'Feed and marketplace upgrade script must be loaded');
+assert.match(html, /id="newsletter-status"[^>]*role="status"[^>]*aria-live="polite"/, 'Newsletter form must expose an accessible live status');
+assert.match(backend, /from\('newsletter_signups'\)\.insert/, 'Newsletter form must save through the configured backend');
+assert.match(backend, /Newsletter signup is not connected yet/, 'Newsletter must not claim success when backend is unavailable');
+assert.match(html, /Email delivery is not active until a newsletter provider is connected/, 'Newsletter copy must disclose that delivery still needs setup');
 assert.match(upgrades, /Shopee/, 'Marketplace cards must have real marketplace destinations');
 assert.ok(upgrades.includes('https://shop.weverse.io/en/shop/USD/artists/2/sales/54189'), 'Official Weverse product link must be present');
 assert.ok(!html.includes('From $12') && !html.includes('From $28') && !html.includes('From $9') && !html.includes('From $22'), 'Product cards must not show stale placeholder prices');
@@ -44,4 +49,6 @@ for (const table of ['profiles','posts','groups','group_members','messages','rep
 }
 assert.match(schema, /and role = 'member'/, 'Clients must not assign privileged group roles');
 assert.match(schema, /auth\.jwt\(\) -> 'app_metadata' ->> 'role'/, 'Moderator checks must use trusted app metadata');
+assert.match(newsletterSchema, /enable row level security/i, 'Newsletter signups must use row-level security');
+assert.match(newsletterSchema, /create policy/i, 'Newsletter signups must have an explicit insert policy');
 console.log('BLOOM static checks passed: safety navigation, Spotify wiring, frontend selector safety, and backend security invariants.');
