@@ -265,6 +265,47 @@ filters.forEach(btn=>btn.addEventListener('click',()=>{filters.forEach(b=>b.clas
 function showToast(message){const t=document.querySelector('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800)}
 function saveItem(btn){btn.textContent=btn.textContent==='♡'?'♥':'♡';btn.style.color=btn.textContent==='♥'?'#d84d86':'';showToast(btn.textContent==='♥'?'Saved to your fan wishlist ♡':'Removed from your wishlist')}
 function demoAffiliate(e,item){e.preventDefault();showToast('Demo shop link for '+item+' — add your affiliate URL before launch.');}
+
+function toggleLike(btn) {
+  const id = btn.dataset.likeId;
+  const key = "bloom-liked-" + id;
+
+  let liked = false;
+
+  try {
+    liked = localStorage.getItem(key) === "true";
+    liked = !liked;
+    localStorage.setItem(key, String(liked));
+  } catch (error) {
+    showToast("Likes could not be saved in this browser.");
+    return;
+  }
+
+  btn.textContent = liked ? "♥ Liked" : "♡ Like";
+  btn.style.color = liked ? "#d84d86" : "";
+  btn.setAttribute("aria-pressed", String(liked));
+
+  showToast(liked ? "You liked this post! ♡" : "Like removed.");
+}
+
+function restoreLikes() {
+  document.querySelectorAll("[data-like-id]").forEach(btn => {
+    try {
+      const liked =
+        localStorage.getItem("bloom-liked-" + btn.dataset.likeId)
+        === "true";
+
+      btn.textContent = liked ? "♥ Liked" : "♡ Like";
+      btn.style.color = liked ? "#d84d86" : "";
+      btn.setAttribute("aria-pressed", String(liked));
+    } catch (error) {
+      // Keep the buttons usable if browser storage is unavailable.
+    }
+  });
+}
+
+restoreLikes();
+  
 function roomToast(e,room){e.preventDefault();showToast(room+' — connect a real community/chat platform to launch this room.')}
 document.querySelector('#signup-form').addEventListener('submit',e=>{e.preventDefault();const email=document.querySelector('#email');if(!email.checkValidity()){email.reportValidity();return}showToast('You’re on the list! Connect an email provider to save signups.');email.value=''});
 
