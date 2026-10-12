@@ -10,6 +10,7 @@ const config = read('../bloom-config.js');
 const schema = read('../supabase/schema.sql');
 const newsletterSchema = read('../supabase/newsletter-signups.sql');
 const hardeningSchema = read('../supabase/launch-hardening.sql');
+const deleteAccount = read('../supabase/functions/delete-account/index.ts');
 const engagementSchema = read('../supabase/feed-engagement.sql');
 const css = read('../bloom-enhancements.css');
 
@@ -54,6 +55,11 @@ assert.match(schema, /\(select auth\.jwt\(\)\) -> 'app_metadata' ->> 'role'/, 'M
 assert.match(hardeningSchema, /revoke all on function public\.bloom_create_profile\(\) from public, anon, authenticated/i, 'Profile trigger function must not be exposed as an RPC');
 assert.match(hardeningSchema, /revoke all on function public\.bloom_add_group_owner\(\) from public, anon, authenticated/i, 'Group owner trigger function must not be exposed as an RPC');
 assert.match(hardeningSchema, /to_regprocedure\('public\.rls_auto_enable\(\)'\)/i, 'Optional Supabase RLS event-trigger hardening must work on fresh projects too');
+assert.match(deleteAccount, /req\.method !== "POST"/, 'Account deletion endpoint must reject non-POST methods');
+assert.match(deleteAccount, /authHeader\?\.startsWith\("Bearer "\)/, 'Account deletion must require a bearer token');
+assert.match(deleteAccount, /admin\.auth\.getUser\(token\)/, 'Account deletion must verify the caller token');
+assert.match(deleteAccount, /admin\.auth\.admin\.deleteUser\(data\.user\.id\)/, 'Account deletion must only delete the verified caller');
+assert.match(deleteAccount, /SUPABASE_SERVICE_ROLE_KEY/, 'Privileged account deletion key must remain server-side');
 assert.match(hardeningSchema, /alter policy .*\(select auth\.jwt\(\)\)/s, 'Hardening migration must use stable JWT expressions in moderator policies');
 assert.match(engagementSchema, /cardinality\(target_post_ids\) between 1 and 100/, 'Engagement RPC must cap request size');
 for (const table of ['post_likes','post_comments']) {
