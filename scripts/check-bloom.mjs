@@ -53,6 +53,7 @@ assert.match(schema, /and role = 'member'/, 'Clients must not assign privileged 
 assert.match(schema, /\(select auth\.jwt\(\)\) -> 'app_metadata' ->> 'role'/, 'Moderator checks must use trusted app metadata through a stable init plan');
 assert.match(hardeningSchema, /revoke all on function public\.bloom_create_profile\(\) from public, anon, authenticated/i, 'Profile trigger function must not be exposed as an RPC');
 assert.match(hardeningSchema, /revoke all on function public\.bloom_add_group_owner\(\) from public, anon, authenticated/i, 'Group owner trigger function must not be exposed as an RPC');
+assert.match(hardeningSchema, /to_regprocedure\('public\.rls_auto_enable\(\)'\)/i, 'Optional Supabase RLS event-trigger hardening must work on fresh projects too');
 assert.match(hardeningSchema, /alter policy .*\(select auth\.jwt\(\)\)/s, 'Hardening migration must use stable JWT expressions in moderator policies');
 assert.match(engagementSchema, /cardinality\(target_post_ids\) between 1 and 100/, 'Engagement RPC must cap request size');
 for (const table of ['post_likes','post_comments']) {
