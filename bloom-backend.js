@@ -350,7 +350,7 @@
       await loadPosts();
       await loadGroups();
     }
-    client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') passwordRecovery = true; void syncSession(session); });
-    client.auth.getSession().then(({ data }) => syncSession(data.session));
+    client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') passwordRecovery = true; setTimeout(() => { void syncSession(session); }, 0); });
+    client.auth.getSession().then(({ data }) => syncSession(data.session)).catch((error) => { setLiveStatus('Could not restore your session. Refresh and try again.'); console.error('BLOOM session restore failed:', error); });
   }
 })();
