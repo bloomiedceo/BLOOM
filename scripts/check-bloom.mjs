@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 const read = (path) => readFileSync(new URL(path, import.meta.url).pathname, 'utf8');
 const html = read('../index.html');
 const enhancements = read('../bloom-enhancements.js');
+const upgrades = read('../bloom-launch-upgrades.js');
 const backend = read('../bloom-backend.js');
 const config = read('../bloom-config.js');
 const schema = read('../supabase/schema.sql');
@@ -17,6 +18,10 @@ assert.match(html, /id="feedback-modal"/, 'Safety report must have a feedback fo
 assert.match(html, /id="safety"[^>]*>/, 'Launch checklist target must exist');
 assert.match(css, /\.safety-modal-grid/, 'Safety Center must have responsive styling');
 
+assert.match(html, /src="bloom-launch-upgrades\.js"/, 'Feed and marketplace upgrade script must be loaded');
+assert.match(upgrades, /Find on Shopee/, 'Marketplace cards must have real marketplace search destinations');
+assert.match(upgrades, /Find on Lazada/, 'Marketplace cards must include a second destination');
+assert.match(upgrades, /bloom-feed-comments/, 'Feed comments must have a persistence key for local preview');
 assert.match(enhancements, /\$\$\('\.feed-card',grid\)\.forEach/, 'Feed cards must be iterated as a collection');
 assert.doesNotMatch(enhancements, /(?<!\$)\$\([^\n)]*,\s*(?:grid|section|controls|roomList)\)\.forEach/, 'Single-element querySelector result must not be treated as a collection');
 assert.match(enhancements, /id="bloom-player-host"/, 'Spotify iframe host must exist');
@@ -26,8 +31,8 @@ assert.match(enhancements, /slot\.append\(frame\)/, 'Dock must move the real Spo
 assert.match(backend, /client\.auth\.onAuthStateChange/, 'Auth session listener must exist');
 assert.match(backend, /setTimeout\(\(\) => \{ void syncSession\(session\); \}, 0\)/, 'Auth session work must run after the auth callback returns');
 assert.match(backend, /from\('reports'\)/, 'Reporting flow must use the reports table');
-assert.match(config, /url:\s*""/);
-assert.match(config, /anonKey:\s*""/);
+assert.match(config, /url:\s*"https:\/\/[^\"]+\.supabase\.co"/, 'Supabase project URL must be configured');
+assert.match(config, /anonKey:\s*"[^\"]+"/, 'Supabase public frontend key must be configured');
 assert.doesNotMatch(config, /service_role\s*:/i, 'Browser config must never contain a service-role key');
 for (const table of ['profiles','posts','groups','group_members','messages','reports']) {
   assert.ok(schema.includes('alter table public.' + table + ' enable row level security;'), 'RLS must be enabled on ' + table);
