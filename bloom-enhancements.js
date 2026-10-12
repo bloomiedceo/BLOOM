@@ -43,10 +43,10 @@ function enhancePostComposer(){
  const form=$('#post-form');if(!form)return;const kind=$('#post-kind'),caption=$('#post-caption'),link=$('#post-link');
  const fandom=document.createElement('label');fandom.htmlFor='bloom-post-fandom';fandom.textContent='Fandom';const select=document.createElement('select');select.id='bloom-post-fandom';select.className='bloom-field';fandoms.slice(1).forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f;select.append(o)});
  const titleLabel=document.createElement('label');titleLabel.htmlFor='bloom-post-title';titleLabel.textContent='Post title';const title=document.createElement('input');title.id='bloom-post-title';title.maxLength=90;title.placeholder='Give your fan moment a title';title.required=true;kind.after(fandom,select,titleLabel,title);
- form.addEventListener('submit',e=>{e.preventDefault();const text=caption.value.trim(),heading=title.value.trim();if(!text||!heading){toast('Add a title and update first.');return}const url=link.value.trim();if(url&&!/^https?:\/\//i.test(url)){toast('Please use a valid http or https link.');return}
+ form.addEventListener('submit',e=>{e.preventDefault();e.stopImmediatePropagation();const text=caption.value.trim(),heading=title.value.trim();if(!text||!heading){toast('Add a title and update first.');return}const url=link.value.trim();if(url&&!/^https?:\/\//i.test(url)){toast('Please use a valid http or https link.');return}
  const post={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title:heading,caption:text,kind:kind.value,fandom:select.value,link:url,emoji:'💗',demo:true,createdAt:new Date().toISOString()};const posts=getPosts();posts.unshift(post);if(!safeWrite('bloom-demo-posts',posts)){toast('Could not save this demo post in browser storage.');return}
  const grid=$('.feed-grid');if(grid)grid.prepend(makePostCard(post));closeModal('post-modal');form.reset();toast('Post added to this browser preview. It is not published online.');$('#activity')?.scrollIntoView({behavior:'smooth',block:'start'});
- });
+ },true);
 }
 function enhanceMarketplace(){
  const grid=$('#product-grid');if(!grid)return;const search=$('#filter-search');if(search){search.setAttribute('aria-label','Search products by name or category');search.placeholder='Search merch, albums, accessories…'}
