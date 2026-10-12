@@ -13,7 +13,7 @@ BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery webs
 - `supabase/feed-engagement.sql` — additional RLS-protected tables and RPC for shared post likes/comment counts; run after the core schema.
 - `supabase/newsletter-signups.sql` — private email signup table with public insert-only access; run after the core schema.
 - `supabase/launch-hardening.sql` — restricts direct execution of trigger-only functions, optimizes moderator RLS expressions, and adds foreign-key indexes.
-- `supabase/functions/delete-account/index.ts` — server-side account deletion function; deploy it before advertising account deletion as available.
+- `supabase/functions/delete-account/index.ts` — server-side account deletion function; deployed to the connected Supabase project with JWT verification enabled.
 - `bloom_kpop_community_launch_preview (1).html` and `bloom_ceo_dashboard.html` — original files retained.
 
 ## Preview locally
@@ -92,7 +92,7 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Test private-profile visibility from a separate signed-in account and a signed-out browser.
 - [ ] Create a post, report it from a second account, hide it as a moderator, and confirm it is no longer public.
 - [ ] Create a public group, join it from a second account/device, send messages both ways, and verify non-members cannot read messages.
-- [ ] Test account deletion after deploying the Edge Function and confirm related data is removed.
+- [ ] Test account deletion using a disposable test account and confirm related data is removed.
 - [ ] Verify RLS for every table and test unauthorized reads/writes; never use the service-role key in the browser.
 - [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
 - [ ] Run `supabase/newsletter-signups.sql`, test signup persistence, connect a newsletter/email provider, and implement verified opt-in and unsubscribe handling before sending updates.
