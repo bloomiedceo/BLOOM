@@ -169,11 +169,11 @@ for delete to authenticated
 using (author_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
 
 create policy "groups read public or member" on public.groups
-for select to authenticated
+for select to anon, authenticated
 using (
   is_public = true
   or owner_id = (select auth.uid())
-  or exists (select 1 from public.group_members gm where gm.group_id = id and gm.user_id = (select auth.uid()))
+  or exists (select 1 from public.group_members gm where gm.group_id = public.groups.id and gm.user_id = (select auth.uid()))
 );
 
 create policy "groups create as self" on public.groups
@@ -193,14 +193,14 @@ create policy "members join public group" on public.group_members
 for insert to authenticated
 with check (
   user_id = (select auth.uid())
-  and exists (select 1 from public.groups g where g.id = group_id and (g.is_public = true or g.owner_id = (select auth.uid())))
+  and exists (select 1 from public.groups g where g.id = public.group_members.group_id and (g.is_public = true or g.owner_id = (select auth.uid())))
 );
 
 create policy "members leave or owner removes" on public.group_members
 for delete to authenticated
 using (
   user_id = (select auth.uid())
-  or exists (select 1 from public.groups g where g.id = group_id and g.owner_id = (select auth.uid()))
+  or exists (select 1 from public.groups g where g.id = public.group_members.group_id and g.owner_id = (select auth.uid()))
   or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator'
 );
 
@@ -237,7 +237,8 @@ with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
 grant select on public.profiles, public.posts to anon, authenticated;
 grant update on public.profiles to authenticated;
 grant insert, update, delete on public.posts to authenticated;
-grant select, insert, update on public.groups to authenticated;
+grant select on public.groups to anon, authenticated;
+grant insert, update on public.groups to authenticated;
 grant select, insert, delete on public.group_members to authenticated;
 grant select, insert, delete on public.messages to authenticated;
 grant select, insert, update on public.reports to authenticated;
