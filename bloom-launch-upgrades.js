@@ -47,7 +47,7 @@
     const products = [
       { match: /album display|album/i, query: 'K-pop album display shelf' },
       { match: /off-duty idol|hoodie|streetwear/i, query: 'K-pop oversized hoodie streetwear' },
-      { match: /photocard|binder/i, query: 'K-pop photocard binder sleeves' },
+      { match: /photocard|binder/i, query: 'K-pop photocard binder sleeves', directUrl: 'https://shopee.com.my/Korean-Card-holder-Card-Album-Photocard-Binder-i.67848659.10411395331' },
       { match: /concert-day|concert bag|lightstick/i, query: 'K-pop concert bag lightstick accessories' }
     ];
     $('#product-grid .product-card').forEach(card => {
@@ -57,9 +57,9 @@
       const links = $$('.shop-link', card);
       if (!links.length) return;
       const primary = links[0], query = encodeURIComponent(product.query);
-      primary.href = 'https://shopee.com.my/search?keyword=' + query;
+      primary.href = product.directUrl || ('https://shopee.com.my/search?keyword=' + query);
       primary.target = '_blank'; primary.rel = 'noopener noreferrer';
-      primary.removeAttribute('onclick'); primary.textContent = 'Find on Shopee ↗';
+      primary.removeAttribute('onclick'); primary.textContent = product.directUrl ? 'View Shopee listing ↗' : 'Search Shopee ↗';
       primary.setAttribute('aria-label', 'Search Shopee Malaysia for ' + name);
       let secondary = $('.bloom-market-links', card);
       if (!secondary) {
@@ -71,7 +71,7 @@
       const lazada = document.createElement('a');
       lazada.href = 'https://www.lazada.com.my/catalog/?q=' + query;
       lazada.target = '_blank'; lazada.rel = 'noopener noreferrer';
-      lazada.textContent = 'Find on Lazada ↗';
+      lazada.textContent = 'Search Lazada ↗';
       lazada.setAttribute('aria-label', 'Search Lazada Malaysia for ' + name);
       secondary.append(lazada);
     });
@@ -145,15 +145,26 @@
     tools.insertAdjacentElement('afterend', note);
 
     function decorate(card, index) {
+      if (card.classList.contains('bloom-shared-post')) return;
       if (card.dataset.bloomLaunchReady === 'true') return;
       card.dataset.bloomLaunchReady = 'true';
       if (!card.dataset.postId) card.dataset.postId = card.id || 'bloom-post-' + index + '-' + (($('h3', card)?.textContent || 'fan').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''));
       const actions = $('.feed-actions', card);
       if (!actions) return;
-      if (!$('[data-bloom-action="comment"]', actions)) {
-        const comment = document.createElement('button'); comment.type = 'button'; comment.className = 'small-action'; comment.dataset.bloomAction = 'comment';
-        comment.innerHTML = '💬 Comment <span class="bloom-comment-count">· Comment</span>'; actions.append(comment);
+      const actionButtons = $('button.small-action', actions);
+      const like = actionButtons[0];
+      if (like) {
+        like.removeAttribute('onclick');
+        like.dataset.bloomAction = 'like';
+        const liked = !!read('bloom-feed-likes', {})[card.dataset.postId];
+        like.setAttribute('aria-pressed', String(liked));
+        like.textContent = liked ? '♥ Liked' : '♡ Like';
       }
+      let comment = actionButtons[1];
+      if (!comment) { comment = document.createElement('button'); comment.type = 'button'; comment.className = 'small-action'; actions.append(comment); }
+      comment.removeAttribute('onclick');
+      comment.dataset.bloomAction = 'comment';
+      comment.innerHTML = '💬 Comment <span class="bloom-comment-count">· Comment</span>';
       if (!$('[data-bloom-action="share"]', actions)) {
         const share = document.createElement('button'); share.type = 'button'; share.className = 'small-action'; share.dataset.bloomAction = 'share'; share.textContent = '↗ Share'; actions.append(share);
       }
@@ -181,6 +192,15 @@
       if (!button) return;
       const card = button.closest('.feed-card');
       if (!card) return;
+      if (button.dataset.bloomAction === 'like') {
+        const likes = read('bloom-feed-likes', {});
+        const liked = !likes[id];
+        if (liked) likes[id] = true; else delete likes[id];
+        if (!write('bloom-feed-likes', likes)) { toast('Could not save this like in browser storage.'); return; }
+        button.setAttribute('aria-pressed', String(liked));
+        button.textContent = liked ? '♥ Liked' : '♡ Like';
+        return;
+      }
       if (button.dataset.bloomAction === 'comment') { openComments(card); return; }
       if (button.dataset.bloomAction === 'share') {
         const title = $('h3', card)?.textContent || 'BLOOM fan post', text = $('p', card)?.textContent || 'Check out this fan moment on BLOOM.';
