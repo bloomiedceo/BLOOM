@@ -11,7 +11,7 @@
   function addStyles() {
     const style = document.createElement('style');
     style.id = 'bloom-launch-upgrades-styles';
-    style.textContent = \`
+    style.textContent = `
       #activity .feed-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;width:min(100%,760px);margin:0 auto;max-height:78svh;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y proximity;padding:4px 8px 16px}
       #activity .feed-card{min-height:min(70svh,640px);display:flex;flex-direction:column;scroll-snap-align:start;scroll-margin-top:100px;border-radius:26px}
       #activity .feed-art{min-height:220px;flex:1;max-height:390px;font-size:clamp(70px,12vw,120px)}
@@ -39,7 +39,7 @@
       .bloom-market-links a{display:inline-flex;align-items:center;gap:4px;border:1px solid #e8def6;background:#faf7ff;color:#7556cf;border-radius:999px;padding:8px 10px;font-size:10px;font-weight:900}
       .bloom-market-links a:hover{background:#eafcff;border-color:#bceef4}
       @media(max-width:640px){#activity .feed-grid{max-height:75svh;padding:2px 2px 12px}#activity .feed-card{min-height:min(68svh,620px)}#activity .feed-art{min-height:150px}#activity .feed-content{padding:15px}.bloom-comments-panel{padding:17px}}
-    \`;
+    `;
     document.head.append(style);
   }
 
