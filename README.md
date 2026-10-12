@@ -41,16 +41,16 @@ BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visib
 
 ## Connect the real backend (required before opening accounts/chat publicly)
 
-GitHub Pages is static hosting. It cannot run the database, authenticate users on its own, or deliver shared messages. The included Supabase integration is **not live until you create and configure a Supabase project**.
+GitHub Pages is static hosting. It cannot run the database, authenticate users on its own, or deliver shared messages. The Supabase integration depends on the matching project being reachable and its schema, RLS policies, Auth redirects, and email delivery being configured correctly. A configured frontend URL/key alone does not prove every production feature is ready.
 
-1. Create a Supabase project in an account you control.
+1. If you have not already done so, create a Supabase project in an account you control. Confirm that the project URL in `bloom-config.js` is the project you intend to use.
 2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then run `supabase/feed-engagement.sql` to enable shared likes and comments. Re-run neither by copying partial snippets; use the complete files in order.
 3. In **Authentication → URL Configuration**, set the Site URL to your published GitHub Pages URL and add that exact URL to the allowed redirect URLs.
 4. In **Authentication → Providers / Email**, enable email sign-up and verification. Configure a real SMTP provider for launch; default/testing email delivery is not a production mail service. Set a suitable minimum password length (at least 10 characters) and enable available password/security protections.
-5. In **Project Settings → API**, copy the Project URL and the public publishable/anon key into `bloom-config.js`. These are browser-visible values; RLS must be enabled as in the SQL file. **Never put a service-role/secret key in any frontend file or GitHub Pages.**
+5. In **Project Settings → API**, confirm `bloom-config.js` contains that project's Project URL and public publishable/anon key. These are browser-visible values; RLS must be enabled as in the SQL files. **Never put a service-role/secret key in any frontend file or GitHub Pages.**
 6. Deploy the account-deletion Edge Function with the Supabase CLI. From a trusted local development environment, link the project and set the server-side secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, then deploy `supabase/functions/delete-account`. Keep the service-role key only in Supabase's server-side function secrets.
 7. In a trusted admin workflow, assign `app_metadata.role = "moderator"` to approved moderator accounts. Never let users grant themselves moderator privileges through editable profile metadata.
-8. Commit the configured public URL/key in `bloom-config.js`, push to `main`, and wait for GitHub Pages to redeploy. Do not treat the site as a live community until the checks below pass.
+8. After reviewing the draft changes, merge the pull request into `main` and wait for GitHub Pages to redeploy. Do not treat the site as a production-ready community until the checks below pass.
 
 ### What the starter backend includes
 
@@ -66,7 +66,7 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 - Photo/video uploads, direct messages, private-group invitations, block/mute, push notifications, a full appeals workflow, seller checkout, inventory, payments, and production affiliate tracking.
 - Formal legal advice or a final privacy policy. The current privacy notice and community guidelines are drafts that must be customized to the real operator, vendors, contact details, retention practices, age policy, and applicable Malaysian/privacy requirements.
 - Automated spam/abuse rate limiting, backups/restore drills, incident response, and full browser/device accessibility testing.
-- A deployed Supabase project, configured email delivery, configured Edge Function, or tested moderator account. These require owner-side setup.
+- Verified Supabase project configuration, production email delivery, a deployed Edge Function, or a tested moderator account. These require owner-side setup and real-world tests.
 
 ## Preview-only features
 
