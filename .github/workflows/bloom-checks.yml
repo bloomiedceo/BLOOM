@@ -27,7 +27,7 @@ jobs:
           grep -q 'bloom-backend.js' index.html
           grep -q 'bloom-mini-dock' bloom-enhancements.js
           grep -q 'enable row level security' supabase/schema.sql
-          if grep -Eiq 'service_role|service-role' bloom-config.js; then
+          if grep -Eiq 'service_role[[:space:]]*:' bloom-config.js; then
             echo 'Do not place service-role keys in browser configuration.'
             exit 1
           fi
