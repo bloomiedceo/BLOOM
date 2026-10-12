@@ -137,7 +137,7 @@ drop policy if exists "reports read own or moderator" on public.reports;
 drop policy if exists "reports update moderator" on public.reports;
 
 create policy "profiles read public or own" on public.profiles
-for select to authenticated
+for select to anon, authenticated
 using (is_private = false or id = (select auth.uid()));
 
 create policy "profiles update own" on public.profiles
@@ -146,7 +146,7 @@ using (id = (select auth.uid()))
 with check (id = (select auth.uid()));
 
 create policy "posts read public or own" on public.posts
-for select to authenticated
+for select to anon, authenticated
 using (
   author_id = (select auth.uid())
   or (
@@ -206,13 +206,13 @@ using (
 
 create policy "messages read members" on public.messages
 for select to authenticated
-using (exists (select 1 from public.group_members gm where gm.group_id = group_id and gm.user_id = (select auth.uid())));
+using (exists (select 1 from public.group_members gm where gm.group_id = public.messages.group_id and gm.user_id = (select auth.uid())));
 
 create policy "messages create as member" on public.messages
 for insert to authenticated
 with check (
   author_id = (select auth.uid())
-  and exists (select 1 from public.group_members gm where gm.group_id = group_id and gm.user_id = (select auth.uid()))
+  and exists (select 1 from public.group_members gm where gm.group_id = public.messages.group_id and gm.user_id = (select auth.uid()))
 );
 
 create policy "messages delete own or moderator" on public.messages
@@ -231,6 +231,16 @@ create policy "reports update moderator" on public.reports
 for update to authenticated
 using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator')
 with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
+
+
+-- SQL privileges are necessary in addition to RLS; policies remain the row-level gate.
+grant select on public.profiles, public.posts to anon, authenticated;
+grant update on public.profiles to authenticated;
+grant insert, update, delete on public.posts to authenticated;
+grant select, insert, update on public.groups to authenticated;
+grant select, insert, delete on public.group_members to authenticated;
+grant select, insert, delete on public.messages to authenticated;
+grant select, insert, update on public.reports to authenticated;
 
 -- Enable Realtime for shared group messages. If this fails because the table is already in the publication,
 -- leave it enabled in Supabase Dashboard > Database > Publications > supabase_realtime.
