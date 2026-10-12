@@ -20,6 +20,8 @@ assert.match(css, /\.safety-modal-grid/, 'Safety Center must have responsive sty
 
 assert.match(html, /src="bloom-launch-upgrades\.js"/, 'Feed and marketplace upgrade script must be loaded');
 assert.match(upgrades, /Shopee/, 'Marketplace cards must have real marketplace destinations');
+assert.ok(upgrades.includes('https://shop.weverse.io/en/shop/USD/artists/2/sales/54189'), 'Official Weverse product link must be present');
+assert.ok(!html.includes('From $12') && !html.includes('From $28') && !html.includes('From $9') && !html.includes('From $22'), 'Product cards must not show stale placeholder prices');
 assert.match(upgrades, /Search Lazada/, 'Marketplace cards must include a second destination');
 assert.match(upgrades, /bloom-feed-comments/, 'Feed comments must have a persistence key for local preview');
 assert.match(enhancements, /\$\$\('\.feed-card',grid\)\.forEach/, 'Feed cards must be iterated as a collection');
@@ -31,6 +33,9 @@ assert.match(enhancements, /slot\.append\(frame\)/, 'Dock must move the real Spo
 assert.match(backend, /client\.auth\.onAuthStateChange/, 'Auth session listener must exist');
 assert.match(backend, /setTimeout\(\(\) => \{ void syncSession\(session\); \}, 0\)/, 'Auth session work must run after the auth callback returns');
 assert.match(backend, /from\('reports'\)/, 'Reporting flow must use the reports table');
+assert.match(backend, /from\('post_likes'\)/, 'Shared likes must use the backend');
+assert.match(backend, /from\('post_comments'\)/, 'Shared comments must use the backend');
+assert.match(upgrades, /bloom-shared-post/, 'Preview interactions must not override shared-post controls');
 assert.match(config, /url:\s*"https:\/\/[^\"]+\.supabase\.co"/, 'Supabase project URL must be configured');
 assert.match(config, /anonKey:\s*"[^\"]+"/, 'Supabase public frontend key must be configured');
 assert.doesNotMatch(config, /service_role\s*:/i, 'Browser config must never contain a service-role key');
