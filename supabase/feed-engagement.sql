@@ -41,7 +41,12 @@ with check (
   user_id = (select auth.uid())
   and exists (
     select 1 from public.posts p
-    where p.id = post_id and p.status = 'published'
+    where p.id = post_id
+      and p.status = 'published'
+      and (
+        p.author_id = (select auth.uid())
+        or exists (select 1 from public.profiles pr where pr.id = p.author_id and pr.is_private = false)
+      )
   )
 );
 
@@ -74,7 +79,12 @@ with check (
   and status = 'published'
   and exists (
     select 1 from public.posts p
-    where p.id = post_id and p.status = 'published'
+    where p.id = post_id
+      and p.status = 'published'
+      and (
+        p.author_id = (select auth.uid())
+        or exists (select 1 from public.profiles pr where pr.id = p.author_id and pr.is_private = false)
+      )
   )
 );
 
