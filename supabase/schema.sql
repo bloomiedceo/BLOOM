@@ -193,6 +193,7 @@ create policy "members join public group" on public.group_members
 for insert to authenticated
 with check (
   user_id = (select auth.uid())
+  and role = 'member'
   and exists (select 1 from public.groups g where g.id = public.group_members.group_id and (g.is_public = true or g.owner_id = (select auth.uid())))
 );
 
