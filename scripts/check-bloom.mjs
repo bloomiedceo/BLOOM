@@ -18,18 +18,19 @@ assert.match(html, /id="safety"[^>]*>/, 'Launch checklist target must exist');
 assert.match(css, /\.safety-modal-grid/, 'Safety Center must have responsive styling');
 
 assert.match(enhancements, /\$\$\('\.feed-card',grid\)\.forEach/, 'Feed cards must be iterated as a collection');
-assert.doesNotMatch(enhancements, /\$\([^\n)]*,\s*(?:grid|section|controls|roomList)\)\.forEach/, 'Single-element querySelector result must not be treated as a collection');
+assert.doesNotMatch(enhancements, /(?<!\$)\$\([^\n)]*,\s*(?:grid|section|controls|roomList)\)\.forEach/, 'Single-element querySelector result must not be treated as a collection');
 assert.match(enhancements, /id="bloom-player-host"/, 'Spotify iframe host must exist');
 assert.match(enhancements, /id="bloom-mini-dock"/, 'Spotify dock control must exist');
 assert.match(enhancements, /slot\.append\(frame\)/, 'Dock must move the real Spotify iframe');
 
 assert.match(backend, /client\.auth\.onAuthStateChange/, 'Auth session listener must exist');
+assert.match(backend, /setTimeout\(\(\) => \{ void syncSession\(session\); \}, 0\)/, 'Auth session work must run after the auth callback returns');
 assert.match(backend, /from\('reports'\)/, 'Reporting flow must use the reports table');
 assert.match(config, /url:\s*""/);
 assert.match(config, /anonKey:\s*""/);
 assert.doesNotMatch(config, /service_role\s*:/i, 'Browser config must never contain a service-role key');
 for (const table of ['profiles','posts','groups','group_members','messages','reports']) {
-  assert.ok(schema.includes(`alter table public.${table} enable row level security;`), `RLS must be enabled on ${table}`);
+  assert.ok(schema.includes('alter table public.' + table + ' enable row level security;'), 'RLS must be enabled on ' + table);
 }
 assert.match(schema, /and role = 'member'/, 'Clients must not assign privileged group roles');
 assert.match(schema, /auth\.jwt\(\) -> 'app_metadata' ->> 'role'/, 'Moderator checks must use trusted app metadata');
