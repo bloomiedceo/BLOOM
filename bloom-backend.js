@@ -45,6 +45,7 @@
     const activity = $('#activity .wrap');
     if (!activity) return;
     let currentUser = null;
+    let passwordRecovery = false;
     let activeGroup = null;
     let messageChannel = null;
     let knownGroups = [];
@@ -110,6 +111,7 @@
           <div id="bloom-auth-password-wrap"><label for="bloom-auth-password">Password</label><input id="bloom-auth-password" type="password" minlength="10" autocomplete="current-password" placeholder="At least 10 characters"></div>
           <button class="pill primary" type="submit">Continue</button>
         </form>
+        <form id="bloom-password-update-form" class="bloom-modal-form" hidden><label for="bloom-new-password">New password</label><input id="bloom-new-password" type="password" minlength="10" autocomplete="new-password" required placeholder="At least 10 characters"><button class="pill primary" type="submit">Update password</button></form>
         <div id="bloom-account-panel" hidden><p id="bloom-account-label"></p><form id="bloom-profile-form" class="bloom-modal-form"><label for="bloom-profile-display">Display name</label><input id="bloom-profile-display" maxlength="50" required><label><input id="bloom-profile-private" type="checkbox" style="width:auto;margin-right:8px">Make my profile private</label><button class="pill lavender" type="submit">Save privacy settings</button></form><button id="bloom-delete-account" class="pill white" type="button">Delete my account</button><button id="bloom-sign-out" class="pill white" type="button">Sign out</button></div>
         <p id="bloom-auth-message" class="bloom-auth-message" role="status" aria-live="polite"></p>
       </div>`;
@@ -165,6 +167,14 @@
           setAuthMessage('If this address has an account, a password-reset email will be sent.');
         }
       } catch (err) { setAuthMessage(err.message || 'Could not complete that request.'); }
+    });
+    $('#bloom-password-update-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = $('#bloom-new-password').value;
+      if (password.length < 10) { setAuthMessage('Use a password with at least 10 characters.'); return; }
+      const { error } = await client.auth.updateUser({ password });
+      if (error) setAuthMessage(error.message);
+      else { passwordRecovery = false; $('#bloom-password-update-form').hidden = true; $('#bloom-new-password').value = ''; setAuthMessage('Password updated. You can continue using BLOOM.'); }
     });
     $('#bloom-sign-out').addEventListener('click', async () => { const { error } = await client.auth.signOut(); if (error) setAuthMessage(error.message); else setAuthMessage('Signed out.'); });
     $('#bloom-profile-form').addEventListener('submit', async (e) => {
@@ -318,6 +328,7 @@
     }
     async function syncSession(session) {
       currentUser = session?.user || null;
+      if (passwordRecovery) { authButton.textContent = 'Finish password reset'; openAuth(); authForm.hidden = true; accountPanel.hidden = true; $('#bloom-password-update-form').hidden = false; setLiveStatus('Password reset in progress.'); return; }
       authButton.textContent = currentUser ? 'My account' : 'Sign in';
       authForm.hidden = !!currentUser;
       accountPanel.hidden = !currentUser;
@@ -339,7 +350,7 @@
       await loadPosts();
       await loadGroups();
     }
-    client.auth.onAuthStateChange((_event, session) => { void syncSession(session); });
+    client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') passwordRecovery = true; void syncSession(session); });
     client.auth.getSession().then(({ data }) => syncSession(data.session));
   }
 })();
