@@ -195,6 +195,21 @@ footer{border-top:1px solid var(--line);padding:26px 0 32px}.footer-row{display:
 <p>Share a fan update, activity, video link, artwork, or group moment. Keep it respectful and only post media you have permission to share.</p>
 <form id="post-form"><label for="post-kind">Post type</label><select id="post-kind"><option>Group activity</option><option>Video or dance cover link</option><option>Fan art / edit</option><option>Concert memory</option><option>Question for the fandom</option></select><label for="post-caption">Your update</label><textarea id="post-caption" rows="4" maxlength="1000" required placeholder="What's your group up to?"></textarea><label for="post-link">Media link (optional)</label><input id="post-link" type="url" placeholder="https://…"><button class="pill primary" type="submit" style="margin-top:15px">Preview post ↗</button></form><p class="notice">Media uploads and publishing are not active yet. A production version should include moderation, reporting, privacy controls, and safe file handling.</p></div></div>
 
+<div class="modal-backdrop" id="safety-modal" role="dialog" aria-modal="true" aria-labelledby="safety-modal-title" onclick="backdropClose(event,this)">
+  <div class="modal safety-modal">
+    <div class="modal-head"><h2 id="safety-modal-title">BLOOM Safety Center 🛡️</h2><button class="modal-close" type="button" aria-label="Close Safety Center" onclick="closeModal('safety-modal')">×</button></div>
+    <p class="safety-modal-intro">Your comfort matters here. Keep your account secure, protect your personal information, and help us keep the fandom kind.</p>
+    <div class="safety-modal-grid">
+      <article class="safety-modal-card"><span aria-hidden="true">🔐</span><h3>Protect your account</h3><p>Use a unique password, verify the email address you control, and never share passwords, sign-in links, or verification codes—even with someone claiming to be staff.</p></article>
+      <article class="safety-modal-card"><span aria-hidden="true">💗</span><h3>Keep personal details private</h3><p>Avoid posting your home address, school, phone number, live location, travel plans, or private conversations. Ask permission before sharing another person's content.</p></article>
+      <article class="safety-modal-card"><span aria-hidden="true">🚩</span><h3>Report and get support</h3><p>If a post or interaction feels unsafe, stop engaging, save only what you need to explain the concern, and tell a trusted adult when appropriate. This preview report form does not send a real report yet.</p></article>
+      <article class="safety-modal-card"><span aria-hidden="true">🤝</span><h3>Respect the community</h3><p>No harassment, threats, impersonation, doxxing, scams, or pressure to share private information. Moderation tools must be configured and staffed before a public launch.</p></article>
+    </div>
+    <p class="safety-modal-note"><strong>Important:</strong> BLOOM's report form is currently a preview and is not monitored. If someone is in immediate danger, contact local emergency services or a trusted adult; don't rely on this website to get urgent help.</p>
+    <div class="safety-modal-actions"><button class="pill primary" type="button" onclick="openSafetyReport()">Open safety report form ↗</button><button class="pill lavender" type="button" onclick="goToSafetyChecklist()">Read launch checklist</button><button class="pill white" type="button" onclick="closeModal('safety-modal')">Close</button></div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="feedback-title">Complaint & suggestion booth 💌</h2><button class="modal-close" aria-label="Close" onclick="closeModal('feedback-modal')">×</button></div>
 <p>Hi from the founder’s desk! Tell us what happened or what you’d love to see improved. Be as clear as you feel comfortable being.</p>
 <form id="feedback-form"><label for="feedback-type">What is this about?</label><select id="feedback-type"><option>Suggestion / new feature</option><option>Bug or something not working</option><option>Safety concern or complaint</option><option>Harassment or community report</option><option>Accessibility issue</option><option>Affiliate / product concern</option><option>Other feedback</option></select>
@@ -311,6 +326,9 @@ function roomToast(e,room){e.preventDefault();showToast(room+' — connect a rea
 document.querySelector('#signup-form').addEventListener('submit',e=>{e.preventDefault();const email=document.querySelector('#email');if(!email.checkValidity()){email.reportValidity();return}showToast('You’re on the list! Connect an email provider to save signups.');email.value=''});
 
 function openModal(id){const modal=document.getElementById(id);if(modal){modal.classList.add('open');document.body.style.overflow='hidden';const focusable=modal.querySelector('input:not([disabled]),textarea,select,button');if(focusable)focusable.focus()}}
+function openSafetyReport(){closeModal('safety-modal');const type=document.querySelector('#feedback-type');if(type)type.value='Safety concern or complaint';const subject=document.querySelector('#feedback-subject');if(subject)subject.value='Safety concern';openModal('feedback-modal')}
+function goToSafetyChecklist(){closeModal('safety-modal');const target=document.getElementById('safety');if(target){target.setAttribute('tabindex','-1');target.scrollIntoView({behavior:'smooth',block:'start'});target.focus({preventScroll:true})}}
+document.querySelectorAll('a[href="#safety"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openModal('safety-modal')}));
 function closeModal(id){const modal=document.getElementById(id);if(modal)modal.classList.remove('open');if(!document.querySelector('.modal-backdrop.open'))document.body.style.overflow=''}
 function backdropClose(event,el){if(event.target===el)closeModal(el.id)}
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id))}});

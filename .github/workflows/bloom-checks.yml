@@ -2,7 +2,7 @@ name: BLOOM validation
 on:
   pull_request:
   push:
-    branches: [main, feature/bloom-launch-readiness]
+    branches: [main, feature/bloom-launch-readiness, fix/safety-center-and-runtime-checks]
   workflow_dispatch:
 
 jobs:
@@ -20,6 +20,8 @@ jobs:
           node --check bloom-config.js
           node --check bloom-enhancements.js
           node --check bloom-backend.js
+          node --check scripts/check-bloom.mjs
+          node scripts/check-bloom.mjs
       - name: Check expected feature wiring
         run: |
           grep -q 'bloom-config.js' index.html
