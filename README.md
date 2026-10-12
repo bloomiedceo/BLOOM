@@ -7,8 +7,10 @@ BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery webs
 - `index.html` — GitHub Pages entry point and original design.
 - `bloom-enhancements.css` / `bloom-enhancements.js` — responsive feed, marketplace preview, music dashboard, and dockable Spotify player.
 - `bloom-config.js` — public Supabase Project URL and publishable/anon key placeholders. It must never contain a service-role key.
-- `bloom-backend.js` — optional Supabase Auth, shared posts, public groups, real-time group messages, reporting, and moderator queue UI.
-- `supabase/schema.sql` — database tables, indexes, triggers, grants, and row-level security (RLS) policies.
+- `bloom-backend.js` — optional Supabase Auth, shared posts, public groups, real-time group messages, shared post likes/comments, reporting, and moderator queue UI.
+- `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
+- `supabase/schema.sql` — core database tables, indexes, triggers, grants, and row-level security (RLS) policies.
+- `supabase/feed-engagement.sql` — additional RLS-protected tables and RPC for shared post likes/comment counts; run after the core schema.
 - `supabase/functions/delete-account/index.ts` — server-side account deletion function; deploy it before advertising account deletion as available.
 - `bloom_kpop_community_launch_preview (1).html` and `bloom_ceo_dashboard.html` — original files retained.
 
@@ -42,7 +44,7 @@ BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visib
 GitHub Pages is static hosting. It cannot run the database, authenticate users on its own, or deliver shared messages. The included Supabase integration is **not live until you create and configure a Supabase project**.
 
 1. Create a Supabase project in an account you control.
-2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file.
+2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then run `supabase/feed-engagement.sql` to enable shared likes and comments. Re-run neither by copying partial snippets; use the complete files in order.
 3. In **Authentication → URL Configuration**, set the Site URL to your published GitHub Pages URL and add that exact URL to the allowed redirect URLs.
 4. In **Authentication → Providers / Email**, enable email sign-up and verification. Configure a real SMTP provider for launch; default/testing email delivery is not a production mail service. Set a suitable minimum password length (at least 10 characters) and enable available password/security protections.
 5. In **Project Settings → API**, copy the Project URL and the public publishable/anon key into `bloom-config.js`. These are browser-visible values; RLS must be enabled as in the SQL file. **Never put a service-role/secret key in any frontend file or GitHub Pages.**
@@ -54,7 +56,7 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 
 - Supabase email/password sign-up, sign-in, email verification flow, password-reset email, and password update after recovery.
 - Profile display name and private-profile setting.
-- Shared posts with public/private profile visibility, reporting, and a moderator queue for hiding posts/resolving reports.
+- Shared posts with public/private profile visibility, reporting, and a moderator queue for hiding posts/resolving reports. Shared post likes/comments require `supabase/feed-engagement.sql`.
 - Public group discovery, group creation/membership, and Realtime group messages.
 - A server-side account deletion Edge Function.
 - RLS policies on profiles, posts, groups, group membership, messages, and reports.
@@ -80,7 +82,8 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Test on desktop and a narrow mobile screen; check keyboard focus and reduced-motion settings.
 - [ ] Click Safety in the top navigation and Safety center in the footer; verify the Safety Center opens, closes, and opens the safety report preview.
 - [ ] Spotify section and fixed mini-player appear; dock/return the actual embed; switch all three playlists.
-- [ ] Search the marketplace and test every category, wishlist, and reset button.
+- [ ] Search the marketplace and test every category, wishlist, and reset button. Confirm Weverse/Shopee listings open and marketplace searches show current offers; seller prices/stock can change.
+- [ ] Run `supabase/feed-engagement.sql`, then test shared post likes/comments with two accounts and confirm private-profile posts stay private.
 - [ ] With Supabase configured, create two test accounts and verify email confirmation works.
 - [ ] Test sign-in, wrong-password errors, password-reset email, and password update from the recovery link.
 - [ ] Test private-profile visibility from a separate signed-in account and a signed-out browser.
