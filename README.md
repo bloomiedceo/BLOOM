@@ -29,6 +29,10 @@ Then open `http://localhost:8000`.
 3. Wait for the Pages deployment to finish and use the URL GitHub displays. The usual project-site URL is `https://bloomiedceo.github.io/Bloom-Kpop-Community/`.
 4. Check the **Actions** tab for failed deployments or validation checks.
 
+## Safety Center
+
+The top navigation and footer Safety links open a dedicated Safety Center dialog with account security, privacy, community conduct, and reporting guidance. The report button opens the existing feedback preview with the safety category selected. **The feedback form is still a preview and does not send or store reports**, so do not rely on it for urgent or monitored support until a private, staffed reporting service is connected.
+
 ## Spotify and mini-player
 
 BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visible at the bottom of the page. Select **Dock Spotify player** to move the actual Spotify iframe into the bottom dock while you browse; select **Return player** to put it back in the dashboard. The mini-player is a dock for Spotify's official embed, not a replacement for Spotify's own playback controls. Playback depends on Spotify, the selected playlist, browser support, region, and account restrictions.
@@ -66,10 +70,15 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 
 When `bloom-config.js` has blank values, the website deliberately stays in preview mode. Likes, saved posts, demo posts, wishlist items, seller listings, and demo chat are saved only in the current browser; they are not shared with other visitors. Do not enter real passwords or private information into preview forms.
 
+## Automated checks
+
+GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which guards against the single-element selector bug that previously stopped the enhancement script, verifies Safety Center wiring and Spotify docking hooks, and checks key RLS/security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
+
 ## Pre-launch smoke-test checklist
 
 - [ ] GitHub Pages deployment succeeds and there are no JavaScript console errors.
 - [ ] Test on desktop and a narrow mobile screen; check keyboard focus and reduced-motion settings.
+- [ ] Click Safety in the top navigation and Safety center in the footer; verify the Safety Center opens, closes, and opens the safety report preview.
 - [ ] Spotify section and fixed mini-player appear; dock/return the actual embed; switch all three playlists.
 - [ ] Search the marketplace and test every category, wishlist, and reset button.
 - [ ] With Supabase configured, create two test accounts and verify email confirmation works.
