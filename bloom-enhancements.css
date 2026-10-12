@@ -44,3 +44,56 @@
 .bloom-message-form button{border:0;border-radius:999px;background:var(--ink);color:#fff;padding:10px 13px;font-size:11px;font-weight:800}
 @media(max-width:760px){.bloom-music-grid{grid-template-columns:1fr}.bloom-music{padding:18px}.bloom-spotify-frame{height:300px}.bloom-message-shell{grid-template-columns:1fr}.bloom-room-list{grid-template-columns:repeat(2,minmax(0,1fr))}.bloom-mini-player{left:9px;right:9px;bottom:9px}.bloom-mini-player button{padding:8px 10px}}
 @media(prefers-reduced-motion:reduce){.bloom-mini-player *{transition:none!important}}
+
+
+/* BLOOM launch-readiness and live-backend UI */
+[hidden]{display:none!important}
+.bloom-player-host{position:relative}
+.bloom-player-placeholder{padding:16px;border:1px dashed #cbb8ee;border-radius:14px;background:#fff9ff;color:var(--muted);font-size:12px;line-height:1.6}
+.bloom-mini-player{width:calc(100% - 32px);max-width:680px;flex-wrap:wrap}
+.bloom-mini-player .mini-copy{min-width:130px}
+.bloom-mini-player.is-docked{max-width:850px;display:grid;grid-template-columns:43px minmax(120px,1fr) auto auto;align-items:center}
+#bloom-mini-player-slot{grid-column:1/-1;width:100%;min-width:0}
+#bloom-mini-player-slot .bloom-spotify-frame{display:block;width:100%;max-width:560px;height:152px;margin:0 auto}
+.bloom-mini-player button:focus-visible,.bloom-quick-tracks button:focus-visible,.bloom-group-choice:focus-visible{outline:3px solid #a58be8;outline-offset:2px}
+.bloom-backend-status{padding:12px 15px;margin:0 0 18px;border:1px solid #e4d8ff;border-radius:15px;background:#f7f2ff;color:#59457f;font-size:12px;line-height:1.65}
+.bloom-live-community{margin:26px 0;padding:24px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(135deg,#fffafd,#f4efff)}
+.bloom-live-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.bloom-live-heading h2{margin:7px 0 0;font-size:clamp(26px,3vw,36px);letter-spacing:-.06em}
+.bloom-live-heading p{font-size:12px;color:var(--muted);line-height:1.6}
+.bloom-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;align-items:start}
+.bloom-live-card{min-width:0;padding:18px;border:1px solid var(--line);border-radius:19px;background:white}
+.bloom-live-card h3{font-size:17px;letter-spacing:-.04em;margin:0 0 14px}
+.bloom-live-posts,.bloom-live-groups{display:grid;gap:10px;margin-top:13px}
+.bloom-live-post{border:1px solid var(--line);border-radius:14px;padding:13px;overflow-wrap:anywhere}
+.bloom-live-post h4{margin:7px 0;font-size:14px}
+.bloom-live-post p{font-size:12px;line-height:1.65;color:#655a73;white-space:pre-wrap}
+.bloom-live-post small,.bloom-live-message small{font-size:10px;color:var(--muted)}
+.bloom-live-post a{font-size:12px;color:var(--purple);text-decoration:underline}
+.bloom-inline-form{display:flex;gap:8px;align-items:center;margin:10px 0}
+.bloom-inline-form input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff;color:var(--ink)}
+.bloom-live-groups{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bloom-group-choice{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;text-align:left;color:var(--ink);font-size:11px;font-weight:800;overflow-wrap:anywhere}
+.bloom-group-choice.active{background:#eee5ff;border-color:#bca4ff}
+.bloom-live-chat{margin-top:15px;border-top:1px solid var(--line);padding-top:14px}
+.bloom-live-chat h4{margin:0 0 8px;font-size:14px}
+.bloom-live-messages{display:grid;gap:9px;align-content:start;max-height:270px;overflow:auto;padding:8px;background:#fcfaff;border:1px solid var(--line);border-radius:13px}
+.bloom-live-message{max-width:95%;padding:9px 11px;border-radius:13px;background:#eee7ff;overflow-wrap:anywhere}
+.bloom-live-message p{margin:4px 0;font-size:12px;line-height:1.55;white-space:pre-wrap}
+.bloom-live-message time{font-size:9px;color:var(--muted)}
+.bloom-report-row{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+.bloom-report-row p{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.bloom-auth-button{white-space:nowrap}
+.bloom-auth-message{font-size:12px;line-height:1.6;color:#6745b5;overflow-wrap:anywhere}
+#bloom-auth-form input[type=password],#bloom-auth-form input[type=email],#bloom-auth-form input[type=text]{width:100%}
+@media(max-width:760px){
+ .bloom-live-community{padding:16px}
+ .bloom-live-heading{align-items:flex-start;flex-direction:column;gap:5px}
+ .bloom-live-grid{grid-template-columns:1fr}
+ .bloom-mini-player{width:calc(100% - 18px);left:9px;right:9px;bottom:9px;max-width:none}
+ .bloom-mini-player.is-docked{grid-template-columns:38px minmax(90px,1fr) auto;gap:8px}
+ .bloom-mini-player.is-docked #bloom-mini-open{grid-column:1/3}
+ .bloom-mini-player.is-docked #bloom-mini-dock{grid-column:3}
+ #bloom-mini-player-slot .bloom-spotify-frame{height:152px}
+ .bloom-live-card{padding:14px}
+}

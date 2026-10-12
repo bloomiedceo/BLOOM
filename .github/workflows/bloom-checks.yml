@@ -1,0 +1,33 @@
+name: BLOOM validation
+on:
+  pull_request:
+  push:
+    branches: [main, feature/bloom-launch-readiness]
+  workflow_dispatch:
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          node --check bloom-config.js
+          node --check bloom-enhancements.js
+          node --check bloom-backend.js
+      - name: Check expected feature wiring
+        run: |
+          grep -q 'bloom-config.js' index.html
+          grep -q 'bloom-enhancements.js' index.html
+          grep -q 'bloom-backend.js' index.html
+          grep -q 'bloom-mini-dock' bloom-enhancements.js
+          grep -q 'enable row level security' supabase/schema.sql
+          if grep -Eiq 'service_role[[:space:]]*:' bloom-config.js; then
+            echo 'Do not place service-role keys in browser configuration.'
+            exit 1
+          fi
