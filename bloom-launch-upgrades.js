@@ -50,7 +50,8 @@
       { match: /photocard|binder/i, query: 'K-pop photocard binder sleeves' },
       { match: /concert-day|concert bag|lightstick/i, query: 'K-pop concert bag lightstick accessories' }
     ];
-    $$('#product-grid .product-card').forEach(card => {
+    $('#product-grid .product-card').forEach(card => {
+      if ($('.tag', card)?.textContent.includes('Your demo listing')) return;
       const name = ($('h3', card)?.textContent || card.dataset.name || '').trim();
       const product = products.find(item => item.match.test(name + ' ' + card.dataset.name)) || { query: name };
       const links = $$('.shop-link', card);
