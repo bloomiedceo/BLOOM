@@ -67,7 +67,7 @@ assert.match(backend, /from\('marketplace_inquiries'\)/, 'Marketplace must suppo
 assert.match(backend, /bloom-story-form/, 'BLOOM LIVE must expose a story creation form');
 assert.match(backend, /capture="environment"/, 'Story photo input should support camera capture on mobile browsers');
 assert.match(backend, /from\('stories'\)/, 'Stories must use the shared Supabase table');
-assert.match(backend, /from\('notifications'\)/, 'Notifications must load from the signed-in user's inbox');
+assert.match(backend, /from\('notifications'\)/, "Notifications must load from the signed-in user inbox");
 assert.match(backend, /update\(\{read_at:new Date\(\)\.toISOString\(\)\}\)/, 'Notifications must be markable as read');
 assert.match(socialSchema, /grant update\(read_at\) on public\.notifications to authenticated/i, 'Users should only receive column-level permission to mark notifications read');
 assert.match(backend, /5 \* 1024 \* 1024/, 'Story uploads must enforce the five-megabyte client-side limit');
