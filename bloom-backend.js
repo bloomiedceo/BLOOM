@@ -252,6 +252,7 @@
       const card = document.createElement('article');
       card.className = 'feed-card bloom-shared-post';
       card.dataset.postId = post.id;
+      card.dataset.fandom = post.fandom || 'Multi-stan';
       const art = document.createElement('div'); art.className = 'feed-art'; art.textContent = '💗';
       const content = document.createElement('div'); content.className = 'feed-content';
       const meta = document.createElement('div'); meta.className = 'meta';
@@ -358,6 +359,7 @@
         if (!engagementError && engagement) statsById = new Map(engagement.map(item => [item.post_id, item]));
       } catch (_) {}
       if (grid) grid.prepend(...data.map(post => renderPost(post, statsById.get(post.id) || {})));
+      document.dispatchEvent(new CustomEvent('bloom:feed-updated'));
     }
 
     activity.addEventListener('click', async event => {
