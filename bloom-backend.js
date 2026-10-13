@@ -402,15 +402,16 @@
       if (!currentUser) { openAuth(); setAuthMessage('Sign in before sharing a story.'); return; }
       const input = $('#bloom-story-photo'), status = $('#bloom-story-status'), button = $('button[type="submit"]', event.currentTarget);
       const file = storyCapturedBlob || input.files?.[0]; if (!file) { status.textContent = 'Choose a photo or video first.'; return; }
-      const isVideo = /^video\/(webm|mp4)$/.test(file.type), isImage = /^image\/(jpeg|png|webp)$/.test(file.type);
+      const fileType = (file.type || '').split(';')[0].toLowerCase();
+      const isVideo = /^video\/(webm|mp4)$/.test(fileType), isImage = /^image\/(jpeg|png|webp)$/.test(fileType);
       if (!isVideo && !isImage) { status.textContent = 'Choose a JPG, PNG, WebP, MP4, or WebM file.'; return; }
       if (file.size > (isVideo ? 25 : 8) * 1024 * 1024) { status.textContent = isVideo ? 'Choose a video under 25 MB.' : 'Choose a photo under 8 MB.'; return; }
       const original = button.textContent; button.disabled = true; button.textContent = 'Sharing…'; status.textContent = isVideo ? 'Preparing your video…' : 'Preparing your photo…';
       let path = null;
       try {
         const blob = isVideo ? file : await prepareSocialImage(file, storyFilter.value);
-        const extension = isVideo ? (file.type === 'video/mp4' ? 'mp4' : 'webm') : 'webp';
-        const contentType = isVideo ? file.type : 'image/webp';
+        const extension = isVideo ? (fileType === 'video/mp4' ? 'mp4' : 'webm') : 'webp';
+        const contentType = isVideo ? fileType : 'image/webp';
         path = currentUser.id + '/story-' + crypto.randomUUID() + '.' + extension;
         const upload = await client.storage.from('bloom-story-media').upload(path, blob, { contentType, upsert: false });
         if (upload.error) throw new Error('Media upload failed. Please check your connection and try again.');
@@ -708,10 +709,11 @@
       if (!currentUser) { openAuth(); setAuthMessage('Sign in before publishing to the shared BLOOM FYP.'); return { ok: false, auth: true }; }
       let mediaUrl = null, uploadedPath = null;
       if (mediaBlob) {
-        const videoType = mediaType === 'video' && /^video\/(webm|mp4)$/.test(mediaBlob.type);
+        const normalizedVideoType = (mediaBlob?.type || '').split(';')[0].toLowerCase();
+        const videoType = mediaType === 'video' && /^video\/(webm|mp4)$/.test(normalizedVideoType);
         if (mediaType === 'video' && (!videoType || mediaBlob.size > 25 * 1024 * 1024)) { setLiveStatus('Choose an MP4 or WebM video under 25 MB.'); return { ok: false, error: new Error('Unsupported video format or size.') }; }
-        const extension = videoType ? (mediaBlob.type === 'video/mp4' ? 'mp4' : 'webm') : 'webp';
-        const contentType = videoType ? mediaBlob.type : 'image/webp';
+        const extension = videoType ? (normalizedVideoType === 'video/mp4' ? 'mp4' : 'webm') : 'webp';
+        const contentType = videoType ? normalizedVideoType : 'image/webp';
         uploadedPath = currentUser.id + '/post-' + crypto.randomUUID() + '.' + extension;
         const upload = await client.storage.from('bloom-post-media').upload(uploadedPath, mediaBlob, { contentType, upsert: false });
         if (upload.error) { setLiveStatus('Media upload failed. Check that BLOOM media storage is configured and try again.'); return { ok: false, error: upload.error }; }
