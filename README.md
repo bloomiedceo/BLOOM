@@ -98,4 +98,4 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Verify RLS for every table and test unauthorized reads/writes; never use the service-role key in the browser.
 - [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
 - [ ] Run `supabase/newsletter-signups.sql`, test signup persistence, set the Resend sender/domain secrets, confirm a test email, and verify unsubscribe before sending updates.
-- [ ] Configure production email delivery, abuse controls, backups, monitoring, and a real moderation rota before announcing launch.
+- [ ] Enable leaked-password protection, configure Supabase Auth custom SMTP, add abuse controls/CAPTCHA, verify backups/monitoring, and establish a real moderation rota before announcing launch.
