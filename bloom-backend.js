@@ -328,11 +328,11 @@
     }
     $('#bloom-notifications-refresh').addEventListener('click', loadNotifications);
     const storyInput = $('#bloom-story-photo'), storyFilter = $('#bloom-story-filter'), storyPreview = $('#bloom-story-preview');
-    let storyPreviewUrl = '';
+    let storyPreviewUrl = '', storyCapturedBlob = null;
     function renderStoryPreview() {
       if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
       storyPreviewUrl = ''; storyPreview.replaceChildren(); storyPreview.hidden = true;
-      const file = storyInput.files?.[0]; if (!file) return;
+      const file = storyCapturedBlob || storyInput.files?.[0]; if (!file) return;
       const videoFile = file.type === 'video/mp4' || file.type === 'video/webm';
       const preview = document.createElement(videoFile ? 'video' : 'img');
       storyPreviewUrl = URL.createObjectURL(file); preview.src = storyPreviewUrl;
@@ -341,13 +341,67 @@
       else { preview.alt = 'Story photo preview'; }
       storyPreview.append(preview); storyPreview.hidden = false;
     }
-    storyInput.addEventListener('change', renderStoryPreview);
+    storyInput.addEventListener('change', () => { storyCapturedBlob = null; renderStoryPreview(); });
     storyFilter.addEventListener('change', renderStoryPreview);
+    const storyCameraView = $('#bloom-story-camera-view'), storyCameraPlaceholder = $('#bloom-story-camera-placeholder');
+    const storyCameraStart = $('#bloom-story-camera-start'), storyCameraPhoto = $('#bloom-story-camera-photo'), storyCameraRecord = $('#bloom-story-camera-record'), storyCameraStop = $('#bloom-story-camera-stop'), storyCameraOff = $('#bloom-story-camera-off');
+    let storyCameraStream = null, storyRecorder = null, storyRecordChunks = [], storyDrawFrame = 0, storyRecordTimeout = null;
+    function stopStoryCamera() {
+      if (storyDrawFrame) cancelAnimationFrame(storyDrawFrame); storyDrawFrame = 0;
+      if (storyCameraStream) storyCameraStream.getTracks().forEach(track => track.stop());
+      storyCameraStream = null; storyCameraView.srcObject = null; storyCameraView.hidden = true; storyCameraPlaceholder.hidden = false;
+      storyCameraStart.disabled = false; storyCameraPhoto.disabled = true; storyCameraRecord.disabled = true; storyCameraStop.disabled = true; storyCameraOff.disabled = true;
+    }
+    storyCameraStart.addEventListener('click', async () => {
+      if (!navigator.mediaDevices?.getUserMedia) { $('#bloom-story-status').textContent = 'Camera access is not supported here. Choose a media file instead.'; return; }
+      try {
+        storyCameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true });
+        storyCameraView.srcObject = storyCameraStream; storyCameraView.hidden = false; storyCameraPlaceholder.hidden = true;
+        storyCameraView.style.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; await storyCameraView.play();
+        storyCameraStart.disabled = true; storyCameraPhoto.disabled = false; storyCameraRecord.disabled = false; storyCameraOff.disabled = false;
+        $('#bloom-story-status').textContent = 'Camera is on. Pick a filter, take a photo, or record a story video up to 30 seconds.';
+      } catch (error) { stopStoryCamera(); $('#bloom-story-status').textContent = error?.name === 'NotAllowedError' ? 'Camera permission was denied. Allow camera and microphone access, or choose a file.' : 'Could not start the camera. Check device permissions and try again.'; }
+    });
+    storyFilter.addEventListener('change', () => { renderStoryPreview(); if (storyCameraStream) storyCameraView.style.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; });
+    storyCameraPhoto.addEventListener('click', async () => {
+      if (!storyCameraStream || !storyCameraView.videoWidth) return;
+      const canvas = document.createElement('canvas'), scale = Math.min(1, 1600 / Math.max(storyCameraView.videoWidth, storyCameraView.videoHeight));
+      canvas.width = Math.round(storyCameraView.videoWidth * scale); canvas.height = Math.round(storyCameraView.videoHeight * scale);
+      const context = canvas.getContext('2d'); context.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; context.drawImage(storyCameraView, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.86));
+      if (!blob) { $('#bloom-story-status').textContent = 'Could not capture that photo. Try again.'; return; }
+      storyCapturedBlob = blob; storyInput.value = ''; renderStoryPreview(); stopStoryCamera(); $('#bloom-story-status').textContent = 'Filtered photo ready. Preview it before sharing.';
+    });
+    storyCameraRecord.addEventListener('click', () => {
+      if (!storyCameraStream || !storyCameraView.videoWidth) return;
+      if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { $('#bloom-story-status').textContent = 'Video recording is not supported in this browser. Choose a video file instead.'; return; }
+      const canvas = document.createElement('canvas'), scale = Math.min(1, 1280 / Math.max(storyCameraView.videoWidth, storyCameraView.videoHeight));
+      canvas.width = Math.round(storyCameraView.videoWidth * scale); canvas.height = Math.round(storyCameraView.videoHeight * scale);
+      const context = canvas.getContext('2d'), draw = () => { if (!storyCameraStream) return; context.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; context.drawImage(storyCameraView, 0, 0, canvas.width, canvas.height); storyDrawFrame = requestAnimationFrame(draw); }; draw();
+      const canvasStream = canvas.captureStream(24), stream = new MediaStream([...canvasStream.getVideoTracks(), ...storyCameraStream.getAudioTracks()]);
+      const mime = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'].find(type => MediaRecorder.isTypeSupported(type));
+      try { storyRecorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); }
+      catch (_) { stream.getTracks().forEach(track => track.stop()); stopStoryCamera(); $('#bloom-story-status').textContent = 'Could not start recording. Try a video file instead.'; return; }
+      storyRecordChunks = []; storyRecorder.ondataavailable = event => { if (event.data?.size) storyRecordChunks.push(event.data); };
+      storyRecorder.onerror = () => { $('#bloom-story-status').textContent = 'Recording failed. Please try again.'; stopStoryCamera(); };
+      storyRecorder.onstop = () => {
+        if (storyRecordTimeout) clearTimeout(storyRecordTimeout); storyRecordTimeout = null;
+        const type = storyRecorder?.mimeType || 'video/webm', blob = new Blob(storyRecordChunks, { type }); stream.getTracks().forEach(track => track.stop());
+        storyCapturedBlob = blob; storyInput.value = ''; renderStoryPreview(); stopStoryCamera();
+        $('#bloom-story-status').textContent = blob.size > 25 * 1024 * 1024 ? 'This recording is over 25 MB. Record a shorter clip.' : 'Filtered recording ready. Preview it before sharing.';
+      };
+      storyRecorder.start(500); storyCameraRecord.disabled = true; storyCameraPhoto.disabled = true; storyCameraStop.disabled = false;
+      $('#bloom-story-status').textContent = 'Recording… it will stop automatically after 30 seconds.';
+      storyRecordTimeout = setTimeout(() => { if (storyRecorder && storyRecorder.state !== 'inactive') storyRecorder.stop(); }, 30000);
+    });
+    storyCameraStop.addEventListener('click', () => { if (storyRecorder && storyRecorder.state !== 'inactive') storyRecorder.stop(); });
+    storyCameraOff.addEventListener('click', () => { if (storyRecorder && storyRecorder.state !== 'inactive') storyRecorder.stop(); stopStoryCamera(); });
+    window.addEventListener('beforeunload', stopStoryCamera, { once: true });
     $('#bloom-story-form').addEventListener('submit', async event => {
       event.preventDefault();
       if (!currentUser) { openAuth(); setAuthMessage('Sign in before sharing a story.'); return; }
       const input = $('#bloom-story-photo'), status = $('#bloom-story-status'), button = $('button[type="submit"]', event.currentTarget);
-      const file = input.files?.[0]; if (!file) { status.textContent = 'Choose a photo or video first.'; return; }
+      const file = storyCapturedBlob || input.files?.[0]; if (!file) { status.textContent = 'Choose a photo or video first.'; return; }
       const isVideo = /^video\/(webm|mp4)$/.test(file.type), isImage = /^image\/(jpeg|png|webp)$/.test(file.type);
       if (!isVideo && !isImage) { status.textContent = 'Choose a JPG, PNG, WebP, MP4, or WebM file.'; return; }
       if (file.size > (isVideo ? 25 : 8) * 1024 * 1024) { status.textContent = isVideo ? 'Choose a video under 25 MB.' : 'Choose a photo under 8 MB.'; return; }
@@ -363,7 +417,7 @@
         const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
         const { error } = await client.from('stories').insert({ user_id: currentUser.id, caption: $('#bloom-story-caption').value.trim(), media_path: path, media_type: isVideo ? 'video' : 'image', expires_at: expires });
         if (error) { await client.storage.from('bloom-story-media').remove([path]); path = null; throw new Error('Story could not be published. Please try again.'); }
-        event.currentTarget.reset(); renderStoryPreview(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
+        event.currentTarget.reset(); storyCapturedBlob = null; renderStoryPreview(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
       } catch (error) { status.textContent = error.message || 'Story could not be shared.'; }
       finally { button.disabled = false; button.textContent = original; }
     });
