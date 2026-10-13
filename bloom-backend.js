@@ -16,6 +16,11 @@
     const status = $('#newsletter-status');
     const submitButton = $('button[type="submit"]', newsletterForm);
     if (!emailInput || !consentInput || !status || !submitButton) return;
+    if (cfg.newsletterEnabled === false) {
+      status.dataset.state = 'error';
+      status.textContent = 'BLOOM email confirmation is still being configured. Your address has not been sent or saved. Please try again later.';
+      return;
+    }
     if (!emailInput.checkValidity()) {
       emailInput.reportValidity();
       status.dataset.state = 'error';
@@ -110,6 +115,19 @@
     const activity = $('#activity .wrap');
     if (!activity) return;
     let currentUser = null;
+    window.bloomMusicPlaylists = {
+      isSignedIn: () => Boolean(currentUser),
+      list: async () => await client.from('music_playlists')
+        .select('id,spotify_playlist_id,title,created_at')
+        .order('created_at', { ascending: false }).limit(50),
+      add: async ({ spotifyId, title }) => {
+        if (!currentUser) return { data: null, auth: true, error: { message: 'Sign in to share a playlist with everyone on BLOOM.' } };
+        return await client.from('music_playlists')
+          .insert({ spotify_playlist_id: spotifyId, title, added_by: currentUser.id })
+          .select('id,spotify_playlist_id,title,created_at').single();
+      }
+    };
+    document.dispatchEvent(new CustomEvent('bloom:music-ready'));
     let passwordRecovery = false;
     let activeGroup = null;
     let messageChannel = null;

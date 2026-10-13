@@ -41,7 +41,7 @@ The top navigation and footer Safety links open a dedicated Safety Center dialog
 
 ## Spotify and mini-player
 
-BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visible at the bottom of the page. Select **Dock Spotify player** to move the actual Spotify iframe into the bottom dock while you browse; select **Return player** to put it back in the dashboard. You can also paste a public Spotify playlist URL in **Add a Spotify playlist**; custom playlist buttons are saved in the current browser only. Spotify still provides the embedded playback. The mini-player is a dock for Spotify's official embed, not a replacement for Spotify's own playback controls. Playback depends on Spotify, the selected playlist, browser support, region, and account restrictions.
+BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visible at the bottom of the page. Select **Dock Spotify player** to move the actual Spotify iframe into the bottom dock while you browse; select **Return player** to put it back in the dashboard. You can also paste a public Spotify playlist URL in **Add a Spotify playlist**; custom playlists are saved in the current browser, and signed-in fans can also add public Spotify playlists to BLOOM's shared community library. Spotify still provides the embedded playback. The mini-player is a dock for Spotify's official embed, not a replacement for Spotify's own playback controls. Playback depends on Spotify, the selected playlist, browser support, region, and account restrictions.
 
 ## Connect the real backend (required before opening accounts/chat publicly)
 
@@ -97,5 +97,5 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Test account deletion using a disposable test account and confirm related data is removed.
 - [ ] Verify RLS for every table and test unauthorized reads/writes; never use the service-role key in the browser.
 - [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
-- [ ] Set Resend API key, verified sender address, and published site URL as Edge Function secrets; test confirmation, duplicate signup, and one-click unsubscribe.
+- [ ] Set Resend API key, verified sender address, and published site URL as Edge Function secrets; then set `newsletterEnabled: true` in `bloom-config.js` and test confirmation, duplicate signup, and one-click unsubscribe.
 - [ ] Enable leaked-password protection, configure Supabase Auth custom SMTP, add abuse controls/CAPTCHA, verify backups/monitoring, and establish a real moderation rota before announcing launch.
