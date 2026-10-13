@@ -131,6 +131,7 @@ assert.match(socialSchema, /alter table public\.posts add column if not exists m
 assert.match(socialSchema, /create table if not exists public\.stories/i, 'Stories table must exist');
 assert.match(socialSchema, /bloom-story-media','bloom-story-media',false/i, 'Story media bucket must be private');
 assert.match(socialSchema, /BLOOM story media visible while active/i, 'Story image access must stop when its story expires');
+assert.match(socialSchema, /storage\.foldername\(media_path\).*auth\.uid/i, 'Story rows must reference only the current user's private media folder');
 assert.match(backend, /createSignedUrl\(story\.media_path, remainingSeconds\)/, 'Story image links must expire with the story');
 assert.match(socialSchema, /interval '24 hours'/i, 'Stories must expire after 24 hours');
 assert.match(socialSchema, /create table if not exists public\.notifications/i, 'Notifications table must exist');
