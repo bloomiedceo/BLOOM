@@ -250,18 +250,21 @@
 
     async function prepareSocialImage(file) {
       if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 8 * 1024 * 1024) throw new Error('Choose a JPG, PNG, or WebP image under 8 MB.');
-      const bitmap = await createImageBitmap(file);
-      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-      const context = canvas.getContext('2d');
+      const bitmap = await createImageBitmap(file), canvas = document.createElement('canvas'), context = canvas.getContext('2d');
       if (!context) { bitmap.close(); throw new Error('This browser cannot prepare the image.'); }
-      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-      bitmap.close();
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.84));
-      if (!blob) throw new Error('Could not prepare the image. Please try another one.');
-      return blob;
+      try {
+        const longest = Math.max(bitmap.width, bitmap.height);
+        for (const preset of [{edge:1600,quality:0.84},{edge:1400,quality:0.76},{edge:1200,quality:0.68}]) {
+          const scale = Math.min(1, preset.edge / longest);
+          canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+          canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', preset.quality));
+          if (blob && blob.size <= 4.7 * 1024 * 1024) return blob;
+        }
+        throw new Error('This photo is still too large after compression. Try a smaller image.');
+      } finally { bitmap.close(); }
     }
     async function loadStories() {
       const holder = $('#bloom-live-stories'), status = $('#bloom-story-status');
