@@ -2,13 +2,14 @@
 -- Apply once to the connected Supabase project. Public media is intentionally limited to
 -- resized images for public posts/stories; uploads are restricted to each user's own folder.
 alter table public.posts add column if not exists media_url text;
+alter table public.posts add column if not exists media_type text not null default 'image' check (media_type in ('image','video'));
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('bloom-post-media','bloom-post-media',true,5242880,array['image/jpeg','image/png','image/webp'])
-on conflict (id) do update set public=true, file_size_limit=5242880, allowed_mime_types=excluded.allowed_mime_types;
+values ('bloom-post-media','bloom-post-media',true,26214400,array['image/jpeg','image/png','image/webp','video/mp4','video/webm'])
+on conflict (id) do update set public=true, file_size_limit=26214400, allowed_mime_types=excluded.allowed_mime_types;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('bloom-story-media','bloom-story-media',false,5242880,array['image/jpeg','image/png','image/webp'])
-on conflict (id) do update set public=false, file_size_limit=5242880, allowed_mime_types=excluded.allowed_mime_types;
+values ('bloom-story-media','bloom-story-media',false,26214400,array['image/jpeg','image/png','image/webp','video/mp4','video/webm'])
+on conflict (id) do update set public=false, file_size_limit=26214400, allowed_mime_types=excluded.allowed_mime_types;
 
 drop policy if exists "BLOOM media public read" on storage.objects;
 create policy "BLOOM media public read" on storage.objects for select to anon, authenticated using (bucket_id = 'bloom-post-media');
@@ -31,6 +32,7 @@ create table if not exists public.stories (
  expires_at timestamptz not null default (now() + interval '24 hours')
 );
 alter table public.stories add column if not exists media_path text;
+alter table public.stories add column if not exists media_type text not null default 'image' check (media_type in ('image','video'));
 alter table public.stories alter column media_url drop not null;
 create index if not exists bloom_stories_expiry_idx on public.stories(expires_at desc);
 alter table public.stories enable row level security;
