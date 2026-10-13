@@ -97,5 +97,5 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Test account deletion using a disposable test account and confirm related data is removed.
 - [ ] Verify RLS for every table and test unauthorized reads/writes; never use the service-role key in the browser.
 - [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
-- [ ] Set Resend API key, verified sender address, and published site URL as Edge Function secrets; test confirmation, duplicate signup, and one-click unsubscribe.
+- [ ] Set Resend API key, verified sender address, and published site URL as Edge Function secrets; then set `newsletterEnabled: true` in `bloom-config.js` and test confirmation, duplicate signup, and one-click unsubscribe.
 - [ ] Enable leaked-password protection, configure Supabase Auth custom SMTP, add abuse controls/CAPTCHA, verify backups/monitoring, and establish a real moderation rota before announcing launch.
