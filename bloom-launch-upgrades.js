@@ -82,6 +82,7 @@
         const initiallySaved = Array.isArray(initialWishlist) && initialWishlist.includes(wishlistKey);
         heart.textContent = initiallySaved ? '♥' : '♡';
         heart.setAttribute('aria-pressed', String(initiallySaved));
+        heart.setAttribute('aria-label', (initiallySaved ? 'Remove from' : 'Add to') + ' wishlist: ' + item.name);
         heart.addEventListener('click', () => {
           const saved = read('bloom-demo-wishlist', []);
           const current = Array.isArray(saved) ? saved : [];
@@ -90,6 +91,7 @@
           const isSaved = next.includes(wishlistKey);
           heart.textContent = isSaved ? '♥' : '♡';
           heart.setAttribute('aria-pressed', String(isSaved));
+          heart.setAttribute('aria-label', (isSaved ? 'Remove from' : 'Add to') + ' wishlist: ' + item.name);
         });
         const emoji = document.createElement('span'); emoji.className = 'product-emoji'; emoji.textContent = item.emoji;
         visual.append(tag, heart, emoji);
