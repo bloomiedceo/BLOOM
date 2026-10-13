@@ -10,11 +10,14 @@ const getPosts=()=>safeRead('bloom-demo-posts',[]);
 const getLiked=()=>safeRead('bloom-demo-liked',[]);
 const getSaved=()=>safeRead('bloom-demo-saved',[]);
 const getWishlist=()=>safeRead('bloom-demo-wishlist',[]);
+const retainedPreviewUrls=new Set();
+window.addEventListener('pagehide',()=>{retainedPreviewUrls.forEach(url=>URL.revokeObjectURL(url));retainedPreviewUrls.clear()});
 const fandoms=['All fandoms','BTS','BLACKPINK','Stray Kids','TWICE','SEVENTEEN','ATEEZ','NewJeans','Multi-stan','Other'];
 function addButton(label,action,pressed){const b=document.createElement('button');b.type='button';b.className='small-action';b.textContent=label;b.dataset.action=action;if(pressed!==undefined)b.setAttribute('aria-pressed',String(pressed));return b}
 function makePostCard(post){
  const article=document.createElement('article');article.className='feed-card';article.dataset.postId=post.id;article.dataset.fandom=post.fandom||'Other';
  const art=document.createElement('div');art.className='feed-art';art.style.background='linear-gradient(135deg,#e6dcff,#ffcfe3)';art.textContent=post.emoji||'💗';
+  if(post.mediaPreview){const photo=document.createElement('img');photo.className='bloom-shared-photo';photo.src=post.mediaPreview;photo.alt='Photo in your local post preview';photo.loading='lazy';art.replaceChildren(photo);}
  const content=document.createElement('div');content.className='feed-content';
  const meta=document.createElement('div');meta.className='meta';meta.textContent=(post.kind||'Fan update')+' · '+(post.fandom||'Other')+' · '+(post.demo?'Your browser':'Community demo');
  const title=document.createElement('h3');title.textContent=post.title||'A little fan moment';
@@ -41,15 +44,57 @@ function enhanceFeed(){
  getPosts().forEach(p=>grid.prepend(makePostCard(p)));
 }
 function enhancePostComposer(){
- const form=$('#post-form');if(!form)return;const kind=$('#post-kind'),caption=$('#post-caption'),link=$('#post-link');
- const fandom=document.createElement('label');fandom.htmlFor='bloom-post-fandom';fandom.textContent='Fandom';const select=document.createElement('select');select.id='bloom-post-fandom';select.className='bloom-field';fandoms.slice(1).forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f;select.append(o)});
- const titleLabel=document.createElement('label');titleLabel.htmlFor='bloom-post-title';titleLabel.textContent='Post title';const title=document.createElement('input');title.id='bloom-post-title';title.maxLength=90;title.placeholder='Give your fan moment a title';title.required=true;kind.after(fandom,select,titleLabel,title);
- form.addEventListener('submit',e=>{e.preventDefault();e.stopImmediatePropagation();const text=caption.value.trim(),heading=title.value.trim();if(!text||!heading){toast('Add a title and update first.');return}const url=link.value.trim();if(url&&!/^https?:\/\//i.test(url)){toast('Please use a valid http or https link.');return}
- const post={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title:heading,caption:text,kind:kind.value,fandom:select.value,link:url,emoji:'💗',demo:true,createdAt:new Date().toISOString()};const posts=getPosts();posts.unshift(post);if(!safeWrite('bloom-demo-posts',posts)){toast('Could not save this demo post in browser storage.');return}
- const grid=$('.feed-grid');if(grid)grid.prepend(makePostCard(post));closeModal('post-modal');form.reset();toast('Post added to this browser preview. It is not published online.');$('#activity')?.scrollIntoView({behavior:'smooth',block:'start'});
+ const form=$('#post-form');if(!form||form.dataset.bloomComposerReady)return;form.dataset.bloomComposerReady='true';
+ const kind=$('#post-kind'),caption=$('#post-caption'),link=$('#post-link');
+ const addField=(tag,id,labelText,after,attrs={})=>{const label=document.createElement('label');label.htmlFor=id;label.textContent=labelText;const field=document.createElement(tag);field.id=id;field.className='bloom-field';Object.entries(attrs).forEach(([k,v])=>field.setAttribute(k,v));after.after(label,field);return field};
+ const title=addField('input','bloom-post-title','Post title',kind,{maxlength:'90',placeholder:'Give your fan moment a title',required:'required'});
+ const fandom=addField('select','bloom-post-fandom','Fandom',title);
+ fandoms.slice(1).forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f;fandom.append(o)});
+ const photo=addField('input','bloom-post-photo','Add a photo or take one with your camera',link,{type:'file',accept:'image/jpeg,image/png,image/webp,image/gif',capture:'environment'});
+ const filter=addField('select','bloom-post-filter','Photo filter',photo);
+ [['none','Original'],['grayscale(1)','Black & white'],['sepia(.35)','Warm'],['contrast(1.12) saturate(1.15)','Crisp'],['saturate(1.4)','Vivid']].forEach(([v,label])=>{const o=document.createElement('option');o.value=v;o.textContent=label;filter.append(o)});
+ const preview=document.createElement('div');preview.className='bloom-post-photo-preview';preview.hidden=true;
+ const image=document.createElement('img');image.alt='Preview of your selected post photo';preview.append(image);photo.insertAdjacentElement('afterend',preview);
+ const note=document.createElement('p');note.className='bloom-enhance-note';note.textContent='Photo preview stays on this device until you publish. BLOOM will resize the image and remove embedded camera metadata before upload.';preview.after(note);
+ let previewUrl='';
+ const paintPreview=()=>{image.style.filter=filter.value==='none'?'none':filter.value};
+ photo.addEventListener('change',()=>{const file=photo.files?.[0];if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';preview.hidden=true;if(!file)return;if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type)||file.size>8*1024*1024){photo.value='';toast('Choose a JPG, PNG, WebP, or GIF image under 8 MB.');return}previewUrl=URL.createObjectURL(file);image.src=previewUrl;preview.hidden=false;paintPreview()});
+ filter.addEventListener('change',paintPreview);
+ async function prepareImage(file,cssFilter){
+  if(!file)return null;
+  const source=await createImageBitmap(file);
+  const scale=Math.min(1,1600/Math.max(source.width,source.height));
+  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
+  const ctx=canvas.getContext('2d');if(!ctx){source.close();throw new Error('Photo editing is not supported by this browser.')}
+  ctx.filter=cssFilter==='none'?'none':cssFilter;ctx.drawImage(source,0,0,canvas.width,canvas.height);source.close();
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.84));
+  if(!blob)throw new Error('Could not prepare this photo. Try another image.');
+  return blob;
+ }
+ form.addEventListener('submit',async e=>{
+  e.preventDefault();e.stopImmediatePropagation();
+  const text=caption.value.trim(),heading=title.value.trim(),url=link.value.trim(),file=photo.files?.[0];
+  if(!text||!heading){toast('Add a title and update first.');return}
+  if(url&&!/^https?:\/\//i.test(url)){toast('Please use a valid http or https link.');return}
+  if(window.BLOOM_SUPABASE_CONFIG?.url&&typeof window.bloomPublishPost!=='function'){toast('BLOOM is still connecting. Wait a moment and try again.');return}
+  if(typeof window.bloomPublishPost==='function'){
+   const submit=$('button[type="submit"]',form),original=submit?.textContent;if(submit){submit.disabled=true;submit.textContent='Publishing…'}
+   try{
+    const mediaBlob=await prepareImage(file,filter.value);
+    const result=await window.bloomPublishPost({title:heading,body:text,fandom:fandom.value,link:url,mediaBlob});
+    if(!result?.ok)return;
+    closeModal('post-modal');form.reset();preview.hidden=true;if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';toast('Your post is live on BLOOM! 🌸');$('#activity')?.scrollIntoView({behavior:'smooth',block:'start'});
+   }catch(err){toast(err?.message||'Post could not be published. Please try again.')}
+   finally{if(submit){submit.disabled=false;submit.textContent=original||'Publish to BLOOM'}}
+   return;
+  }
+  const localImage=previewUrl||'';if(localImage)retainedPreviewUrls.add(localImage);
+  const post={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title:heading,caption:text,kind:kind.value,fandom:fandom.value,link:url,mediaPreview:localImage,emoji:'💗',demo:true,createdAt:new Date().toISOString()};
+  const posts=getPosts();posts.unshift(post);if(!safeWrite('bloom-demo-posts',posts)){toast('Could not save this demo post in browser storage.');return}
+  const grid=$('.feed-grid');if(grid)grid.prepend(makePostCard(post));closeModal('post-modal');form.reset();preview.hidden=true;previewUrl='';toast('Post added to this browser preview only.');$('#activity')?.scrollIntoView({behavior:'smooth',block:'start'});
  },true);
 }
-function enhanceMarketplace(){
+ function enhanceMarketplace(){
  const grid=$('#product-grid');if(!grid)return;const search=$('#filter-search');if(search){search.setAttribute('aria-label','Search products by name or category');search.placeholder='Search merch, albums, accessories…'}
  const section=$('#discover');if(!section)return;const tools=document.createElement('div');tools.className='bloom-market-tools';
  const own=document.createElement('button');own.className='pill primary';own.type='button';own.textContent='＋ List your product';own.addEventListener('click',()=>openModal('bloom-product-modal'));
