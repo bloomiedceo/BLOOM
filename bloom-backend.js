@@ -232,7 +232,16 @@
       if (password.length < 10) { setAuthMessage('Use a password with at least 10 characters.'); return; }
       const { error } = await client.auth.updateUser({ password });
       if (error) setAuthMessage(error.message);
-      else { passwordRecovery = false; $('#bloom-password-update-form').hidden = true; $('#bloom-new-password').value = ''; setAuthMessage('Password updated. You can continue using BLOOM.'); }
+      else {
+        passwordRecovery = false;
+        $('#bloom-password-update-form').hidden = true;
+        $('#bloom-new-password').value = '';
+        // Recovery starts with the normal account panel hidden. Restore the UI after
+        // changing the password instead of leaving the user on an empty auth screen.
+        const { data: sessionData } = await client.auth.getSession();
+        await syncSession(sessionData.session);
+        setAuthMessage('Password updated. You can continue using BLOOM.');
+      }
     });
     $('#bloom-sign-out').addEventListener('click', async () => { const { error } = await client.auth.signOut(); if (error) setAuthMessage(error.message); else setAuthMessage('Signed out.'); });
     $('#bloom-profile-form').addEventListener('submit', async (e) => {
