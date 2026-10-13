@@ -49,7 +49,7 @@ assert.match(enhancements, /open\.spotify\.com\/embed\//, 'BLOOM MUSIC must use 
 assert.match(enhancements, /function parseSpotify\(raw\)/, 'BLOOM MUSIC must validate supported Spotify links before embedding');
 assert.match(enhancements, /allowedTypes=new Set\(\['playlist','album','artist','track','show','episode'\]\)/, 'BLOOM MUSIC must support standard Spotify content types');
 assert.doesNotMatch(enhancements, /bloom-local-audio|accept="audio\/\*"/, 'BLOOM MUSIC must not ask fans to upload audio files or build local playlists');
-assert.match(html, /there is no code or redirect on this page/i, 'Newsletter instructions must explain that confirmation arrives by email');
+assert.match(html, /no code or redirect appears on this page/i, 'Newsletter instructions must explain that confirmation arrives by email');
 assert.match(html, /Newsletter signup is paused while email delivery is configured/i, 'Newsletter must clearly explain its current unavailable state before submission');
 assert.match(config, /newsletterEnabled:\s*false/, 'Newsletter must remain disabled until server-side email delivery is configured');
 assert.match(enhancementsCss, /\.newsletter-status\{display:block;min-height/, 'Newsletter errors and confirmations must have a visible status area');
