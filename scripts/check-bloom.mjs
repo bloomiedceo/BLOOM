@@ -45,6 +45,7 @@ assert.match(upgrades, /const catalogue = \[/, 'Marketplace must render a browse
 assert.match(upgrades, /#activity \.feed-card\[hidden\],#product-grid \.product-card\[hidden\]\{display:none!important\}/, 'FYP and marketplace filters must override card display styles when hiding items');
 assert.equal((upgrades.match(/heart\.addEventListener\('click'/g) || []).length, 1, 'New catalogue wishlist buttons must have exactly one click handler');
 assert.match(upgrades, /const initiallySaved = Array\.isArray\(initialWishlist\) && initialWishlist\.includes\(wishlistKey\)/, 'New catalogue wishlist buttons must restore saved state');
+assert.match(upgrades, /heart\.setAttribute\('aria-label', \(isSaved \? 'Remove from' : 'Add to'\) \+ ' wishlist: ' \+ item\.name\)/, 'Wishlist buttons must announce their current action to assistive technology');
 assert.match(upgrades, /if \(!write\('bloom-demo-wishlist', next\)\)/, 'New catalogue wishlist changes must report storage failures');
 assert.match(enhancements, /const update=\(\)=>\{const yes=getWishlist\(\)\.includes\(name\)/, 'Existing product wishlist buttons must initialize and refresh from saved browser state');
 assert.match(upgrades, /const id = card\.dataset\.postId/, 'Feed likes must use the clicked card ID rather than an undefined variable');
