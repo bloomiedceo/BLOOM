@@ -6,6 +6,9 @@ alter table public.posts add column if not exists media_url text;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('bloom-post-media','bloom-post-media',true,5242880,array['image/jpeg','image/png','image/webp'])
 on conflict (id) do update set public=true, file_size_limit=5242880, allowed_mime_types=excluded.allowed_mime_types;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('bloom-story-media','bloom-story-media',false,5242880,array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update set public=false, file_size_limit=5242880, allowed_mime_types=excluded.allowed_mime_types;
 
 drop policy if exists "BLOOM media public read" on storage.objects;
 create policy "BLOOM media public read" on storage.objects for select to anon, authenticated using (bucket_id = 'bloom-post-media');
@@ -16,24 +19,39 @@ create policy "BLOOM users update own media" on storage.objects for update to au
 drop policy if exists "BLOOM users delete own media" on storage.objects;
 create policy "BLOOM users delete own media" on storage.objects for delete to authenticated using (bucket_id = 'bloom-post-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
 
+
+
 create table if not exists public.stories (
  id uuid primary key default gen_random_uuid(),
  user_id uuid not null references public.profiles(id) on delete cascade,
  caption text not null default '' check (char_length(caption) <= 240),
- media_url text not null,
+ media_url text,
+ media_path text,
  created_at timestamptz not null default now(),
  expires_at timestamptz not null default (now() + interval '24 hours')
 );
+alter table public.stories add column if not exists media_path text;
+alter table public.stories alter column media_url drop not null;
 create index if not exists bloom_stories_expiry_idx on public.stories(expires_at desc);
 alter table public.stories enable row level security;
 drop policy if exists "BLOOM stories visible while active" on public.stories;
 create policy "BLOOM stories visible while active" on public.stories for select to anon, authenticated using (expires_at > now() and exists (select 1 from public.profiles p where p.id = user_id and (p.is_private = false or p.id = (select auth.uid()))));
 drop policy if exists "BLOOM users create own stories" on public.stories;
-create policy "BLOOM users create own stories" on public.stories for insert to authenticated with check (user_id = (select auth.uid()) and expires_at <= now() + interval '24 hours 5 minutes' and expires_at > now());
+create policy "BLOOM users create own stories" on public.stories for insert to authenticated with check (user_id = (select auth.uid()) and media_path is not null and expires_at <= now() + interval '24 hours 5 minutes' and expires_at > now());
 drop policy if exists "BLOOM users delete own stories" on public.stories;
 create policy "BLOOM users delete own stories" on public.stories for delete to authenticated using (user_id = (select auth.uid()));
 grant select on public.stories to anon, authenticated;
 grant insert, delete on public.stories to authenticated;
+
+drop policy if exists "BLOOM story media visible while active" on storage.objects;
+create policy "BLOOM story media visible while active" on storage.objects for select to anon, authenticated
+using (bucket_id = 'bloom-story-media' and exists (select 1 from public.stories s where s.media_path = name and s.expires_at > now()));
+drop policy if exists "BLOOM users upload own story media" on storage.objects;
+create policy "BLOOM users upload own story media" on storage.objects for insert to authenticated
+with check (bucket_id = 'bloom-story-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists "BLOOM users delete own story media" on storage.objects;
+create policy "BLOOM users delete own story media" on storage.objects for delete to authenticated
+using (bucket_id = 'bloom-story-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
 
 create table if not exists public.notifications (
  id uuid primary key default gen_random_uuid(),

@@ -267,15 +267,21 @@
       const holder = $('#bloom-live-stories'), status = $('#bloom-story-status');
       if (!currentUser) { holder.replaceChildren(); status.textContent = 'Sign in to share a story or see stories from the community.'; return; }
       status.textContent = 'Loading stories…'; holder.replaceChildren();
-      const { data, error } = await client.from('stories').select('id,user_id,caption,media_url,created_at,expires_at').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }).limit(30);
+      const { data, error } = await client.from('stories').select('id,user_id,caption,media_path,created_at,expires_at').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }).limit(30);
       if (error) { status.textContent = 'Stories need the BLOOM social-features database setup. Please contact the site owner.'; return; }
       status.textContent = data?.length ? data.length + ' active story/stories · disappear after 24 hours' : 'No active stories yet. Share the first one!';
       const ids = [...new Set((data || []).map(story => story.user_id))];
       const profiles = ids.length ? await client.from('profiles').select('id,username').in('id', ids) : { data: [] };
       const names = new Map((profiles.data || []).map(profile => [profile.id, profile.username]));
-      (data || []).forEach(story => {
+      const visibleStories = await Promise.all((data || []).map(async story => {
+        const remainingSeconds = Math.max(1, Math.floor((Date.parse(story.expires_at) - Date.now()) / 1000));
+        const signed = story.media_path ? await client.storage.from('bloom-story-media').createSignedUrl(story.media_path, remainingSeconds) : { data: null, error: null };
+        return { ...story, signedUrl: signed.data?.signedUrl || null };
+      }));
+      visibleStories.forEach(story => {
+        if (!story.signedUrl) return;
         const card = document.createElement('article'); card.className = 'bloom-story-card';
-        const image = document.createElement('img'); image.src = story.media_url; image.alt = 'Story from ' + (names.get(story.user_id) || 'a BLOOM fan'); image.loading = 'lazy'; image.decoding = 'async';
+        const image = document.createElement('img'); image.src = story.signedUrl; image.alt = 'Story from ' + (names.get(story.user_id) || 'a BLOOM fan'); image.loading = 'lazy'; image.decoding = 'async';
         const caption = document.createElement('p'); caption.textContent = story.caption || 'A little fandom moment ♡';
         const meta = document.createElement('small'); meta.textContent = '@' + (names.get(story.user_id) || 'fan') + (story.user_id === currentUser.id ? ' · You' : '');
         card.append(image, caption, meta); holder.append(card);
@@ -322,12 +328,11 @@
       try {
         const blob = await prepareSocialImage(file);
         path = currentUser.id + '/story-' + crypto.randomUUID() + '.webp';
-        const upload = await client.storage.from('bloom-post-media').upload(path, blob, { contentType: 'image/webp', upsert: false });
+        const upload = await client.storage.from('bloom-story-media').upload(path, blob, { contentType: 'image/webp', upsert: false });
         if (upload.error) throw new Error('Photo upload failed. Please check your connection and try again.');
-        const mediaUrl = client.storage.from('bloom-post-media').getPublicUrl(path).data.publicUrl;
         const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-        const { error } = await client.from('stories').insert({ user_id: currentUser.id, caption: $('#bloom-story-caption').value.trim(), media_url: mediaUrl, expires_at: expires });
-        if (error) { await client.storage.from('bloom-post-media').remove([path]); path = null; throw new Error('Story could not be published. Please try again.'); }
+        const { error } = await client.from('stories').insert({ user_id: currentUser.id, caption: $('#bloom-story-caption').value.trim(), media_path: path, expires_at: expires });
+        if (error) { await client.storage.from('bloom-story-media').remove([path]); path = null; throw new Error('Story could not be published. Please try again.'); }
         event.currentTarget.reset(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
       } catch (error) { status.textContent = error.message || 'Story could not be shared.'; }
       finally { button.disabled = false; button.textContent = original; }
