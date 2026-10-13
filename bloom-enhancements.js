@@ -50,7 +50,7 @@ function enhancePostComposer(){
  const title=addField('input','bloom-post-title','Post title',kind,{maxlength:'90',placeholder:'Give your fan moment a title',required:'required'});
  const fandom=addField('select','bloom-post-fandom','Fandom',title);
  fandoms.slice(1).forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f;fandom.append(o)});
- const photo=addField('input','bloom-post-photo','Add a photo or take one with your camera',link,{type:'file',accept:'image/jpeg,image/png,image/webp,image/gif',capture:'environment'});
+ const photo=addField('input','bloom-post-photo','Add a photo or take one with your camera',link,{type:'file',accept:'image/jpeg,image/png,image/webp',capture:'environment'});
  const filter=addField('select','bloom-post-filter','Photo filter',photo);
  [['none','Original'],['grayscale(1)','Black & white'],['sepia(.35)','Warm'],['contrast(1.12) saturate(1.15)','Crisp'],['saturate(1.4)','Vivid']].forEach(([v,label])=>{const o=document.createElement('option');o.value=v;o.textContent=label;filter.append(o)});
  const preview=document.createElement('div');preview.className='bloom-post-photo-preview';preview.hidden=true;
@@ -58,18 +58,22 @@ function enhancePostComposer(){
  const note=document.createElement('p');note.className='bloom-enhance-note';note.textContent='Photo preview stays on this device until you publish. BLOOM will resize the image and remove embedded camera metadata before upload.';preview.after(note);
  let previewUrl='';
  const paintPreview=()=>{image.style.filter=filter.value==='none'?'none':filter.value};
- photo.addEventListener('change',()=>{const file=photo.files?.[0];if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';preview.hidden=true;if(!file)return;if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type)||file.size>8*1024*1024){photo.value='';toast('Choose a JPG, PNG, WebP, or GIF image under 8 MB.');return}previewUrl=URL.createObjectURL(file);image.src=previewUrl;preview.hidden=false;paintPreview()});
+ photo.addEventListener('change',()=>{const file=photo.files?.[0];if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';preview.hidden=true;if(!file)return;if(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>8*1024*1024){photo.value='';toast('Choose a JPG, PNG, or WebP image under 8 MB.');return}previewUrl=URL.createObjectURL(file);image.src=previewUrl;preview.hidden=false;paintPreview()});
  filter.addEventListener('change',paintPreview);
  async function prepareImage(file,cssFilter){
   if(!file)return null;
-  const source=await createImageBitmap(file);
-  const scale=Math.min(1,1600/Math.max(source.width,source.height));
-  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
-  const ctx=canvas.getContext('2d');if(!ctx){source.close();throw new Error('Photo editing is not supported by this browser.')}
-  ctx.filter=cssFilter==='none'?'none':cssFilter;ctx.drawImage(source,0,0,canvas.width,canvas.height);source.close();
-  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.84));
-  if(!blob)throw new Error('Could not prepare this photo. Try another image.');
-  return blob;
+  const source=await createImageBitmap(file),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+  if(!ctx){source.close();throw new Error('Photo editing is not supported by this browser.')}
+  try{
+   const longest=Math.max(source.width,source.height);
+   for(const preset of [{edge:1600,quality:0.84},{edge:1400,quality:0.76},{edge:1200,quality:0.68}]){
+    const scale=Math.min(1,preset.edge/longest);canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
+    ctx.filter=cssFilter==='none'?'none':cssFilter;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(source,0,0,canvas.width,canvas.height);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',preset.quality));
+    if(blob&&blob.size<=4.7*1024*1024)return blob;
+   }
+   throw new Error('This photo is still too large after compression. Try a smaller image.');
+  }finally{source.close()}
  }
  form.addEventListener('submit',async e=>{
   e.preventDefault();e.stopImmediatePropagation();
