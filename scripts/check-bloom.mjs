@@ -26,10 +26,10 @@ assert.match(css, /\.safety-modal-grid/, 'Safety Center must have responsive sty
 
 assert.match(html, /src="bloom-launch-upgrades\.js"/, 'Feed and marketplace upgrade script must be loaded');
 assert.match(html, /id="newsletter-status"[^>]*role="status"[^>]*aria-live="polite"/, 'Newsletter form must expose an accessible live status');
-assert.match(backend, /functions\\/v1\\/newsletter-subscribe/, 'Newsletter form must call the provider-backed Edge Function');
+assert.ok(backend.includes('functions/v1/newsletter-subscribe'), 'Newsletter form must call the provider-backed Edge Function');
 assert.match(backend, /newsletter-consent/, 'Newsletter submission must check explicit consent');
 assert.match(backend, /newsletter-website/, 'Newsletter form must submit the honeypot field for basic bot filtering');
-assert.match(html, /newsletter-consent[\\s\\S]*?required/, 'Newsletter requires explicit consent');
+assert.ok(html.includes('id="newsletter-consent"') && html.includes('type="checkbox" required'), 'Newsletter requires explicit consent');
 assert.ok(newsletterProviderSchema.includes('revoke all on public.newsletter_subscribers from public, anon, authenticated'), 'Subscriber table must not be publicly accessible');
 assert.ok(newsletterFunction.includes('RESEND_API_KEY'), 'Newsletter email provider key must stay server-side');
 assert.ok(newsletterFunction.includes('action=confirm'), 'Newsletter must use double opt-in confirmation');
