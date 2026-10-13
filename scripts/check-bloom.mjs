@@ -129,6 +129,9 @@ assert.match(backend, /from\('stories'\)/, 'Stories must load from the shared ba
 assert.match(backend, /from\('notifications'\)/, 'Notifications must load from the shared backend');
 assert.match(socialSchema, /alter table public\.posts add column if not exists media_url text/i, 'Shared posts must support uploaded media URLs');
 assert.match(socialSchema, /create table if not exists public\.stories/i, 'Stories table must exist');
+assert.match(socialSchema, /bloom-story-media','bloom-story-media',false/i, 'Story media bucket must be private');
+assert.match(socialSchema, /BLOOM story media visible while active/i, 'Story image access must stop when its story expires');
+assert.match(backend, /createSignedUrl\(story\.media_path, remainingSeconds\)/, 'Story image links must expire with the story');
 assert.match(socialSchema, /interval '24 hours'/i, 'Stories must expire after 24 hours');
 assert.match(socialSchema, /create table if not exists public\.notifications/i, 'Notifications table must exist');
 assert.match(socialSchema, /bloom_notify_post_like/i, 'Likes must generate notifications');
