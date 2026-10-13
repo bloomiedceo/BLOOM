@@ -35,7 +35,7 @@ assert.ok(newsletterFunction.includes('RESEND_API_KEY'), 'Newsletter email provi
 assert.ok(newsletterFunction.includes('action=confirm'), 'Newsletter must use double opt-in confirmation');
 assert.ok(newsletterFunction.includes('action=unsubscribe'), 'Newsletter must provide an unsubscribe path');
 assert.ok(newsletterFunction.includes('List-Unsubscribe-Post'), 'Newsletter emails must advertise one-click unsubscribe');
-assert.ok(newsletterFunction.includes('req.method === "POST" && url.searchParams.get("action") === "unsubscribe"'), 'Newsletter endpoint must handle one-click POST unsubscribe');
+assert.ok(newsletterFunction.includes('req.method === "POST" && ["confirm", "unsubscribe"]'), 'Newsletter endpoint must require an explicit POST for confirmation and unsubscribe');
 assert.ok(newsletterFunction.includes('api.resend.com/emails'), 'Newsletter function must call Resend API');
 assert.match(upgrades, /Shopee/, 'Marketplace cards must have real marketplace destinations');
 assert.ok(upgrades.includes('https://shop.weverse.io/en/shop/USD/artists/2/sales/54189'), 'Official Weverse product link must be present');
