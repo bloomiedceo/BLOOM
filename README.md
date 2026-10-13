@@ -5,7 +5,7 @@ BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery webs
 ## Main files
 
 - `index.html` — GitHub Pages entry point and original design.
-- `bloom-enhancements.css` / `bloom-enhancements.js` — responsive feed, marketplace preview, music dashboard, and dockable Spotify player.
+- `bloom-enhancements.css` / `bloom-enhancements.js` — responsive feed, media composer, in-app Spotify embed, and interface upgrades.
 - `bloom-config.js` — public Supabase Project URL and publishable/anon key placeholders. It must never contain a service-role key.
 - `bloom-backend.js` — optional Supabase Auth, shared posts, public groups, real-time group messages, shared post likes/comments, reporting, and moderator queue UI.
 - `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
@@ -39,9 +39,9 @@ Then open `http://localhost:8000`.
 
 The top navigation and footer Safety links open a dedicated Safety Center dialog with account security, privacy, community conduct, and reporting guidance. The report button opens the existing feedback preview with the safety category selected. **The feedback form is still a preview and does not send or store reports**, so do not rely on it for urgent or monitored support until a private, staffed reporting service is connected.
 
-## Spotify and mini-player
+## Spotify in BLOOM MUSIC
 
-BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visible at the bottom of the page. Select **Dock Spotify player** to move the actual Spotify iframe into the bottom dock while you browse; select **Return player** to put it back in the dashboard. You can also paste a public Spotify playlist URL in **Add a Spotify playlist**; custom playlists are saved in the current browser, and signed-in fans can also add public Spotify playlists to BLOOM's shared community library. Spotify still provides the embedded playback. The mini-player is a dock for Spotify's official embed, not a replacement for Spotify's own playback controls. Playback depends on Spotify, the selected playlist, browser support, region, and account restrictions.
+BLOOM MUSIC uses Spotify's official embedded player. To add a playlist you already use, open Spotify, choose **Share → Copy link**, paste the link into BLOOM MUSIC, and select **Show Spotify player**. Public playlist, album, artist, track, show, and episode links are supported. BLOOM does not create playlists, upload audio files, or copy Spotify tracks; Spotify handles playback, sign-in, and availability. You can also open the same item directly in Spotify.
 
 ## Connect the real backend (required before opening accounts/chat publicly)
 
@@ -79,14 +79,14 @@ When `bloom-config.js` has blank values, the website deliberately stays in previ
 
 ## Automated checks
 
-GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which guards against the single-element selector bug that previously stopped the enhancement script, verifies Safety Center wiring and Spotify docking hooks, and checks key RLS/security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
+GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which guards against the single-element selector bug that previously stopped the enhancement script, verifies Safety Center wiring and Spotify embed validation, and checks key RLS/security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
 
 ## Pre-launch smoke-test checklist
 
 - [ ] GitHub Pages deployment succeeds and there are no JavaScript console errors.
 - [ ] Test on desktop and a narrow mobile screen; check keyboard focus and reduced-motion settings.
 - [ ] Click Safety in the top navigation and Safety center in the footer; verify the Safety Center opens, closes, and opens the safety report preview.
-- [ ] Spotify section and fixed mini-player appear; dock/return the actual embed; switch all three playlists.
+- [ ] Spotify section loads a valid official embed from a copied Spotify share link; verify invalid links show a helpful error.
 - [ ] Search the marketplace and test every category, wishlist, and reset button. Confirm Weverse/Shopee listings open and marketplace searches show current offers; seller prices/stock can change.
 - [ ] Run `supabase/feed-engagement.sql`, then test shared post likes/comments with two accounts and confirm private-profile posts stay private.
 - [ ] With Supabase configured, create two test accounts and verify email confirmation works.

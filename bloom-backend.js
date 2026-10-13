@@ -136,6 +136,8 @@
           </form>
           <p id="bloom-story-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to share a story. Stories are public for 24 hours. Don't share private or identifying images.</p>
           <div id="bloom-live-stories" class="bloom-live-stories"></div>
+        </section>
+        <section class="bloom-live-card" id="bloom-notifications-rail">
           <div class="bloom-social-notifications-head"><h4>🔔 Notifications</h4><button id="bloom-notifications-refresh" class="small-action" type="button">Refresh</button></div>
           <p id="bloom-notification-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to view activity on your posts and groups.</p>
           <div id="bloom-live-notifications" class="bloom-live-notifications"></div>

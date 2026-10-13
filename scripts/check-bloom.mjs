@@ -44,14 +44,17 @@ assert.ok(newsletterFunction.includes('List-Unsubscribe-Post'), 'Newsletter emai
 assert.ok(newsletterFunction.includes('req.method === "POST" && ["confirm", "unsubscribe"]'), 'Newsletter endpoint must require an explicit POST for confirmation and unsubscribe');
 assert.ok(newsletterFunction.includes('api.resend.com/emails'), 'Newsletter function must call Resend API');
 assert.match(newsletterFunction, /new Response\(null, \{ status: 204, headers: headers\(origin\) \}\)/, 'Newsletter CORS preflight must return an empty 204 response body');
-assert.match(enhancements, /bloom-local-audio/, 'BLOOM MUSIC must provide its own in-page audio player');
-assert.match(enhancements, /accept="audio\/\*"/, 'BLOOM MUSIC must accept user-selected local audio files');
-assert.match(enhancements, /URL\.createObjectURL\(file\)/, 'Audio playback must use local object URLs rather than uploading tracks');
-assert.match(enhancements, /Files play locally on this device and are never uploaded by BLOOM/, 'Local playlist UI must explain that tracks stay on device');
-assert.doesNotMatch(enhancements, /open\.spotify\.com\/embed|parsePlaylistId|bloom-community-playlists/, 'BLOOM MUSIC must no longer depend on Spotify embeds or playlist IDs');
-
-assert.match(html, /there is no code or redirect on this page/i, 'Newsletter instructions must explain that confirmation arrives by email');
+assert.match(enhancements, /id="bloom-spotify-form"/, 'BLOOM MUSIC must accept an existing Spotify share link');
+assert.match(enhancements, /open\.spotify\.com\/embed\//, 'BLOOM MUSIC must use Spotify official embedded playback');
+assert.match(enhancements, /function parseSpotify\(raw\)/, 'BLOOM MUSIC must validate supported Spotify links before embedding');
+assert.match(enhancements, /allowedTypes=new Set\(\['playlist','album','artist','track','show','episode'\]\)/, 'BLOOM MUSIC must support standard Spotify content types');
+assert.doesNotMatch(enhancements, /bloom-local-audio|accept="audio\/\*"/, 'BLOOM MUSIC must not ask fans to upload audio files or build local playlists');
+assert.match(html, /no code or redirect appears on this page/i, 'Newsletter instructions must explain that confirmation arrives by email');
+assert.match(html, /Newsletter signup is paused while email delivery is configured/i, 'Newsletter must clearly explain its current unavailable state before submission');
+assert.match(config, /newsletterEnabled:\s*false/, 'Newsletter must remain disabled until server-side email delivery is configured');
 assert.match(enhancementsCss, /\.newsletter-status\{display:block;min-height/, 'Newsletter errors and confirmations must have a visible status area');
+assert.match(enhancementsCss, /\.bloom-live-grid\{grid-template-columns:repeat\(4,minmax\(0,1fr\)\)\}/, 'Stories, notifications, posts, and group chat must have separate desktop columns');
+assert.match(backend, /id="bloom-notifications-rail"/, 'Notifications must have a dedicated social column');
 assert.match(upgrades, /#bloom-marketplace-listings/, 'Marketplace discovery links must stay inside BLOOM');
 assert.match(upgrades, /content-visibility:auto;contain-intrinsic-size:auto 520px/, 'Feed cards should skip expensive offscreen rendering work');
 assert.doesNotMatch(upgrades, /shopee\.com\.my|lazada\.com\.my|shop\.weverse\.io/i, 'Marketplace cards must not send buyers to external shopping apps');
@@ -133,7 +136,7 @@ for (const index of ['bloom_groups_owner_idx','bloom_messages_author_idx','bloom
 }
 assert.match(newsletterSchema, /enable row level security/i, 'Newsletter signups must use row-level security');
 assert.match(newsletterSchema, /create policy/i, 'Newsletter signups must have an explicit insert policy');
-console.log('BLOOM static checks passed: safety navigation, local music player, media capture, frontend selector safety, and backend security invariants.');
+console.log('BLOOM static checks passed: safety navigation, Spotify embeds, media capture, newsletter status, social columns, frontend selector safety, and backend security invariants.');
 
 assert.match(enhancements, /prepareImage\(file,filter\.value\)/, 'FYP image filters must be applied before upload');
 assert.match(enhancements, /window\.bloomPublishPost/, 'The FYP composer must publish to the shared backend when connected');
