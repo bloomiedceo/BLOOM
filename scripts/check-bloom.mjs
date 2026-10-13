@@ -124,6 +124,9 @@ assert.match(enhancements, /window\.bloomPublishPost/, 'The FYP composer must pu
 assert.match(backend, /window\.bloomPublishPost = async/, 'Backend must expose the shared FYP publishing function');
 assert.match(backend, /from\('bloom-post-media'\)\.upload/, 'Shared FYP images must upload to protected BLOOM media storage');
 assert.match(backend, /select\('id,author_id,title,body,fandom,link,media_url,created_at,status'\)/, 'FYP must load shared image URLs');
+assert.match(backend, /blob\.size <= 4\.7 \* 1024 \* 1024/, 'Story photos must be compressed below the 5 MB storage limit');
+assert.match(enhancements, /blob\.size<=4\.7\*1024\*1024/, 'FYP photos must be compressed below the 5 MB storage limit');
+assert.doesNotMatch(enhancements, /image\/gif/, 'Animated GIFs must not be advertised as supported when uploads are converted to static WebP');
 assert.match(backend, /id="bloom-social-rail"/, 'BLOOM must show a stories and notifications column');
 assert.match(backend, /from\('stories'\)/, 'Stories must load from the shared backend');
 assert.match(backend, /from\('notifications'\)/, 'Notifications must load from the shared backend');
