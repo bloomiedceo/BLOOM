@@ -52,6 +52,9 @@ assert.ok(upgrades.includes("primary.removeAttribute('onclick')"), 'Shop buttons
 assert.ok(!html.includes('onclick="demoAffiliate('), 'Shop buttons must not call the demo-only affiliate handler');
 assert.match(upgrades, /bloom-feed-comments/, 'Feed comments must have a persistence key for local preview');
 assert.match(enhancements, /\$\$\('\.feed-card',grid\)\.forEach/, 'Feed cards must be iterated as a collection');
+assert.match(enhancements, /document\.addEventListener\('bloom:feed-updated',apply\)/, 'FYP filters must refresh when shared posts are loaded');
+assert.match(backend, /card\.dataset\.fandom = post\.fandom \|\| 'Multi-stan'/, 'Shared posts must expose their fandom to the FYP filter');
+assert.match(backend, /document\.dispatchEvent\(new CustomEvent\('bloom:feed-updated'\)\)/, 'Shared feed loading must notify FYP filters');
 assert.doesNotMatch(enhancements, /(?<!\$)\$\([^\n)]*,\s*(?:grid|section|controls|roomList)\)\.forEach/, 'Single-element querySelector result must not be treated as a collection');
 assert.match(enhancements, /id="bloom-player-host"/, 'Spotify iframe host must exist');
 assert.match(enhancements, /id="bloom-mini-dock"/, 'Spotify dock control must exist');
