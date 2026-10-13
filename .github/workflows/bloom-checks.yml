@@ -20,6 +20,7 @@ jobs:
           node --check bloom-config.js
           node --check bloom-enhancements.js
           node --check bloom-backend.js
+          node --check bloom-launch-upgrades.js
           node --check scripts/check-bloom.mjs
           node scripts/check-bloom.mjs
       - name: Check expected feature wiring
@@ -27,6 +28,9 @@ jobs:
           grep -q 'bloom-config.js' index.html
           grep -q 'bloom-enhancements.js' index.html
           grep -q 'bloom-backend.js' index.html
+          grep -q 'bloom-launch-upgrades.js' index.html
+          grep -q 'feed-engagement.sql' README.md
+          grep -q 'bloom_post_engagement' supabase/feed-engagement.sql
           grep -q 'bloom-mini-dock' bloom-enhancements.js
           grep -q 'enable row level security' supabase/schema.sql
           if grep -Eiq 'service_role[[:space:]]*:' bloom-config.js; then

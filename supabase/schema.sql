@@ -40,6 +40,9 @@ create trigger bloom_auth_user_created
 after insert on auth.users
 for each row execute procedure public.bloom_create_profile();
 
+-- This is a trigger-only function, not a public RPC endpoint.
+revoke all on function public.bloom_create_profile() from public, anon, authenticated;
+
 create table if not exists public.posts (
   id uuid primary key default gen_random_uuid(),
   author_id uuid not null references public.profiles(id) on delete cascade,
@@ -85,6 +88,9 @@ create trigger bloom_group_owner_member
 after insert on public.groups
 for each row execute procedure public.bloom_add_group_owner();
 
+-- This is a trigger-only function, not a public RPC endpoint.
+revoke all on function public.bloom_add_group_owner() from public, anon, authenticated;
+
 create table if not exists public.messages (
   id uuid primary key default gen_random_uuid(),
   group_id uuid not null references public.groups(id) on delete cascade,
@@ -94,7 +100,10 @@ create table if not exists public.messages (
 );
 
 create index if not exists bloom_posts_created_idx on public.posts(created_at desc);
+create index if not exists bloom_posts_author_idx on public.posts(author_id);
+create index if not exists bloom_groups_owner_idx on public.groups(owner_id);
 create index if not exists bloom_messages_group_created_idx on public.messages(group_id, created_at);
+create index if not exists bloom_messages_author_idx on public.messages(author_id);
 create index if not exists bloom_group_members_user_idx on public.group_members(user_id);
 
 create table if not exists public.reports (
@@ -108,6 +117,9 @@ create table if not exists public.reports (
   reviewed_by uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now()
 );
+
+create index if not exists bloom_reports_reporter_idx on public.reports(reporter_id);
+create index if not exists bloom_reports_reviewed_by_idx on public.reports(reviewed_by);
 
 alter table public.profiles enable row level security;
 alter table public.posts enable row level security;
@@ -161,12 +173,12 @@ with check (author_id = (select auth.uid()) and status = 'published');
 
 create policy "posts update own or moderator" on public.posts
 for update to authenticated
-using (author_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator')
-with check (author_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
+using (author_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator')
+with check (author_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator');
 
 create policy "posts delete own or moderator" on public.posts
 for delete to authenticated
-using (author_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
+using (author_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator');
 
 create policy "groups read public or member" on public.groups
 for select to anon, authenticated
@@ -182,8 +194,8 @@ with check (owner_id = (select auth.uid()));
 
 create policy "groups update owner or moderator" on public.groups
 for update to authenticated
-using (owner_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator')
-with check (owner_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
+using (owner_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator')
+with check (owner_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator');
 
 create policy "members read own" on public.group_members
 for select to authenticated
@@ -202,7 +214,7 @@ for delete to authenticated
 using (
   user_id = (select auth.uid())
   or exists (select 1 from public.groups g where g.id = public.group_members.group_id and g.owner_id = (select auth.uid()))
-  or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator'
+  or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator'
 );
 
 create policy "messages read members" on public.messages
@@ -218,7 +230,7 @@ with check (
 
 create policy "messages delete own or moderator" on public.messages
 for delete to authenticated
-using (author_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
+using (author_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator');
 
 create policy "reports create own" on public.reports
 for insert to authenticated
@@ -226,12 +238,12 @@ with check (reporter_id = (select auth.uid()));
 
 create policy "reports read own or moderator" on public.reports
 for select to authenticated
-using (reporter_id = (select auth.uid()) or (auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
+using (reporter_id = (select auth.uid()) or ((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator');
 
 create policy "reports update moderator" on public.reports
 for update to authenticated
-using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator')
-with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'moderator');
+using (((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator')
+with check (((select auth.jwt()) -> 'app_metadata' ->> 'role') = 'moderator');
 
 
 -- SQL privileges are necessary in addition to RLS; policies remain the row-level gate.

@@ -5,6 +5,63 @@
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
   const esc = (value) => String(value ?? '');
+  let newsletterClient = null;
+  let newsletterSubmitting = false;
+  const newsletterForm = $('#signup-form');
+  if (newsletterForm) newsletterForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const emailInput = $('#email');
+    const consentInput = $('#newsletter-consent');
+    const honeypot = $('#newsletter-website');
+    const status = $('#newsletter-status');
+    const submitButton = $('button[type="submit"]', newsletterForm);
+    if (!emailInput || !consentInput || !status || !submitButton) return;
+    if (!emailInput.checkValidity()) {
+      emailInput.reportValidity();
+      status.textContent = 'Please enter a valid email address.';
+      return;
+    }
+    if (!consentInput.checked) {
+      status.textContent = 'Please confirm that you want to receive BLOOM email updates.';
+      consentInput.focus();
+      return;
+    }
+    if (!cfg.url || !cfg.anonKey) {
+      status.textContent = 'Newsletter signup is temporarily unavailable. Please try again later.';
+      return;
+    }
+    if (newsletterSubmitting) return;
+    newsletterSubmitting = true;
+    submitButton.disabled = true;
+    const originalLabel = submitButton.textContent;
+    submitButton.textContent = 'Sending…';
+    status.textContent = 'Requesting your confirmation email…';
+    try {
+      const response = await fetch(cfg.url.replace(/\/$/, '') + '/functions/v1/newsletter-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': cfg.anonKey },
+        body: JSON.stringify({
+          email: emailInput.value.trim().toLowerCase(),
+          consent: consentInput.checked,
+          website: honeypot?.value || ''
+        })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        status.textContent = result.error || 'We could not send your confirmation email. Please try again later.';
+      } else {
+        status.textContent = result.message || 'Check your inbox for a confirmation link to finish signing up.';
+        emailInput.value = '';
+        consentInput.checked = false;
+      }
+    } catch (_) {
+      status.textContent = 'We could not reach the newsletter service. Your signup is not confirmed; please try again.';
+    } finally {
+      newsletterSubmitting = false;
+      submitButton.disabled = false;
+      submitButton.textContent = originalLabel;
+    }
+  });
   const note = (message) => {
     let box = $('#bloom-backend-status');
     if (!box) {
@@ -42,6 +99,7 @@
   document.head.append(script);
 
   function start(client) {
+    newsletterClient = client;
     const activity = $('#activity .wrap');
     if (!activity) return;
     let currentUser = null;
@@ -174,7 +232,16 @@
       if (password.length < 10) { setAuthMessage('Use a password with at least 10 characters.'); return; }
       const { error } = await client.auth.updateUser({ password });
       if (error) setAuthMessage(error.message);
-      else { passwordRecovery = false; $('#bloom-password-update-form').hidden = true; $('#bloom-new-password').value = ''; setAuthMessage('Password updated. You can continue using BLOOM.'); }
+      else {
+        passwordRecovery = false;
+        $('#bloom-password-update-form').hidden = true;
+        $('#bloom-new-password').value = '';
+        // Recovery starts with the normal account panel hidden. Restore the UI after
+        // changing the password instead of leaving the user on an empty auth screen.
+        const { data: sessionData } = await client.auth.getSession();
+        await syncSession(sessionData.session);
+        setAuthMessage('Password updated. You can continue using BLOOM.');
+      }
     });
     $('#bloom-sign-out').addEventListener('click', async () => { const { error } = await client.auth.signOut(); if (error) setAuthMessage(error.message); else setAuthMessage('Signed out.'); });
     $('#bloom-profile-form').addEventListener('submit', async (e) => {
@@ -190,32 +257,159 @@
       else { await client.auth.signOut(); setAuthMessage('Account deletion requested.'); }
     });
 
-    function renderPost(post) {
-      const card = document.createElement('article'); card.className = 'bloom-live-post';
-      const title = document.createElement('h4'); title.textContent = post.title;
+    function renderPost(post, stats = {}) {
+      const card = document.createElement('article');
+      card.className = 'feed-card bloom-shared-post';
+      card.dataset.postId = post.id;
+      card.dataset.fandom = post.fandom || 'Multi-stan';
+      const art = document.createElement('div'); art.className = 'feed-art'; art.textContent = '💗';
+      const content = document.createElement('div'); content.className = 'feed-content';
+      const meta = document.createElement('div'); meta.className = 'meta';
+      meta.textContent = (post.fandom || 'Multi-stan') + ' · ' + new Date(post.created_at).toLocaleString() + ' · BLOOM LIVE';
+      const title = document.createElement('h3'); title.textContent = post.title;
       const body = document.createElement('p'); body.textContent = post.body;
-      const meta = document.createElement('small'); meta.textContent = (post.fandom || 'Multi-stan') + ' · ' + new Date(post.created_at).toLocaleString();
-      card.append(meta, title, body);
-      if (post.link) { const a = document.createElement('a'); a.href = post.link; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'Open link ↗'; card.append(a); }
+      content.append(meta, title, body);
+      if (post.link) {
+        const a = document.createElement('a'); a.href = post.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        a.className = 'shop-link'; a.textContent = 'Open shared link ↗'; content.append(a);
+      }
+      const actions = document.createElement('div'); actions.className = 'feed-actions';
+      const like = document.createElement('button'); like.type = 'button'; like.className = 'small-action';
+      like.dataset.liveAction = 'like'; like.setAttribute('aria-pressed', String(!!stats.liked_by_me));
+      like.textContent = (stats.liked_by_me ? '♥ Liked' : '♡ Like') + ' · ' + Number(stats.like_count || 0);
+      const comment = document.createElement('button'); comment.type = 'button'; comment.className = 'small-action';
+      comment.dataset.liveAction = 'comment'; comment.textContent = '💬 Comment · ' + Number(stats.comment_count || 0);
+      const share = document.createElement('button'); share.type = 'button'; share.className = 'small-action';
+      share.dataset.liveAction = 'share'; share.textContent = '↗ Share';
+      actions.append(like, comment, share);
       if (currentUser) {
-        const report = document.createElement('button'); report.type = 'button'; report.className = 'small-action'; report.textContent = '⚑ Report';
+        const report = document.createElement('button'); report.type = 'button'; report.className = 'small-action';
+        report.textContent = '⚑ Report';
         report.addEventListener('click', async () => {
           const reason = window.prompt('What is the concern? Choose a short reason and do not include private information.');
           if (!reason || !reason.trim()) return;
           const { error } = await client.from('reports').insert({ reporter_id: currentUser.id, target_type: 'post', target_id: post.id, reason: reason.trim().slice(0,80) });
-          window.alert(error ? 'Report could not be sent: ' + error.message : 'Thanks. Your report has been sent to the moderation queue.');
+          if (error) window.alert('Report could not be sent. Confirm the reports table is configured in Supabase.');
+          else window.alert('Thanks. Your report has been sent to the moderation queue.');
         });
-        card.append(report);
+        actions.append(report);
       }
+      content.append(actions); card.append(art, content);
       return card;
     }
+
+    let activeCommentPost = null;
+    function ensureLiveCommentsModal() {
+      if ($('#bloom-live-comments-modal')) return;
+      const modal = document.createElement('div');
+      modal.className = 'modal-backdrop'; modal.id = 'bloom-live-comments-modal';
+      modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-labelledby', 'bloom-live-comments-title');
+      modal.innerHTML = '<div class="modal"><div class="modal-head"><h2 id="bloom-live-comments-title">Comments 💬</h2><button class="modal-close" id="bloom-live-comments-close" type="button" aria-label="Close comments">×</button></div><p id="bloom-live-comments-status" class="bloom-inline-status" role="status"></p><div id="bloom-live-comments-list" class="bloom-live-posts" aria-live="polite"></div><form id="bloom-live-comment-form" class="bloom-modal-form"><label for="bloom-live-comment-input">Add a comment</label><textarea id="bloom-live-comment-input" rows="3" maxlength="500" required placeholder="Keep it kind and fandom-friendly."></textarea><button class="pill primary" type="submit">Post comment</button></form></div>';
+      document.body.append(modal);
+      $('#bloom-live-comments-close').addEventListener('click', () => closeModal(modal.id));
+      modal.addEventListener('click', event => { if (event.target === modal) closeModal(modal.id); });
+      $('#bloom-live-comment-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!currentUser) { openAuth(); setAuthMessage('Sign in before posting a shared comment.'); return; }
+        if (!activeCommentPost) return;
+        const input = $('#bloom-live-comment-input'), body = input.value.trim();
+        if (!body) return;
+        const { error } = await client.from('post_comments').insert({ post_id: activeCommentPost.id, author_id: currentUser.id, body });
+        if (error) {
+          $('#bloom-live-comments-status').textContent = 'Comment could not be saved. Check that supabase/feed-engagement.sql has been run.';
+          return;
+        }
+        input.value = '';
+        await loadLiveComments(activeCommentPost);
+        await loadPosts();
+      });
+    }
+    async function loadLiveComments(post) {
+      const holder = $('#bloom-live-comments-list');
+      const status = $('#bloom-live-comments-status');
+      holder.replaceChildren();
+      status.textContent = 'Loading comments…';
+      const { data, error } = await client.from('post_comments')
+        .select('id,author_id,body,created_at')
+        .eq('post_id', post.id).eq('status', 'published')
+        .order('created_at', { ascending: true }).limit(100);
+      if (error) {
+        status.textContent = 'Shared comments need the feed-engagement SQL migration in Supabase.';
+        return;
+      }
+      status.textContent = data?.length ? data.length + ' shared comment(s)' : 'No comments yet. Start the conversation!';
+      (data || []).forEach(comment => {
+        const item = document.createElement('article'); item.className = 'bloom-live-post';
+        const author = document.createElement('small'); author.textContent = comment.author_id === currentUser?.id ? 'You' : 'Fan';
+        const body = document.createElement('p'); body.textContent = comment.body;
+        const when = document.createElement('small'); when.textContent = new Date(comment.created_at).toLocaleString();
+        item.append(author, body, when); holder.append(item);
+      });
+    }
+    async function openLiveComments(post) {
+      activeCommentPost = post;
+      ensureLiveCommentsModal();
+      $('#bloom-live-comments-title').textContent = 'Comments · ' + post.title;
+      openModal('bloom-live-comments-modal');
+      await loadLiveComments(post);
+    }
+
     async function loadPosts() {
+      const grid = $('#activity .feed-grid');
+      $$('.bloom-shared-post', grid || document).forEach(card => card.remove());
       const { data, error } = await client.from('posts').select('id,author_id,title,body,fandom,link,created_at,status').eq('status','published').order('created_at',{ascending:false}).limit(50);
       livePostList.replaceChildren();
-      if (error) { livePostList.textContent = 'Could not load posts: ' + error.message; return; }
-      if (!data?.length) { livePostList.textContent = 'No shared posts yet. Be the first to post!'; return; }
-      data.forEach(p => livePostList.append(renderPost(p)));
+      if (error) { livePostList.textContent = 'Could not load shared posts. Check the Supabase posts table and row-level security policies.'; return; }
+      if (!data?.length) { livePostList.textContent = 'No shared posts yet. Publish one to have it appear in the FYP below.'; return; }
+      livePostList.textContent = data.length + ' shared post(s) are shown in the FYP below.';
+      let statsById = new Map();
+      try {
+        const { data: engagement, error: engagementError } = await client.rpc('bloom_post_engagement', { target_post_ids: data.map(post => post.id) });
+        if (!engagementError && engagement) statsById = new Map(engagement.map(item => [item.post_id, item]));
+      } catch (_) {}
+      if (grid) grid.prepend(...data.map(post => renderPost(post, statsById.get(post.id) || {})));
+      document.dispatchEvent(new CustomEvent('bloom:feed-updated'));
     }
+
+    activity.addEventListener('click', async event => {
+      const button = event.target.closest('button[data-live-action]');
+      if (!button) return;
+      const card = button.closest('.bloom-shared-post');
+      if (!card) return;
+      const postId = card.dataset.postId;
+      if (button.dataset.liveAction === 'comment') {
+        const title = $('h3', card)?.textContent || 'Fan post';
+        await openLiveComments({ id: postId, title });
+        return;
+      }
+      if (button.dataset.liveAction === 'share') {
+        const title = $('h3', card)?.textContent || 'BLOOM fan post';
+        const body = $('p', card)?.textContent || 'Check out this fan post on BLOOM.';
+        const url = location.origin + location.pathname + '#activity';
+        try {
+          if (navigator.share) await navigator.share({ title: 'BLOOM · ' + title, text: body, url });
+          else if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(url); note('BLOOM feed link copied.'); }
+          else window.prompt('Copy this BLOOM link:', url);
+        } catch (error) { if (error?.name !== 'AbortError') note('Could not share automatically. Copy the page link from your browser.'); }
+        return;
+      }
+      if (button.dataset.liveAction === 'like') {
+        if (!currentUser) { openAuth(); setAuthMessage('Sign in to like shared posts.'); return; }
+        button.disabled = true;
+        const { data: existing, error: readError } = await client.from('post_likes')
+          .select('post_id').eq('post_id', postId).eq('user_id', currentUser.id).maybeSingle();
+        if (readError) {
+          button.disabled = false;
+          note('Shared likes need the feed-engagement SQL migration in Supabase.');
+          return;
+        }
+        const result = existing
+          ? await client.from('post_likes').delete().eq('post_id', postId).eq('user_id', currentUser.id)
+          : await client.from('post_likes').insert({ post_id: postId, user_id: currentUser.id });
+        if (result.error) note('Like could not be saved. Check the feed-engagement SQL migration and policies.');
+        await loadPosts();
+      }
+    });
     $('#bloom-live-post-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser) { openAuth(); setAuthMessage('Sign in before publishing a shared post.'); return; }

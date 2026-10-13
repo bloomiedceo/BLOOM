@@ -31,6 +31,7 @@ function enhanceFeed(){
  const status=document.createElement('p');status.className='bloom-enhance-note';status.id='bloom-feed-status';status.textContent='Likes, saves, and posts on this preview are stored only in this browser. They are not shared with other fans.';controls.after(status);
  function apply(){const q=$('#bloom-feed-search').value.trim().toLowerCase(),f=select.value,savedOnly=$('#bloom-show-saved').getAttribute('aria-pressed')==='true';$$('.feed-card',grid).forEach(card=>{card.hidden=!((f==='all'||card.dataset.fandom===f)&&card.textContent.toLowerCase().includes(q)&&(!savedOnly||getSaved().includes(card.dataset.postId)))})}
  controls.addEventListener('input',apply);
+ document.addEventListener('bloom:feed-updated',apply);
  $('#bloom-show-saved',controls).addEventListener('click',e=>{const b=e.currentTarget,on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));b.textContent=on?'★ Showing saved':'☆ Saved posts';apply()});
  grid.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const card=b.closest('.feed-card'),id=card?.dataset.postId;if(!id)return;
  if(b.dataset.action==='like'){const a=getLiked(),next=a.includes(id)?a.filter(x=>x!==id):a.concat(id);if(!safeWrite('bloom-demo-liked',next)){toast('Browser storage unavailable; this change may not persist.');return}b.setAttribute('aria-pressed',String(next.includes(id)));b.textContent=next.includes(id)?'♥ Liked':'♡ Like';toast(next.includes(id)?'Liked on this browser ♡':'Like removed')}
