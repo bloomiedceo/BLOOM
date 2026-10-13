@@ -122,7 +122,7 @@
             <label for="bloom-story-caption">Caption (optional)</label><input id="bloom-story-caption" maxlength="240" placeholder="A little fandom moment…">
             <button class="pill lavender" type="submit">＋ Share 24-hour story</button>
           </form>
-          <p id="bloom-story-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to share a story. Stories expire after 24 hours.</p>
+          <p id="bloom-story-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to share a story. Stories are public for 24 hours. Don't share private or identifying images.</p>
           <div id="bloom-live-stories" class="bloom-live-stories"></div>
           <div class="bloom-social-notifications-head"><h4>🔔 Notifications</h4><button id="bloom-notifications-refresh" class="small-action" type="button">Refresh</button></div>
           <p id="bloom-notification-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to view activity on your posts and groups.</p>
