@@ -207,3 +207,18 @@
 #signup-form button:disabled{opacity:.72;cursor:not-allowed;transform:none;box-shadow:none}
 @media(max-width:900px){.bloom-spotify-community-picks{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.bloom-spotify-community-picks{grid-template-columns:1fr}.bloom-spotify-community{padding:13px}}
+
+/* BLOOM MUSIC: multiple original Spotify embeds and a visible marketplace fallback. */
+.bloom-spotify-players{display:grid;gap:14px;min-width:0}
+.bloom-spotify-player-card{min-width:0;overflow:hidden;border:1px solid #e8def6;border-radius:16px;background:#fff;padding:12px}
+.bloom-spotify-player-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.bloom-spotify-player-head strong{font-size:12px;text-transform:capitalize}
+.bloom-spotify-player-card iframe{display:block;width:100%;max-width:100%;border:0;border-radius:12px;background:#121212}
+.bloom-spotify-player-card .bloom-spotify-open{margin-top:9px;text-decoration:none}
+.bloom-marketplace-preview{display:block;margin:22px 0 28px;padding:22px;border:1px solid #e5d9fb;border-radius:24px;background:linear-gradient(135deg,#f6f0ff,#fff0f6 58%,#e8fbff)}
+.bloom-market-preview-head{display:flex;align-items:center;gap:14px}
+.bloom-market-preview-head>span{display:grid;place-items:center;width:48px;height:48px;flex:0 0 auto;border-radius:15px;background:#fff;font-size:26px}
+.bloom-market-preview-head h3{margin:0 0 6px;font-size:clamp(20px,3vw,28px)}
+.bloom-market-preview-head p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+#bloom-marketplace-preview-status{margin:14px 0 0;color:#5e4b80;font-size:12px;line-height:1.6}
+@media(max-width:560px){.bloom-marketplace-preview{padding:16px}}

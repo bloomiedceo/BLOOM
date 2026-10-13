@@ -41,7 +41,7 @@ The top navigation and footer Safety links open a dedicated Safety Center dialog
 
 ## Spotify in BLOOM MUSIC
 
-BLOOM MUSIC uses Spotify's official embedded player. To add a playlist you already use, open Spotify, choose **Share → Copy link**, paste the link into BLOOM MUSIC, and select **Show Spotify player**. Public playlist, album, artist, track, show, and episode links are supported. BLOOM does not create playlists, upload audio files, or copy Spotify tracks; Spotify handles playback, sign-in, and availability. You can also open the same item directly in Spotify.
+BLOOM MUSIC uses Spotify's official embedded player. Open Spotify, choose **Share → Copy link**, paste a direct `open.spotify.com` link into BLOOM MUSIC, and select **Add Spotify player**. You can add multiple original Spotify playlist, album, artist, track, show, and episode embeds on the page. BLOOM does not create or store playlists or upload audio files; Spotify handles playback, sign-in, and availability. Short `spotify.link` URLs must be opened in Spotify first so you can copy the full link.
 
 ## Connect the real backend (required before opening accounts/chat publicly)
 
@@ -87,7 +87,7 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Test on desktop and a narrow mobile screen; check keyboard focus and reduced-motion settings.
 - [ ] Click Safety in the top navigation and Safety center in the footer; verify the Safety Center opens, closes, and opens the safety report preview.
 - [ ] Spotify section loads a valid official embed from a copied Spotify share link; verify invalid links show a helpful error.
-- [ ] Search the marketplace and test every category, wishlist, and reset button. Confirm Weverse/Shopee listings open and marketplace searches show current offers; seller prices/stock can change.
+- [ ] Search the marketplace and test every category, wishlist, and reset button. Verify the in-BLOOM marketplace container is visible, publish a test listing, and send a request from a second test account. Payments are not connected yet.
 - [ ] Run `supabase/feed-engagement.sql`, then test shared post likes/comments with two accounts and confirm private-profile posts stay private.
 - [ ] With Supabase configured, create two test accounts and verify email confirmation works.
 - [ ] Test sign-in, wrong-password errors, password-reset email, and password update from the recovery link.
