@@ -76,14 +76,6 @@
         visual.className = 'product-visual ' + item.tone;
         const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = item.tag;
         const heart = document.createElement('button'); heart.className = 'heart'; heart.type = 'button'; heart.setAttribute('aria-label', 'Save ' + item.name); heart.textContent = '♡';
-        heart.addEventListener('click', () => {
-          const saved = read('bloom-demo-wishlist', []);
-          const key = card.dataset.name;
-          const next = saved.includes(key) ? saved.filter(value => value !== key) : [...saved, key];
-          write('bloom-demo-wishlist', next);
-          heart.textContent = next.includes(key) ? '♥' : '♡';
-          heart.setAttribute('aria-pressed', String(next.includes(key)));
-        });
         const emoji = document.createElement('span'); emoji.className = 'product-emoji'; emoji.textContent = item.emoji;
         visual.append(tag, heart, emoji);
         const info = document.createElement('div'); info.className = 'product-info';
