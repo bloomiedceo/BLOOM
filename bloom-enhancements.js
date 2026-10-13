@@ -118,7 +118,7 @@ function enhanceMusic(){
  const community=$('#community');if(community)community.before(section);else $('main')?.append(section);
  const audio=$('#bloom-local-audio',section),status=$('#bloom-music-status',section),list=$('#bloom-track-list',section),select=$('#bloom-playlist-select',section),fileInput=$('#bloom-audio-files',section);
  const playlists=new Map();let activePlaylist='',activeIndex=-1,serial=0;
- const getTracks=()=>playlists.get(activePlaylist)||[];
+ const getTracks=()=>playlists.get(activePlaylist)?.tracks||[];
  const clearAudio=()=>{audio.pause();audio.removeAttribute('src');audio.load();activeIndex=-1};
  function createPlaylist(name){const id='playlist-'+(++serial);playlists.set(id,{name,tracks:[]});activePlaylist=id;renderPlaylists();renderTracks();status.textContent='Created “'+name+'”. Add music files from your device.'}
  function renderPlaylists(){const previous=activePlaylist;select.replaceChildren();playlists.forEach((item,id)=>{const option=document.createElement('option');option.value=id;option.textContent=item.name;select.append(option)});if(playlists.has(previous)){select.value=previous}else if(playlists.size){activePlaylist=playlists.keys().next().value;select.value=activePlaylist}else{activePlaylist='';const option=document.createElement('option');option.value='';option.textContent='Create a playlist first';select.append(option);select.disabled=true;return}select.disabled=false}
