@@ -12,10 +12,10 @@
     const style = document.createElement('style');
     style.id = 'bloom-launch-upgrades-styles';
     style.textContent = `
-      #activity .feed-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;width:min(100%,760px);margin:0 auto;max-height:78svh;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y proximity;padding:4px 8px 16px}
+      #activity .feed-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;width:min(100%,760px);margin:0 auto;padding:4px 8px 16px}
       #activity .feed-card[hidden],#product-grid .product-card[hidden]{display:none!important}
-      #activity .feed-card{min-height:min(70svh,640px);display:flex;flex-direction:column;scroll-snap-align:start;scroll-margin-top:100px;border-radius:26px}
-      #activity .feed-art{min-height:220px;flex:1;max-height:390px;font-size:clamp(70px,12vw,120px)}
+      #activity .feed-card{min-height:0;display:flex;flex-direction:column;scroll-snap-align:none;scroll-margin-top:100px;border-radius:26px;content-visibility:auto;contain-intrinsic-size:auto 520px}
+      #activity .feed-art{min-height:220px;flex:0 0 auto;max-height:390px;font-size:clamp(70px,12vw,120px)}
       #activity .feed-content{padding:20px}
       #activity .feed-content h3{font-size:clamp(18px,3vw,25px)}
       #activity .feed-content p{font-size:13px}
@@ -45,27 +45,20 @@
   }
 
   function marketplace() {
-    const products = [
-      { match: /official bts lightstick|bts official light stick/i, query: 'BTS OFFICIAL LIGHT STICK VER.4', directUrl: 'https://shop.weverse.io/en/shop/USD/artists/2/sales/54189', official: true },
-      { match: /album display|album/i, query: 'K-pop album display shelf' },
-      { match: /off-duty idol|hoodie|streetwear/i, query: 'K-pop oversized hoodie streetwear' },
-      { match: /photocard|binder/i, query: 'K-pop photocard binder sleeves', directUrl: 'https://shopee.com.my/Korean-Card-holder-Card-Album-Photocard-Binder-i.67848659.10411395331' },
-      { match: /concert-day|concert bag|lightstick/i, query: 'K-pop concert bag lightstick accessories' }
-    ];
     const grid = $('#product-grid');
     const catalogue = [
       {name:'K-pop Album Display Shelf',category:'albums',type:'Albums & collectibles',emoji:'💿',tone:'v-lilac',query:'K-pop album display shelf',tag:'Shelf styling'},
-      {name:'Photocard Binder & Sleeves',category:'albums',type:'Photocard storage',emoji:'📔',tone:'v-mint',query:'K-pop photocard binder sleeves',tag:'Collector pick'},
-      {name:'Official Light Stick Search',category:'concert',type:'Concert essentials',emoji:'💡',tone:'v-yellow',query:'K-pop official light stick',tag:'Check official shops'},
-      {name:'Light Stick Carry Bag',category:'concert',type:'Concert essentials',emoji:'🎒',tone:'v-pink',query:'K-pop lightstick carry bag',tag:'Concert ready'},
+      {name:'Photocard Binder & Sleeves',category:'albums',type:'Photocard storage',emoji:'📔',tone:'v-mint',query:'Photocard binder sleeves',tag:'Collector pick'},
+      {name:'Official Light Stick Search',category:'concert',type:'Concert essentials',emoji:'💡',tone:'v-yellow',query:'K-pop official light stick',tag:'Check authenticity'},
+      {name:'Light Stick Carry Bag',category:'concert',type:'Concert essentials',emoji:'🎒',tone:'v-pink',query:'Lightstick carry bag',tag:'Concert ready'},
       {name:'K-pop Album Display Stand',category:'albums',type:'Albums & collectibles',emoji:'🖼️',tone:'v-lilac',query:'K-pop album acrylic display stand',tag:'Display edit'},
-      {name:'Photocard Toploader Decor',category:'accessories',type:'Fan accessories',emoji:'✨',tone:'v-yellow',query:'photocard toploader deco stickers',tag:'DIY corner'},
-      {name:'K-pop Slogan Towel',category:'concert',type:'Concert essentials',emoji:'🎀',tone:'v-pink',query:'K-pop concert slogan towel',tag:'Fan project fave'},
-      {name:'Concert Light Stick Strap',category:'accessories',type:'Fan accessories',emoji:'🔗',tone:'v-mint',query:'K-pop lightstick wrist strap',tag:'Little essential'},
+      {name:'Photocard Toploader Decor',category:'accessories',type:'Fan accessories',emoji:'✨',tone:'v-yellow',query:'Photocard toploader stickers',tag:'DIY corner'},
+      {name:'K-pop Slogan Towel',category:'concert',type:'Concert essentials',emoji:'🎀',tone:'v-pink',query:'Concert slogan towel',tag:'Fan project fave'},
+      {name:'Concert Light Stick Strap',category:'accessories',type:'Fan accessories',emoji:'🔗',tone:'v-mint',query:'Lightstick wrist strap',tag:'Little essential'},
       {name:'K-pop Inspired Oversized Hoodie',category:'style',type:'Fan style',emoji:'🧥',tone:'v-pink',query:'K-pop inspired oversized hoodie',tag:'Style pick'},
-      {name:'Photocard Holder Keychain',category:'accessories',type:'Fan accessories',emoji:'🫧',tone:'v-mint',query:'K-pop photocard holder keychain',tag:'Everyday carry'},
-      {name:'Album & Photocard Storage Box',category:'albums',type:'Albums & collectibles',emoji:'📦',tone:'v-lilac',query:'K-pop album photocard storage box',tag:'Tidy collection'},
-      {name:'Concert Crossbody Bag',category:'concert',type:'Concert essentials',emoji:'👜',tone:'v-yellow',query:'K-pop concert clear crossbody bag',tag:'Venue-ready'}
+      {name:'Photocard Holder Keychain',category:'accessories',type:'Fan accessories',emoji:'🫧',tone:'v-mint',query:'Photocard holder keychain',tag:'Everyday carry'},
+      {name:'Album & Photocard Storage Box',category:'albums',type:'Albums & collectibles',emoji:'📦',tone:'v-lilac',query:'Album photocard storage box',tag:'Tidy collection'},
+      {name:'Concert Crossbody Bag',category:'concert',type:'Concert essentials',emoji:'👜',tone:'v-yellow',query:'Concert clear crossbody bag',tag:'Venue-ready'}
     ];
     if (grid && !grid.dataset.bloomCatalogueAdded) {
       catalogue.forEach(item => {
@@ -73,77 +66,56 @@
         card.className = 'product-card';
         card.dataset.category = item.category;
         card.dataset.name = item.name.toLowerCase() + ' ' + item.query.toLowerCase();
-        const visual = document.createElement('div');
-        visual.className = 'product-visual ' + item.tone;
+        const visual = document.createElement('div'); visual.className = 'product-visual ' + item.tone;
         const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = item.tag;
-        const heart = document.createElement('button'); heart.className = 'heart'; heart.type = 'button'; heart.setAttribute('aria-label', 'Save ' + item.name); heart.textContent = '♡';
+        const heart = document.createElement('button'); heart.className = 'heart'; heart.type = 'button';
+        heart.setAttribute('aria-label', 'Save ' + item.name);
         const wishlistKey = card.dataset.name;
-        const initialWishlist = read('bloom-demo-wishlist', []);
-        const initiallySaved = Array.isArray(initialWishlist) && initialWishlist.includes(wishlistKey);
+        const saved = read('bloom-demo-wishlist', []);
+        const initiallySaved = Array.isArray(saved) && saved.includes(wishlistKey);
         heart.textContent = initiallySaved ? '♥' : '♡';
         heart.setAttribute('aria-pressed', String(initiallySaved));
-        heart.setAttribute('aria-label', (initiallySaved ? 'Remove from' : 'Add to') + ' wishlist: ' + item.name);
         heart.addEventListener('click', () => {
-          const saved = read('bloom-demo-wishlist', []);
-          const current = Array.isArray(saved) ? saved : [];
-          const next = current.includes(wishlistKey) ? current.filter(value => value !== wishlistKey) : [...current, wishlistKey];
+          const current = read('bloom-demo-wishlist', []);
+          const list = Array.isArray(current) ? current : [];
+          const next = list.includes(wishlistKey) ? list.filter(value => value !== wishlistKey) : [...list, wishlistKey];
           if (!write('bloom-demo-wishlist', next)) { toast('Could not save your wishlist in this browser.'); return; }
           const isSaved = next.includes(wishlistKey);
           heart.textContent = isSaved ? '♥' : '♡';
           heart.setAttribute('aria-pressed', String(isSaved));
-          heart.setAttribute('aria-label', (isSaved ? 'Remove from' : 'Add to') + ' wishlist: ' + item.name);
         });
         const emoji = document.createElement('span'); emoji.className = 'product-emoji'; emoji.textContent = item.emoji;
         visual.append(tag, heart, emoji);
         const info = document.createElement('div'); info.className = 'product-info';
         const type = document.createElement('div'); type.className = 'product-type'; type.textContent = item.type;
         const title = document.createElement('h3'); title.textContent = item.name;
-        const desc = document.createElement('p'); desc.textContent = 'Browse current listings and compare sellers before buying.';
+        const desc = document.createElement('p'); desc.textContent = 'Find items listed by BLOOM community sellers, all without leaving BLOOM.';
         const bottom = document.createElement('div'); bottom.className = 'product-bottom';
-        const price = document.createElement('span'); price.className = 'price'; price.textContent = 'Compare listings';
-        const link = document.createElement('a'); link.className = 'shop-link'; link.href = 'https://shopee.com.my/search?keyword=' + encodeURIComponent(item.query); link.target = '_self'; link.rel = 'noopener noreferrer'; link.textContent = 'Shop the find ↗';
+        const price = document.createElement('span'); price.className = 'price'; price.textContent = 'Community listings';
+        const link = document.createElement('a'); link.className = 'shop-link'; link.href = '#bloom-marketplace-listings'; link.textContent = 'Find on BLOOM ↗';
         bottom.append(price, link); info.append(type, title, desc, bottom); card.append(visual, info); grid.append(card);
       });
       grid.dataset.bloomCatalogueAdded = 'true';
     }
     $$('#product-grid .product-card').forEach(card => {
-      if ($('.tag', card)?.textContent.includes('Your demo listing')) return;
-      const name = ($('h3', card)?.textContent || card.dataset.name || '').trim();
-      const product = products.find(item => item.match.test(name + ' ' + card.dataset.name)) || { query: name };
+      const title = ($('h3', card)?.textContent || card.dataset.name || '').trim();
       const primary = $('.shop-link', card);
       if (!primary) return;
-      const existingHref = primary.getAttribute('href') || '';
-      const fallback = 'https://shopee.com.my/search?keyword=' + encodeURIComponent(product.query);
-      const destination = product.directUrl || (/^https:\/\//i.test(existingHref) ? existingHref : fallback);
-      primary.href = destination;
-      primary.target = '_self';
-      primary.rel = 'noopener noreferrer';
-      primary.removeAttribute('onclick');
-      primary.textContent = product.official ? 'View on Weverse ↗' : 'Shop the find ↗';
-      primary.setAttribute('aria-label', product.official
-        ? 'Open the official Weverse listing for ' + name
-        : 'Open the shopping destination for ' + name);
-      primary.setAttribute('data-shop-destination', 'true');
-      let secondary = $('.bloom-market-links', card);
-      if (!secondary) {
-        secondary = document.createElement('div');
-        secondary.className = 'bloom-market-links';
-        const bottom = $('.product-bottom', card);
-        if (bottom) bottom.insertAdjacentElement('afterend', secondary);
-      }
-      if (secondary) {
-        secondary.replaceChildren();
-        const lazada = document.createElement('a');
-        lazada.href = 'https://www.lazada.com.my/catalog/?q=' + encodeURIComponent(product.query);
-        lazada.target = '_self';
-        lazada.rel = 'noopener noreferrer';
-        lazada.textContent = 'Search Lazada ↗';
-        lazada.setAttribute('aria-label', 'Search Lazada Malaysia for ' + name);
-        secondary.append(lazada);
-      }
+      primary.href = '#bloom-marketplace-listings';
+      primary.removeAttribute('target');
+      primary.removeAttribute('rel');
+      primary.textContent = 'Find on BLOOM ↗';
+      primary.setAttribute('aria-label', 'Find ' + title + ' in the BLOOM community marketplace');
+      primary.addEventListener('click', event => {
+        event.preventDefault();
+        const search = $('#bloom-marketplace-search');
+        if (search) { search.value = title.replace(/^K-pop /i, ''); search.dispatchEvent(new Event('input', {bubbles:true})); }
+        $('#bloom-marketplace-listings')?.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+      $$('.bloom-market-links', card).forEach(el => el.remove());
     });
     const disclosure = $('#affiliate-note');
-    if (disclosure) disclosure.textContent = 'Links open an official Weverse listing, a Shopee listing/search, or a Lazada search. BLOOM has not verified every seller, current stock, shipping, or final price. These are not affiliate links. Check seller ratings and checkout details before buying.';
+    if (disclosure) disclosure.textContent = 'BLOOM community listings stay inside BLOOM. Purchase requests are sent to sellers in BLOOM; payments are not processed here yet. Check listings carefully and keep personal information private.';
   }
 
   let activePostId = null;

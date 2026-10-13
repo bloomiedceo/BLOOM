@@ -144,6 +144,91 @@
     const feed = $('#activity .feed-grid');
     if (feed) feed.before(panel);
     else activity.append(panel);
+    function setupMarketplace() {
+      const discover = $('#discover .wrap');
+      if (!discover || $('#bloom-marketplace-app')) return;
+      const root = document.createElement('section');
+      root.id = 'bloom-marketplace-app';
+      root.innerHTML = `
+        <div class="bloom-market-head"><div><div class="kicker">BLOOM marketplace · buy & sell here</div><h2>Find your next fan treasure. 🌸</h2><p>Browse community listings, post an item, and send purchase requests without leaving BLOOM.</p></div><button class="pill primary" id="bloom-market-sell" type="button">＋ Sell an item</button></div>
+        <div class="bloom-market-controls"><input id="bloom-market-search" type="search" aria-label="Search listings" placeholder="Search BLOOM listings…"><select id="bloom-market-category" aria-label="Filter category"><option value="all">All categories</option><option value="albums">Albums & collectibles</option><option value="photocards">Photocards</option><option value="fashion">Fan style</option><option value="accessories">Accessories</option><option value="concert">Concert essentials</option><option value="other">Other</option></select></div>
+        <p id="bloom-market-status" class="bloom-enhance-note" role="status" aria-live="polite">Loading listings…</p><div id="bloom-marketplace-listings" class="bloom-market-grid"></div>
+        <form id="bloom-market-listing-form" class="bloom-market-form" hidden><h3>List an item on BLOOM</h3><label for="bloom-market-title">Item name</label><input id="bloom-market-title" maxlength="90" required placeholder="e.g. Photocard binder"><label for="bloom-market-description">Description</label><textarea id="bloom-market-description" maxlength="1200" rows="3" required placeholder="Condition, details, and what's included"></textarea><div class="bloom-market-form-row"><div><label for="bloom-market-price">Price (MYR)</label><input id="bloom-market-price" type="number" min="0" max="100000" step="0.01" value="0" required></div><div><label for="bloom-market-category-new">Category</label><select id="bloom-market-category-new"><option value="albums">Albums & collectibles</option><option value="photocards">Photocards</option><option value="fashion">Fan style</option><option value="accessories">Accessories</option><option value="concert">Concert essentials</option><option value="other">Other</option></select></div></div><div class="bloom-market-form-row"><div><label for="bloom-market-condition">Condition</label><select id="bloom-market-condition"><option value="new">New</option><option value="like_new">Like new</option><option value="good" selected>Good</option><option value="fair">Fair</option></select></div><div><label for="bloom-market-emoji">Card emoji</label><select id="bloom-market-emoji"><option>🌸</option><option>💿</option><option>🎀</option><option>📔</option><option>🧥</option><option>🎒</option><option>✨</option><option>🫧</option></select></div></div><button class="pill primary" type="submit">Publish listing</button> <button class="pill lavender" id="bloom-market-cancel" type="button">Cancel</button><p class="bloom-enhance-note">Be honest about the item. Don't include addresses, phone numbers, or private information.</p></form>
+        <section class="bloom-market-inbox"><h3>Seller inbox 💌</h3><p class="bloom-enhance-note">Purchase requests for your listings appear here. No payment is taken in BLOOM yet.</p><div id="bloom-market-inquiries"></div></section>
+        <p class="bloom-market-safety">Safety first: don't share passwords, verification codes, home addresses, or private contact details. If you're under 18, involve a trusted adult before any payment, shipping, or in-person exchange. BLOOM does not process payments or verify items yet.</p>`;
+      const head = $('.section-head', discover);
+      if (head) head.insertAdjacentElement('afterend', root); else discover.prepend(root);
+      const style = document.createElement('style'); style.id='bloom-marketplace-styles';
+      style.textContent = `
+        #bloom-marketplace-app{margin:22px 0 30px;padding:24px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(145deg,#fff,#f5efff)}
+        .bloom-market-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}.bloom-market-head h2{font-size:clamp(25px,4vw,38px);letter-spacing:-.06em;margin:8px 0}.bloom-market-head p{max-width:600px;color:var(--muted);font-size:13px;line-height:1.65}
+        .bloom-market-controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 10px}.bloom-market-controls input{flex:1;min-width:150px}
+        .bloom-market-controls input,.bloom-market-controls select,.bloom-market-form input,.bloom-market-form select,.bloom-market-form textarea,.bloom-market-request-form textarea{border:1px solid var(--line);border-radius:12px;background:white;padding:11px 13px;color:var(--ink);font:inherit}
+        .bloom-market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:16px 0}.bloom-market-card{min-width:0;background:white;border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:9px;content-visibility:auto;contain-intrinsic-size:auto 290px}
+        .bloom-market-emoji{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:#f1eaff;font-size:25px}.bloom-market-card h4{margin:0;font-size:16px;overflow-wrap:anywhere}.bloom-market-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.55;overflow-wrap:anywhere}.bloom-market-meta{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.bloom-market-price{font-size:17px;font-weight:900;margin-top:auto}.bloom-market-actions{display:flex;gap:8px;flex-wrap:wrap}.bloom-market-actions button{border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:white;font-weight:800;font-size:11px}
+        .bloom-market-form{margin:18px 0;padding:18px;border-radius:18px;background:white;border:1px solid var(--line)}.bloom-market-form[hidden]{display:none}.bloom-market-form label,.bloom-market-request-form label{display:block;font-size:12px;font-weight:800;margin:12px 0 6px}.bloom-market-form input,.bloom-market-form select,.bloom-market-form textarea{width:100%}.bloom-market-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.bloom-market-inbox{margin-top:22px;border-top:1px solid var(--line);padding-top:18px}.bloom-market-inquiry{border:1px solid var(--line);border-radius:14px;background:white;padding:12px;margin:9px 0}.bloom-market-inquiry p{font-size:12px;line-height:1.5;overflow-wrap:anywhere}.bloom-market-safety{font-size:11px;line-height:1.6;color:var(--muted);margin-top:18px}
+        #bloom-market-request-modal .modal{width:min(520px,100%)}.bloom-market-request-form textarea{width:100%}
+        @media(max-width:760px){#bloom-marketplace-app{padding:16px}.bloom-market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.bloom-market-grid,.bloom-market-form-row{grid-template-columns:1fr}}
+      `;
+      document.head.append(style);
+      const status=$('#bloom-market-status'), form=$('#bloom-market-listing-form'), cards=$('#bloom-marketplace-listings'), inbox=$('#bloom-market-inquiries'), search=$('#bloom-market-search'), filter=$('#bloom-market-category');
+      let listings=[], sellerProfiles=new Map(), requested=null;
+      const say=message=>{status.textContent=message};
+      const price=value=>Number(value)===0?'Free':'MYR '+Number(value).toFixed(2);
+      const condition=value=>({new:'New',like_new:'Like new',good:'Good',fair:'Fair'})[value]||'Good';
+      function needAuth(message){openAuth();setAuthMessage(message);}
+      function openRequest(item){if(!currentUser){needAuth('Sign in to send a purchase request.');return;}if(item.seller_id===currentUser.id){say('That is your own listing.');return;}requested=item;$('#bloom-market-request-title').textContent='Request: '+item.title;$('#bloom-market-request-modal').classList.add('open');document.body.style.overflow='hidden';$('#bloom-market-request-message').focus();}
+      function renderListings(){
+        const q=search.value.trim().toLowerCase(), cat=filter.value;
+        const visible=listings.filter(item=>(cat==='all'||item.category===cat)&&(item.title+' '+item.description+' '+item.category).toLowerCase().includes(q));
+        cards.replaceChildren();
+        if(!visible.length){const empty=document.createElement('p');empty.className='bloom-enhance-note';empty.textContent=listings.length?'No listings match. Try another search or category.':'No community listings yet. Be the first to list a fan item!';cards.append(empty);return;}
+        visible.forEach(item=>{
+          const card=document.createElement('article');card.className='bloom-market-card';
+          const emoji=document.createElement('div');emoji.className='bloom-market-emoji';emoji.textContent=item.emoji||'🌸';
+          const meta=document.createElement('div');meta.className='bloom-market-meta';meta.textContent=item.category+' · '+condition(item.item_condition)+' · '+(sellerProfiles.get(item.seller_id)?.username||'BLOOM seller');
+          const title=document.createElement('h4');title.textContent=item.title;
+          const desc=document.createElement('p');desc.textContent=item.description;
+          const cost=document.createElement('div');cost.className='bloom-market-price';cost.textContent=price(item.price);
+          const actions=document.createElement('div');actions.className='bloom-market-actions';
+          if(currentUser?.id===item.seller_id){const sold=document.createElement('button');sold.type='button';sold.textContent='Mark as sold';sold.addEventListener('click',async()=>{const {error}=await client.from('marketplace_listings').update({status:'sold',updated_at:new Date().toISOString()}).eq('id',item.id).eq('seller_id',currentUser.id);if(error){say('Could not update listing: '+error.message);return;}say('Listing marked as sold.');await loadMarketplaceListings();await loadMarketplaceInbox();});actions.append(sold);}
+          else {const buy=document.createElement('button');buy.type='button';buy.textContent='Request to buy';buy.addEventListener('click',()=>openRequest(item));actions.append(buy);}
+          card.append(emoji,meta,title,desc,cost,actions);cards.append(card);
+        });
+      }
+      async function loadMarketplaceListings(){
+        const {data,error}=await client.from('marketplace_listings').select('id,seller_id,title,description,category,item_condition,price,emoji,status,created_at').eq('status','active').order('created_at',{ascending:false}).limit(60);
+        if(error){listings=[];renderListings();say('Marketplace database needs setup: '+error.message);return;}
+        listings=data||[];sellerProfiles=new Map();const ids=[...new Set(listings.map(item=>item.seller_id))];
+        if(ids.length){const p=await client.from('profiles').select('id,username,display_name').in('id',ids);if(!p.error)(p.data||[]).forEach(row=>sellerProfiles.set(row.id,row));}
+        renderListings();say(listings.length+' active BLOOM listing(s). Request an item directly inside BLOOM.');
+      }
+      async function loadMarketplaceInbox(){
+        inbox.replaceChildren();if(!currentUser){inbox.textContent='Sign in to see requests for your listings.';return;}
+        const own=await client.from('marketplace_listings').select('id,title').eq('seller_id',currentUser.id);
+        if(own.error){inbox.textContent='Could not load your listings inbox: '+own.error.message;return;}
+        const mine=own.data||[];if(!mine.length){inbox.textContent='Publish a listing to receive requests here.';return;}
+        const result=await client.from('marketplace_inquiries').select('id,listing_id,buyer_id,message,status,created_at').in('listing_id',mine.map(x=>x.id)).order('created_at',{ascending:false}).limit(40);
+        if(result.error){inbox.textContent='Could not load requests: '+result.error.message;return;}
+        const rows=(result.data||[]).filter(x=>x.status==='new');if(!rows.length){inbox.textContent='No new purchase requests yet.';return;}
+        const buyerIds=[...new Set(rows.map(x=>x.buyer_id))], p=await client.from('profiles').select('id,username').in('id',buyerIds), buyers=new Map((p.data||[]).map(x=>[x.id,x.username]));
+        rows.forEach(item=>{const box=document.createElement('article');box.className='bloom-market-inquiry';const heading=document.createElement('strong');heading.textContent=(mine.find(x=>x.id===item.listing_id)?.title||'Your item')+' · from '+(buyers.get(item.buyer_id)||'BLOOM buyer');const msg=document.createElement('p');msg.textContent=item.message;const close=document.createElement('button');close.type='button';close.className='pill lavender';close.textContent='Close request';close.addEventListener('click',async()=>{const {error}=await client.from('marketplace_inquiries').update({status:'closed'}).eq('id',item.id);if(error){say('Could not close request: '+error.message);return;}await loadMarketplaceInbox();});box.append(heading,msg,close);inbox.append(box);});
+      }
+      const modal=document.createElement('div');modal.id='bloom-market-request-modal';modal.className='modal-backdrop';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','bloom-market-request-heading');
+      modal.innerHTML='<div class="modal"><div class="modal-head"><h2 id="bloom-market-request-heading">Request an item 💌</h2><button type="button" class="modal-close" id="bloom-market-request-close" aria-label="Close">×</button></div><h3 id="bloom-market-request-title"></h3><p class="bloom-enhance-note">This sends a request, not a payment or confirmed order. Do not include private contact details.</p><form id="bloom-market-request-form" class="bloom-market-request-form"><label for="bloom-market-request-message">Message to seller</label><textarea id="bloom-market-request-message" rows="4" maxlength="600" required placeholder="Hi! Is this item still available?"></textarea><button type="submit" class="pill primary">Send request</button></form></div>';
+      document.body.append(modal);
+      $('#bloom-market-request-close').addEventListener('click',()=>{modal.classList.remove('open');document.body.style.overflow='';});
+      modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');document.body.style.overflow='';}});
+      $('#bloom-market-request-form').addEventListener('submit',async e=>{e.preventDefault();if(!currentUser||!requested||requested.seller_id===currentUser.id){needAuth('Sign in with a buyer account to send a request.');return;}const message=$('#bloom-market-request-message').value.trim();if(!message)return;const {error}=await client.from('marketplace_inquiries').insert({listing_id:requested.id,buyer_id:currentUser.id,message});if(error){say('Could not send request: '+error.message);return;}modal.classList.remove('open');document.body.style.overflow='';e.target.reset();say('Purchase request sent inside BLOOM. No payment has been taken.');});
+      $('#bloom-market-sell').addEventListener('click',()=>{if(!currentUser){needAuth('Sign in before publishing a listing.');return;}form.hidden=!form.hidden;if(!form.hidden)$('#bloom-market-title').focus();});
+      $('#bloom-market-cancel').addEventListener('click',()=>{form.hidden=true;form.reset();});
+      form.addEventListener('submit',async e=>{e.preventDefault();if(!currentUser){needAuth('Sign in before publishing a listing.');return;}const payload={seller_id:currentUser.id,title:$('#bloom-market-title').value.trim(),description:$('#bloom-market-description').value.trim(),price:Number($('#bloom-market-price').value),category:$('#bloom-market-category-new').value,item_condition:$('#bloom-market-condition').value,emoji:$('#bloom-market-emoji').value,currency:'MYR',status:'active'};if(!payload.title||!payload.description||!Number.isFinite(payload.price)||payload.price<0){say('Check the item name, description, and price.');return;}const {error}=await client.from('marketplace_listings').insert(payload);if(error){say('Could not publish listing: '+error.message);return;}form.reset();form.hidden=true;say('Your item is listed on BLOOM.');await loadMarketplaceListings();await loadMarketplaceInbox();});
+      search.addEventListener('input',renderListings);filter.addEventListener('change',renderListings);
+      window.bloomMarketplace={refresh:async()=>{await loadMarketplaceListings();await loadMarketplaceInbox();}};
+      loadMarketplaceListings();loadMarketplaceInbox();
+    }
+    setupMarketplace();
+
 
     const authButton = document.createElement('button');
     authButton.type = 'button';
@@ -543,6 +628,7 @@
       }
       await loadPosts();
       await loadGroups();
+      if (window.bloomMarketplace?.refresh) await window.bloomMarketplace.refresh();
     }
     client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') passwordRecovery = true; setTimeout(() => { void syncSession(session); }, 0); });
     client.auth.getSession().then(({ data }) => syncSession(data.session)).catch((error) => { setLiveStatus('Could not restore your session. Refresh and try again.'); console.error('BLOOM session restore failed:', error); });
