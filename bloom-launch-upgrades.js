@@ -51,6 +51,52 @@
       { match: /photocard|binder/i, query: 'K-pop photocard binder sleeves', directUrl: 'https://shopee.com.my/Korean-Card-holder-Card-Album-Photocard-Binder-i.67848659.10411395331' },
       { match: /concert-day|concert bag|lightstick/i, query: 'K-pop concert bag lightstick accessories' }
     ];
+    const grid = $('#product-grid');
+    const catalogue = [
+      {name:'K-pop Album Display Shelf',category:'albums',type:'Albums & collectibles',emoji:'💿',tone:'v-lilac',query:'K-pop album display shelf',tag:'Shelf styling'},
+      {name:'Photocard Binder & Sleeves',category:'albums',type:'Photocard storage',emoji:'📔',tone:'v-mint',query:'K-pop photocard binder sleeves',tag:'Collector pick'},
+      {name:'Official Light Stick Search',category:'concert',type:'Concert essentials',emoji:'💡',tone:'v-yellow',query:'K-pop official light stick',tag:'Check official shops'},
+      {name:'Light Stick Carry Bag',category:'concert',type:'Concert essentials',emoji:'🎒',tone:'v-pink',query:'K-pop lightstick carry bag',tag:'Concert ready'},
+      {name:'K-pop Album Display Stand',category:'albums',type:'Albums & collectibles',emoji:'🖼️',tone:'v-lilac',query:'K-pop album acrylic display stand',tag:'Display edit'},
+      {name:'Photocard Toploader Decor',category:'accessories',type:'Fan accessories',emoji:'✨',tone:'v-yellow',query:'photocard toploader deco stickers',tag:'DIY corner'},
+      {name:'K-pop Slogan Towel',category:'concert',type:'Concert essentials',emoji:'🎀',tone:'v-pink',query:'K-pop concert slogan towel',tag:'Fan project fave'},
+      {name:'Concert Light Stick Strap',category:'accessories',type:'Fan accessories',emoji:'🔗',tone:'v-mint',query:'K-pop lightstick wrist strap',tag:'Little essential'},
+      {name:'K-pop Inspired Oversized Hoodie',category:'style',type:'Fan style',emoji:'🧥',tone:'v-pink',query:'K-pop inspired oversized hoodie',tag:'Style pick'},
+      {name:'Photocard Holder Keychain',category:'accessories',type:'Fan accessories',emoji:'🫧',tone:'v-mint',query:'K-pop photocard holder keychain',tag:'Everyday carry'},
+      {name:'Album & Photocard Storage Box',category:'albums',type:'Albums & collectibles',emoji:'📦',tone:'v-lilac',query:'K-pop album photocard storage box',tag:'Tidy collection'},
+      {name:'Concert Crossbody Bag',category:'concert',type:'Concert essentials',emoji:'👜',tone:'v-yellow',query:'K-pop concert clear crossbody bag',tag:'Venue-ready'}
+    ];
+    if (grid && !grid.dataset.bloomCatalogueAdded) {
+      catalogue.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'product-card';
+        card.dataset.category = item.category;
+        card.dataset.name = item.name.toLowerCase() + ' ' + item.query.toLowerCase();
+        const visual = document.createElement('div');
+        visual.className = 'product-visual ' + item.tone;
+        const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = item.tag;
+        const heart = document.createElement('button'); heart.className = 'heart'; heart.type = 'button'; heart.setAttribute('aria-label', 'Save ' + item.name); heart.textContent = '♡';
+        heart.addEventListener('click', () => {
+          const saved = read('bloom-market-wishlist', []);
+          const key = item.name;
+          const next = saved.includes(key) ? saved.filter(value => value !== key) : [...saved, key];
+          write('bloom-market-wishlist', next);
+          heart.textContent = next.includes(key) ? '♥' : '♡';
+          heart.setAttribute('aria-pressed', String(next.includes(key)));
+        });
+        const emoji = document.createElement('span'); emoji.className = 'product-emoji'; emoji.textContent = item.emoji;
+        visual.append(tag, heart, emoji);
+        const info = document.createElement('div'); info.className = 'product-info';
+        const type = document.createElement('div'); type.className = 'product-type'; type.textContent = item.type;
+        const title = document.createElement('h3'); title.textContent = item.name;
+        const desc = document.createElement('p'); desc.textContent = 'Browse current listings and compare sellers before buying.';
+        const bottom = document.createElement('div'); bottom.className = 'product-bottom';
+        const price = document.createElement('span'); price.className = 'price'; price.textContent = 'Compare listings';
+        const link = document.createElement('a'); link.className = 'shop-link'; link.href = 'https://shopee.com.my/search?keyword=' + encodeURIComponent(item.query); link.target = '_self'; link.rel = 'noopener noreferrer'; link.textContent = 'Shop the find ↗';
+        bottom.append(price, link); info.append(type, title, desc, bottom); card.append(visual, info); grid.append(card);
+      });
+      grid.dataset.bloomCatalogueAdded = 'true';
+    }
     $('#product-grid .product-card').forEach(card => {
       if ($('.tag', card)?.textContent.includes('Your demo listing')) return;
       const name = ($('h3', card)?.textContent || card.dataset.name || '').trim();
@@ -206,6 +252,7 @@
       if (!card) return;
       if (button.dataset.bloomAction === 'like') {
         const likes = read('bloom-feed-likes', {});
+        const id = card.dataset.postId;
         const liked = !likes[id];
         if (liked) likes[id] = true; else delete likes[id];
         if (!write('bloom-feed-likes', likes)) { toast('Could not save this like in browser storage.'); return; }
