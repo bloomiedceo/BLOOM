@@ -55,29 +55,40 @@
       if ($('.tag', card)?.textContent.includes('Your demo listing')) return;
       const name = ($('h3', card)?.textContent || card.dataset.name || '').trim();
       const product = products.find(item => item.match.test(name + ' ' + card.dataset.name)) || { query: name };
-      const links = $$('.shop-link', card);
-      if (!links.length) return;
-      const primary = links[0], query = encodeURIComponent(product.query);
-      primary.href = product.directUrl || ('https://shopee.com.my/search?keyword=' + query);
-      primary.target = '_blank'; primary.rel = 'noopener noreferrer';
-      primary.removeAttribute('onclick'); primary.textContent = product.official ? 'View official Weverse listing ↗' : product.directUrl ? 'View Shopee listing ↗' : 'Search Shopee ↗';
-      primary.setAttribute('aria-label', product.official ? 'Open official Weverse listing for ' + name : product.directUrl ? 'Open Shopee listing for ' + name : 'Search Shopee Malaysia for ' + name);
+      const primary = $('.shop-link', card);
+      if (!primary) return;
+      const existingHref = primary.getAttribute('href') || '';
+      const fallback = 'https://shopee.com.my/search?keyword=' + encodeURIComponent(product.query);
+      const destination = product.directUrl || (/^https:\/\//i.test(existingHref) ? existingHref : fallback);
+      primary.href = destination;
+      primary.target = '_self';
+      primary.rel = 'noopener noreferrer';
+      primary.removeAttribute('onclick');
+      primary.textContent = product.official ? 'View on Weverse ↗' : 'Shop the find ↗';
+      primary.setAttribute('aria-label', product.official
+        ? 'Open the official Weverse listing for ' + name
+        : 'Open the shopping destination for ' + name);
+      primary.setAttribute('data-shop-destination', 'true');
       let secondary = $('.bloom-market-links', card);
       if (!secondary) {
-        secondary = document.createElement('div'); secondary.className = 'bloom-market-links';
+        secondary = document.createElement('div');
+        secondary.className = 'bloom-market-links';
         const bottom = $('.product-bottom', card);
         if (bottom) bottom.insertAdjacentElement('afterend', secondary);
       }
-      secondary.replaceChildren();
-      const lazada = document.createElement('a');
-      lazada.href = 'https://www.lazada.com.my/catalog/?q=' + query;
-      lazada.target = '_blank'; lazada.rel = 'noopener noreferrer';
-      lazada.textContent = 'Search Lazada ↗';
-      lazada.setAttribute('aria-label', 'Search Lazada Malaysia for ' + name);
-      secondary.append(lazada);
+      if (secondary) {
+        secondary.replaceChildren();
+        const lazada = document.createElement('a');
+        lazada.href = 'https://www.lazada.com.my/catalog/?q=' + encodeURIComponent(product.query);
+        lazada.target = '_self';
+        lazada.rel = 'noopener noreferrer';
+        lazada.textContent = 'Search Lazada ↗';
+        lazada.setAttribute('aria-label', 'Search Lazada Malaysia for ' + name);
+        secondary.append(lazada);
+      }
     });
     const disclosure = $('#affiliate-note');
-    if (disclosure) disclosure.textContent = 'Links open the official Weverse listing, a Shopee product listing, or Shopee/Lazada search results depending on the card. BLOOM has not verified every seller, current stock, shipping, or final price. These are not affiliate links. Check seller ratings and checkout details before buying.';
+    if (disclosure) disclosure.textContent = 'Links open an official Weverse listing, a Shopee listing/search, or a Lazada search. BLOOM has not verified every seller, current stock, shipping, or final price. These are not affiliate links. Check seller ratings and checkout details before buying.';
   }
 
   let activePostId = null;
