@@ -15,6 +15,7 @@ const hardeningSchema = read('../supabase/launch-hardening.sql');
 const deleteAccount = read('../supabase/functions/delete-account/index.ts');
 const engagementSchema = read('../supabase/feed-engagement.sql');
 const marketplaceSchema = read('../supabase/marketplace.sql');
+const socialSchema = read('../supabase/social-features.sql');
 const css = read('../bloom-enhancements.css');
 
 assert.match(html, /id="safety-modal"[^>]*role="dialog"[^>]*aria-modal="true"/, 'Safety Center dialog must exist and expose dialog semantics');
@@ -111,3 +112,23 @@ for (const index of ['bloom_groups_owner_idx','bloom_messages_author_idx','bloom
 assert.match(newsletterSchema, /enable row level security/i, 'Newsletter signups must use row-level security');
 assert.match(newsletterSchema, /create policy/i, 'Newsletter signups must have an explicit insert policy');
 console.log('BLOOM static checks passed: safety navigation, Spotify wiring, frontend selector safety, and backend security invariants.');
+
+assert.match(enhancements, /bloom-add-playlist-form/, 'BLOOM MUSIC must have an Add playlist form');
+assert.match(enhancements, /open\.spotify\.com/, 'Custom playlists must use Spotify embeds');
+assert.match(enhancements, /bloom-spotify-playlists-v1/, 'Added Spotify playlists should persist in browser storage');
+assert.match(enhancements, /prepareImage\(file,filter\.value\)/, 'FYP image filters must be applied before upload');
+assert.match(enhancements, /window\.bloomPublishPost/, 'The FYP composer must publish to the shared backend when connected');
+assert.match(backend, /window\.bloomPublishPost = async/, 'Backend must expose the shared FYP publishing function');
+assert.match(backend, /from\('bloom-post-media'\)\.upload/, 'Shared FYP images must upload to protected BLOOM media storage');
+assert.match(backend, /select\('id,author_id,title,body,fandom,link,media_url,created_at,status'\)/, 'FYP must load shared image URLs');
+assert.match(backend, /id="bloom-social-rail"/, 'BLOOM must show a stories and notifications column');
+assert.match(backend, /from\('stories'\)/, 'Stories must load from the shared backend');
+assert.match(backend, /from\('notifications'\)/, 'Notifications must load from the shared backend');
+assert.match(socialSchema, /alter table public\.posts add column if not exists media_url text/i, 'Shared posts must support uploaded media URLs');
+assert.match(socialSchema, /create table if not exists public\.stories/i, 'Stories table must exist');
+assert.match(socialSchema, /interval '24 hours'/i, 'Stories must expire after 24 hours');
+assert.match(socialSchema, /create table if not exists public\.notifications/i, 'Notifications table must exist');
+assert.match(socialSchema, /bloom_notify_post_like/i, 'Likes must generate notifications');
+assert.match(socialSchema, /bloom_notify_post_comment/i, 'Comments must generate notifications');
+assert.match(socialSchema, /bloom_notify_group_message/i, 'Group messages must generate notifications');
+assert.match(newsletterFunction, /new Response\(null, \{ status: 204/, 'Newsletter CORS preflight must return an empty valid 204 response');
