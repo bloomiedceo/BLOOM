@@ -13,6 +13,7 @@
     style.id = 'bloom-launch-upgrades-styles';
     style.textContent = `
       #activity .feed-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;width:min(100%,760px);margin:0 auto;max-height:78svh;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y proximity;padding:4px 8px 16px}
+      #activity .feed-card[hidden],#product-grid .product-card[hidden]{display:none!important}
       #activity .feed-card{min-height:min(70svh,640px);display:flex;flex-direction:column;scroll-snap-align:start;scroll-margin-top:100px;border-radius:26px}
       #activity .feed-art{min-height:220px;flex:1;max-height:390px;font-size:clamp(70px,12vw,120px)}
       #activity .feed-content{padding:20px}
