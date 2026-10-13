@@ -40,6 +40,10 @@ assert.ok(newsletterFunction.includes('List-Unsubscribe-Post'), 'Newsletter emai
 assert.ok(newsletterFunction.includes('req.method === "POST" && ["confirm", "unsubscribe"]'), 'Newsletter endpoint must require an explicit POST for confirmation and unsubscribe');
 assert.ok(newsletterFunction.includes('api.resend.com/emails'), 'Newsletter function must call Resend API');
 assert.match(upgrades, /Shopee/, 'Marketplace cards must have real marketplace destinations');
+assert.match(upgrades, /\$\$\('#product-grid \.product-card'\)\.forEach/, 'Marketplace must iterate over all product cards without a querySelector null error');
+assert.match(upgrades, /const catalogue = \[/, 'Marketplace must render a browseable K-pop product discovery catalogue');
+assert.match(upgrades, /const id = card\.dataset\.postId/, 'Feed likes must use the clicked card ID rather than an undefined variable');
+assert.ok((upgrades.match(/category:'(?:albums|style|accessories|concert)'/g) || []).length >= 10, 'Marketplace catalogue should include a range of K-pop product categories');
 assert.ok(upgrades.includes('https://shop.weverse.io/en/shop/USD/artists/2/sales/54189'), 'Official Weverse product link must be present');
 assert.ok(!html.includes('From $12') && !html.includes('From $28') && !html.includes('From $9') && !html.includes('From $22'), 'Product cards must not show stale placeholder prices');
 assert.match(upgrades, /Search Lazada/, 'Marketplace cards must include a second destination');
