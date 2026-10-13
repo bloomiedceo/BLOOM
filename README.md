@@ -41,7 +41,7 @@ The top navigation and footer Safety links open a dedicated Safety Center dialog
 
 ## Spotify and mini-player
 
-BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visible at the bottom of the page. Select **Dock Spotify player** to move the actual Spotify iframe into the bottom dock while you browse; select **Return player** to put it back in the dashboard. The mini-player is a dock for Spotify's official embed, not a replacement for Spotify's own playback controls. Playback depends on Spotify, the selected playlist, browser support, region, and account restrictions.
+BLOOM MUSIC is inserted by the enhancement script. The fixed player bar is visible at the bottom of the page. Select **Dock Spotify player** to move the actual Spotify iframe into the bottom dock while you browse; select **Return player** to put it back in the dashboard. You can also paste a public Spotify playlist URL in **Add a Spotify playlist**; custom playlist buttons are saved in the current browser only. Spotify still provides the embedded playback. The mini-player is a dock for Spotify's official embed, not a replacement for Spotify's own playback controls. Playback depends on Spotify, the selected playlist, browser support, region, and account restrictions.
 
 ## Connect the real backend (required before opening accounts/chat publicly)
 
