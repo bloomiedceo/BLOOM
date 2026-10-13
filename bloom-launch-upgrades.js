@@ -77,10 +77,10 @@
         const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = item.tag;
         const heart = document.createElement('button'); heart.className = 'heart'; heart.type = 'button'; heart.setAttribute('aria-label', 'Save ' + item.name); heart.textContent = '♡';
         heart.addEventListener('click', () => {
-          const saved = read('bloom-market-wishlist', []);
-          const key = item.name;
+          const saved = read('bloom-demo-wishlist', []);
+          const key = card.dataset.name;
           const next = saved.includes(key) ? saved.filter(value => value !== key) : [...saved, key];
-          write('bloom-market-wishlist', next);
+          write('bloom-demo-wishlist', next);
           heart.textContent = next.includes(key) ? '♥' : '♡';
           heart.setAttribute('aria-pressed', String(next.includes(key)));
         });
