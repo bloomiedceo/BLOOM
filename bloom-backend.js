@@ -16,6 +16,11 @@
     const status = $('#newsletter-status');
     const submitButton = $('button[type="submit"]', newsletterForm);
     if (!emailInput || !consentInput || !status || !submitButton) return;
+    if (cfg.newsletterEnabled === false) {
+      status.dataset.state = 'error';
+      status.textContent = 'BLOOM email confirmation is still being configured. Your address has not been sent or saved. Please try again later.';
+      return;
+    }
     if (!emailInput.checkValidity()) {
       emailInput.reportValidity();
       status.dataset.state = 'error';
