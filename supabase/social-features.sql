@@ -37,7 +37,7 @@ alter table public.stories enable row level security;
 drop policy if exists "BLOOM stories visible while active" on public.stories;
 create policy "BLOOM stories visible while active" on public.stories for select to anon, authenticated using (expires_at > now() and exists (select 1 from public.profiles p where p.id = user_id and (p.is_private = false or p.id = (select auth.uid()))));
 drop policy if exists "BLOOM users create own stories" on public.stories;
-create policy "BLOOM users create own stories" on public.stories for insert to authenticated with check (user_id = (select auth.uid()) and media_path is not null and expires_at <= now() + interval '24 hours 5 minutes' and expires_at > now());
+create policy "BLOOM users create own stories" on public.stories for insert to authenticated with check (user_id = (select auth.uid()) and media_path is not null and (storage.foldername(media_path))[1] = (select auth.uid())::text and expires_at <= now() + interval '24 hours 5 minutes' and expires_at > now());
 drop policy if exists "BLOOM users delete own stories" on public.stories;
 create policy "BLOOM users delete own stories" on public.stories for delete to authenticated using (user_id = (select auth.uid()));
 grant select on public.stories to anon, authenticated;
