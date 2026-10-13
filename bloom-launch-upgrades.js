@@ -203,13 +203,12 @@
   function setupFeed() {
     const section = $('#activity'), grid = $('.feed-grid', section);
     if (!section || !grid) return;
-    const tools = document.createElement('div'); tools.className = 'bloom-feed-tools';
-    tools.innerHTML = '<input id="bloom-launch-feed-search" type="search" aria-label="Search posts" placeholder="Search fan moments…"><select id="bloom-launch-feed-filter" aria-label="Filter feed"><option value="all">All fandoms</option><option>BTS</option><option>BLACKPINK</option><option>Stray Kids</option><option>TWICE</option><option>SEVENTEEN</option><option>ATEEZ</option><option>NewJeans</option><option>Multi-stan</option><option>Other</option></select>';
+    // bloom-enhancements.js owns the single search/fandom/saved-post filter bar.
+    // A second filter bar here competed for the same cards and could undo the first filter.
     const existing = $('.bloom-controls', section);
-    if (existing) existing.insertAdjacentElement('afterend', tools); else grid.before(tools);
     const note = document.createElement('p'); note.className = 'bloom-local-note';
-    note.textContent = 'Scroll vertically for the feed. Likes and comments in this preview are saved on this device only; shared community posts use the connected BLOOM backend.';
-    tools.insertAdjacentElement('afterend', note);
+    note.textContent = 'Scroll vertically for the feed. Preview likes, saves, and comments stay on this device; shared community posts use the connected BLOOM backend.';
+    if (existing) existing.insertAdjacentElement('afterend', note); else grid.before(note);
 
     function decorate(card, index) {
       if (card.classList.contains('bloom-shared-post')) return;
@@ -219,15 +218,20 @@
       const actions = $('.feed-actions', card);
       if (!actions) return;
       const actionButtons = $('button.small-action', actions);
-      const like = actionButtons[0];
+      const like = actionButtons.find(button => button.dataset.action === 'like' || /^(?:♡|♥) Like|^(?:♡|♥) Liked/.test(button.textContent.trim()));
       if (like) {
         like.removeAttribute('onclick');
+        // One click must run one like handler, not update two competing storage keys.
+        like.removeAttribute('data-action');
         like.dataset.bloomAction = 'like';
         const liked = !!read('bloom-feed-likes', {})[card.dataset.postId];
         like.setAttribute('aria-pressed', String(liked));
         like.textContent = liked ? '♥ Liked' : '♡ Like';
       }
-      let comment = actionButtons[1];
+      // Preserve the existing Save and Discuss controls; do not repurpose Save as Comment.
+      const save = actionButtons.find(button => button.dataset.action === 'save');
+      if (save) save.removeAttribute('onclick');
+      let comment = $('[data-bloom-action="comment"]', actions);
       if (!comment) { comment = document.createElement('button'); comment.type = 'button'; comment.className = 'small-action'; actions.append(comment); }
       comment.removeAttribute('onclick');
       comment.dataset.bloomAction = 'comment';
@@ -238,16 +242,7 @@
       const count = $('.bloom-comment-count', actions), n = (read('bloom-feed-comments', {})[card.dataset.postId] || []).length;
       if (count && n) count.textContent = '· ' + n + ' comment' + (n === 1 ? '' : 's');
     }
-    function apply() {
-      const q = $('#bloom-launch-feed-search').value.trim().toLowerCase(), fandom = $('#bloom-launch-feed-filter').value;
-      $$('.feed-card', grid).forEach(card => {
-        const cardFandom = card.dataset.fandom || (card.textContent.match(/BTS|BLACKPINK|Stray Kids|TWICE|SEVENTEEN|ATEEZ|NewJeans|Multi-stan|Other/) || ['Other'])[0];
-        card.hidden = (q && !card.textContent.toLowerCase().includes(q)) || (fandom !== 'all' && cardFandom !== fandom);
-      });
-    }
-    $('#bloom-launch-feed-search').addEventListener('input', apply);
-    $('#bloom-launch-feed-filter').addEventListener('change', apply);
-    $$('.feed-card', grid).forEach(decorate);
+    $('.feed-card', grid).forEach(decorate);
     const observer = new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
       if (node.nodeType !== 1) return;
       if (node.matches?.('.feed-card')) decorate(node, Date.now());
