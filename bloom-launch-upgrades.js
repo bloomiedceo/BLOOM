@@ -97,7 +97,7 @@
       });
       grid.dataset.bloomCatalogueAdded = 'true';
     }
-    $('#product-grid .product-card').forEach(card => {
+    $$('#product-grid .product-card').forEach(card => {
       if ($('.tag', card)?.textContent.includes('Your demo listing')) return;
       const name = ($('h3', card)?.textContent || card.dataset.name || '').trim();
       const product = products.find(item => item.match.test(name + ' ' + card.dataset.name)) || { query: name };
