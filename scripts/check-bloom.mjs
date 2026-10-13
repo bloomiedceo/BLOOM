@@ -43,7 +43,7 @@ assert.match(upgrades, /Shopee/, 'Marketplace cards must have real marketplace d
 assert.match(upgrades, /\$\$\('#product-grid \.product-card'\)\.forEach/, 'Marketplace must iterate over all product cards without a querySelector null error');
 assert.match(upgrades, /const catalogue = \[/, 'Marketplace must render a browseable K-pop product discovery catalogue');
 assert.doesNotMatch(upgrades, /heart\.addEventListener\('click'/, 'Catalogue wishlist buttons must not register a duplicate click handler');
-assert.match(upgrades, /const update=\(\)=>\{const yes=getWishlist\(\)\.includes\(name\)/, 'Wishlist buttons must initialize and refresh from saved browser state');
+assert.match(enhancements, /const update=\(\)=>\{const yes=getWishlist\(\)\.includes\(name\)/, 'Wishlist buttons must initialize and refresh from saved browser state');
 assert.match(upgrades, /const id = card\.dataset\.postId/, 'Feed likes must use the clicked card ID rather than an undefined variable');
 assert.ok((upgrades.match(/category:'(?:albums|style|accessories|concert)'/g) || []).length >= 10, 'Marketplace catalogue should include a range of K-pop product categories');
 assert.ok(upgrades.includes('https://shop.weverse.io/en/shop/USD/artists/2/sales/54189'), 'Official Weverse product link must be present');
