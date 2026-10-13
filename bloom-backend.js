@@ -11,41 +11,51 @@
   if (newsletterForm) newsletterForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const emailInput = $('#email');
+    const consentInput = $('#newsletter-consent');
+    const honeypot = $('#newsletter-website');
     const status = $('#newsletter-status');
     const submitButton = $('button[type="submit"]', newsletterForm);
-    if (!emailInput || !status || !submitButton) return;
+    if (!emailInput || !consentInput || !status || !submitButton) return;
     if (!emailInput.checkValidity()) {
       emailInput.reportValidity();
       status.textContent = 'Please enter a valid email address.';
       return;
     }
-    if (!newsletterClient) {
-      status.textContent = 'Newsletter signup is not connected yet, so your email was not saved. Please try again later.';
+    if (!consentInput.checked) {
+      status.textContent = 'Please confirm that you want to receive BLOOM email updates.';
+      consentInput.focus();
+      return;
+    }
+    if (!cfg.url || !cfg.anonKey) {
+      status.textContent = 'Newsletter signup is temporarily unavailable. Please try again later.';
       return;
     }
     if (newsletterSubmitting) return;
     newsletterSubmitting = true;
     submitButton.disabled = true;
     const originalLabel = submitButton.textContent;
-    submitButton.textContent = 'Saving…';
-    status.textContent = 'Saving your signup securely…';
+    submitButton.textContent = 'Sending…';
+    status.textContent = 'Requesting your confirmation email…';
     try {
-      const email = emailInput.value.trim().toLowerCase();
-      const { error } = await newsletterClient.from('newsletter_signups').insert({
-        email,
-        consent_at: new Date().toISOString(),
-        source: 'website'
+      const response = await fetch(cfg.url.replace(/\/$/, '') + '/functions/v1/newsletter-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': cfg.anonKey },
+        body: JSON.stringify({
+          email: emailInput.value.trim().toLowerCase(),
+          consent: consentInput.checked,
+          website: honeypot?.value || ''
+        })
       });
-      if (error && error.code === '23505') {
-        status.textContent = 'That email is already on the BLOOM signup list.';
-      } else if (error) {
-        status.textContent = 'We could not save your signup. The newsletter database may need setup; please try again later.';
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        status.textContent = result.error || 'We could not send your confirmation email. Please try again later.';
       } else {
-        status.textContent = 'You’re on BLOOM’s signup list! Newsletter emails will start only after the site owner connects an email delivery provider.';
+        status.textContent = result.message || 'Check your inbox for a confirmation link to finish signing up.';
         emailInput.value = '';
+        consentInput.checked = false;
       }
     } catch (_) {
-      status.textContent = 'A connection problem stopped your signup. Your email was not confirmed as saved; please try again.';
+      status.textContent = 'We could not reach the newsletter service. Your signup is not confirmed; please try again.';
     } finally {
       newsletterSubmitting = false;
       submitButton.disabled = false;
