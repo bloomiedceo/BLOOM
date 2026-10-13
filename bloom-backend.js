@@ -12,6 +12,10 @@
     const newsletterStatus = $('#newsletter-status');
     const newsletterButton = $('button[type="submit"]', newsletterForm);
     if (cfg.newsletterEnabled === false) {
+      const emailInput = $('#email');
+      const consentInput = $('#newsletter-consent');
+      if (emailInput) emailInput.disabled = true;
+      if (consentInput) consentInput.disabled = true;
       if (newsletterStatus) {
         newsletterStatus.dataset.state = 'error';
         newsletterStatus.textContent = 'Newsletter signup is paused while email delivery is configured. No email will be sent or saved yet. Once enabled, you will receive a confirmation link by email, not a code or redirect.';
@@ -22,6 +26,10 @@
         newsletterButton.title = 'Newsletter email delivery is not configured yet.';
       }
     } else {
+      const emailInput = $('#email');
+      const consentInput = $('#newsletter-consent');
+      if (emailInput) emailInput.disabled = false;
+      if (consentInput) consentInput.disabled = false;
       if (newsletterStatus && /signup is paused|email confirmation is still being configured/i.test(newsletterStatus.textContent)) {
         newsletterStatus.textContent = '';
         delete newsletterStatus.dataset.state;
@@ -196,103 +204,14 @@
     const feed = $('#activity .feed-grid');
     if (feed) feed.before(panel);
     else activity.append(panel);
-    async function loadSpotifyPlaylists() {
-      const holder = $('#bloom-spotify-community-picks');
-      const status = $('#bloom-spotify-community-status');
-      if (!holder || !status) return;
-      holder.replaceChildren();
-      status.textContent = 'Loading community Spotify picks…';
-      const { data, error } = await client.from('music_playlists')
-        .select('id,spotify_playlist_id,title,added_by,created_at')
-        .order('created_at', { ascending: false }).limit(24);
-      if (error) {
-        status.textContent = 'Community picks could not load right now. You can still paste any Spotify link above.';
-        return;
-      }
-      if (!data?.length) {
-        status.textContent = 'No community picks yet. Sign in and share the first Spotify playlist.';
-        return;
-      }
-      status.textContent = data.length + (data.length === 1 ? ' playlist shared by BLOOM fans.' : ' playlists shared by BLOOM fans.');
-      data.forEach(row => {
-        const card = document.createElement('article');
-        card.className = 'bloom-spotify-community-item';
-        const title = document.createElement('h4');
-        title.textContent = row.title;
-        const actions = document.createElement('div');
-        actions.className = 'bloom-spotify-community-actions';
-        const play = document.createElement('button');
-        play.type = 'button';
-        play.className = 'pill lavender';
-        play.textContent = 'Play in BLOOM';
-        play.addEventListener('click', () => {
-          const input = $('#bloom-spotify-url');
-          const form = $('#bloom-spotify-form');
-          if (!input || !form) return;
-          input.value = 'https://open.spotify.com/playlist/' + row.spotify_playlist_id;
-          if (typeof form.requestSubmit === 'function') form.requestSubmit();
-          else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-          $('#bloom-music')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-        const open = document.createElement('a');
-        open.className = 'pill white';
-        open.href = 'https://open.spotify.com/playlist/' + row.spotify_playlist_id;
-        open.target = '_blank';
-        open.rel = 'noopener noreferrer';
-        open.textContent = 'Open Spotify ↗';
-        actions.append(play, open);
-        if (currentUser && row.added_by === currentUser.id) {
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.className = 'small-action';
-          remove.textContent = 'Remove my pick';
-          remove.addEventListener('click', async () => {
-            remove.disabled = true;
-            const { error: removeError } = await client.from('music_playlists')
-              .delete().eq('id', row.id).eq('added_by', currentUser.id);
-            if (removeError) {
-              status.textContent = 'Could not remove this pick. Please try again.';
-              remove.disabled = false;
-              return;
-            }
-            await loadSpotifyPlaylists();
-          });
-          actions.append(remove);
-        }
-        card.append(title, actions);
-        holder.append(card);
-      });
-    }
-    window.bloomShareSpotifyPlaylist = async ({ id, title } = {}) => {
-      if (!currentUser) {
-        openAuth();
-        setAuthMessage('Sign in before sharing a Spotify playlist with the community.');
-        return { ok: false, message: 'Please sign in to share a playlist with BLOOM fans.' };
-      }
-      const playlistId = String(id || '');
-      const playlistTitle = String(title || '').trim();
-      if (!/^[A-Za-z0-9]{10,32}$/.test(playlistId) || playlistTitle.length < 2 || playlistTitle.length > 60) {
-        return { ok: false, message: 'Use a valid Spotify playlist link and a title between 2 and 60 characters.' };
-      }
-      const { error } = await client.from('music_playlists').insert({
-        spotify_playlist_id: playlistId,
-        title: playlistTitle,
-        added_by: currentUser.id
-      });
-      if (error) {
-        if (error.code === '23505') return { ok: false, message: 'That Spotify playlist is already in BLOOM community picks.' };
-        console.error('BLOOM Spotify playlist share failed:', error.message);
-        return { ok: false, message: 'BLOOM could not share that playlist. Please try again.' };
-      }
-      await loadSpotifyPlaylists();
-      return { ok: true, message: 'Added to BLOOM community picks. Spotify still hosts the playlist.' };
-    };
-
     function setupMarketplace() {
       const discover = $('#discover .wrap');
-      if (!discover || $('#bloom-marketplace-app')) return;
-      const root = document.createElement('section');
+      if (!discover) return;
+      const existingRoot = $('#bloom-marketplace-app');
+      if (existingRoot?.dataset.bloomInitialized === 'true') return;
+      const root = existingRoot || document.createElement('section');
       root.id = 'bloom-marketplace-app';
+      root.dataset.bloomInitialized = 'true';
       root.innerHTML = `
         <div class="bloom-market-head"><div><div class="kicker">BLOOM marketplace · buy & sell here</div><h2>Find your next fan treasure. 🌸</h2><p>Browse community listings, post an item, and send purchase requests without leaving BLOOM.</p></div><button class="pill primary" id="bloom-market-sell" type="button">＋ Sell an item</button></div>
         <div class="bloom-market-controls"><input id="bloom-market-search" type="search" aria-label="Search listings" placeholder="Search BLOOM listings…"><select id="bloom-market-category" aria-label="Filter category"><option value="all">All categories</option><option value="albums">Albums & collectibles</option><option value="photocards">Photocards</option><option value="fashion">Fan style</option><option value="accessories">Accessories</option><option value="concert">Concert essentials</option><option value="other">Other</option></select></div>
@@ -301,7 +220,9 @@
         <section class="bloom-market-inbox"><h3>Seller inbox 💌</h3><p class="bloom-enhance-note">Purchase requests for your listings appear here. No payment is taken in BLOOM yet.</p><div id="bloom-market-inquiries"></div></section>
         <p class="bloom-market-safety">Safety first: don't share passwords, verification codes, home addresses, or private contact details. If you're under 18, involve a trusted adult before any payment, shipping, or in-person exchange. BLOOM does not process payments or verify items yet.</p>`;
       const head = $('.section-head', discover);
-      if (head) head.insertAdjacentElement('afterend', root); else discover.prepend(root);
+      if (!root.isConnected) {
+        if (head) head.insertAdjacentElement('afterend', root); else discover.prepend(root);
+      }
       const style = document.createElement('style'); style.id='bloom-marketplace-styles';
       style.textContent = `
         #bloom-marketplace-app{margin:22px 0 30px;padding:24px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(145deg,#fff,#f5efff)}
@@ -972,7 +893,6 @@
       await loadPosts();
       await loadGroups();
       await refreshSocialRail();
-      await loadSpotifyPlaylists();
       if (window.bloomMarketplace?.refresh) await window.bloomMarketplace.refresh();
     }
     client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') passwordRecovery = true; setTimeout(() => { void syncSession(session); }, 0); });
