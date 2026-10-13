@@ -30,3 +30,6 @@ alter table public.newsletter_subscribers enable row level security;
 revoke all on public.newsletter_subscribers from public, anon, authenticated;
 -- No public policies are intentionally created. Only the server-side Edge Function
 -- using SUPABASE_SERVICE_ROLE_KEY can access subscriber records.
+
+-- Edge Functions use the server-only service_role; public roles receive no table access.
+grant select, insert, update, delete on public.newsletter_subscribers to service_role;
