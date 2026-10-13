@@ -44,14 +44,12 @@ assert.ok(newsletterFunction.includes('List-Unsubscribe-Post'), 'Newsletter emai
 assert.ok(newsletterFunction.includes('req.method === "POST" && ["confirm", "unsubscribe"]'), 'Newsletter endpoint must require an explicit POST for confirmation and unsubscribe');
 assert.ok(newsletterFunction.includes('api.resend.com/emails'), 'Newsletter function must call Resend API');
 assert.match(newsletterFunction, /new Response\(null, \{ status: 204, headers: headers\(origin\) \}\)/, 'Newsletter CORS preflight must return an empty 204 response body');
-assert.match(enhancements, /bloom-add-playlist-form/, 'BLOOM MUSIC must allow users to add their own Spotify playlist');
-assert.match(enhancements, /parsePlaylistId/, 'Custom playlist URLs must be parsed and validated before embedding');
-assert.match(enhancements, /bloom-custom-playlists/, 'Custom playlists must persist in this browser');
-assert.match(enhancements, /bloom-community-playlists/, 'BLOOM MUSIC must render a shared playlist library');
-assert.match(enhancements, /public Spotify playlist link/, 'Invalid music links must explain which playlist URLs are supported');
-assert.match(backend, /from\('music_playlists'\)/, 'Shared music playlists must use the database');
-assert.match(musicSchema, /alter table public\.music_playlists enable row level security/i, 'Shared playlists must have RLS enabled');
-assert.match(musicSchema, /added_by = \(select auth\.uid\(\)\)/, 'Only the signed-in playlist owner may add or remove their shared playlist');
+assert.match(enhancements, /bloom-local-audio/, 'BLOOM MUSIC must provide its own in-page audio player');
+assert.match(enhancements, /accept="audio\/\*"/, 'BLOOM MUSIC must accept user-selected local audio files');
+assert.match(enhancements, /URL\.createObjectURL\(file\)/, 'Audio playback must use local object URLs rather than uploading tracks');
+assert.match(enhancements, /Files play locally on this device and are never uploaded by BLOOM/, 'Local playlist UI must explain that tracks stay on device');
+assert.doesNotMatch(enhancements, /open\.spotify\.com\/embed|parsePlaylistId|bloom-community-playlists/, 'BLOOM MUSIC must no longer depend on Spotify embeds or playlist IDs');
+
 assert.match(html, /there is no code or redirect on this page/i, 'Newsletter instructions must explain that confirmation arrives by email');
 assert.match(enhancementsCss, /\.newsletter-status\{display:block;min-height/, 'Newsletter errors and confirmations must have a visible status area');
 assert.match(upgrades, /#bloom-marketplace-listings/, 'Marketplace discovery links must stay inside BLOOM');
@@ -82,9 +80,20 @@ assert.match(enhancements, /document\.addEventListener\('bloom:feed-updated',app
 assert.match(backend, /card\.dataset\.fandom = post\.fandom \|\| 'Multi-stan'/, 'Shared posts must expose their fandom to the FYP filter');
 assert.match(backend, /document\.dispatchEvent\(new CustomEvent\('bloom:feed-updated'\)\)/, 'Shared feed loading must notify FYP filters');
 assert.doesNotMatch(enhancements, /(?<!\$)\$\([^\n)]*,\s*(?:grid|section|controls|roomList)\)\.forEach/, 'Single-element querySelector result must not be treated as a collection');
-assert.match(enhancements, /id="bloom-player-host"/, 'Spotify iframe host must exist');
-assert.match(enhancements, /id="bloom-mini-dock"/, 'Spotify dock control must exist');
-assert.match(enhancements, /slot\.append\(frame\)/, 'Dock must move the real Spotify iframe');
+assert.match(enhancements, /data-camera="start"/, 'Post composer must let fans explicitly start the camera');
+assert.match(enhancements, /data-camera="photo"/, 'Post composer must capture filtered photos from the camera');
+assert.match(enhancements, /data-camera="record"/, 'Post composer must record video with filters');
+assert.match(enhancements, /new MediaRecorder\(stream/, 'Camera recording must use the browser media recorder');
+assert.match(enhancements, /Choose a video under 25 MB/, 'Post composer must enforce the video size limit');
+assert.match(backend, /media_type: mediaType === 'video' \? 'video' : 'image'/, 'Published posts must persist their media type');
+assert.match(backend, /story\.media_type === 'video'/, 'Stories must render uploaded video as video');
+assert.match(backend, /storyCameraRecord\.addEventListener/, 'Stories must support direct camera video recording');
+assert.match(backend, /storyCameraPhoto\.addEventListener/, 'Stories must support direct camera photo capture');
+assert.match(backend, /storyRecordTimeout = setTimeout/, 'Story camera recording must have a 30-second safety cap');
+assert.match(backend, /prepareSocialImage\(file, storyFilter\.value\)/, 'Story photo filters must be applied before upload');
+assert.match(socialSchema, /media_type text not null default 'image'/, 'Stories and posts must store media type safely');
+assert.match(backend, /media_type: isVideo \? 'video' : 'image'/, 'Stories must persist their media type');
+assert.match(socialSchema, /allowed_mime_types=excluded\.allowed_mime_types/, 'Media storage must configure allowed image and video types');
 
 assert.match(backend, /client\.auth\.onAuthStateChange/, 'Auth session listener must exist');
 assert.match(backend, /await syncSession\(sessionData\.session\)/, 'Successful password reset must restore the signed-in account UI');
@@ -124,13 +133,13 @@ for (const index of ['bloom_groups_owner_idx','bloom_messages_author_idx','bloom
 }
 assert.match(newsletterSchema, /enable row level security/i, 'Newsletter signups must use row-level security');
 assert.match(newsletterSchema, /create policy/i, 'Newsletter signups must have an explicit insert policy');
-console.log('BLOOM static checks passed: safety navigation, Spotify wiring, frontend selector safety, and backend security invariants.');
+console.log('BLOOM static checks passed: safety navigation, local music player, media capture, frontend selector safety, and backend security invariants.');
 
 assert.match(enhancements, /prepareImage\(file,filter\.value\)/, 'FYP image filters must be applied before upload');
 assert.match(enhancements, /window\.bloomPublishPost/, 'The FYP composer must publish to the shared backend when connected');
 assert.match(backend, /window\.bloomPublishPost = async/, 'Backend must expose the shared FYP publishing function');
 assert.match(backend, /from\('bloom-post-media'\)\.upload/, 'Shared FYP images must upload to protected BLOOM media storage');
-assert.match(backend, /select\('id,author_id,title,body,fandom,link,media_url,created_at,status'\)/, 'FYP must load shared image URLs');
+assert.match(backend, /select\('id,author_id,title,body,fandom,link,media_url,media_type,created_at,status'\)/, 'FYP must load shared image URLs');
 assert.match(backend, /blob\.size <= 4\.7 \* 1024 \* 1024/, 'Story photos must be compressed below the 5 MB storage limit');
 assert.match(enhancements, /blob\.size<=4\.7\*1024\*1024/, 'FYP photos must be compressed below the 5 MB storage limit');
 assert.doesNotMatch(enhancements, /image\/gif/, 'Animated GIFs must not be advertised as supported when uploads are converted to static WebP');

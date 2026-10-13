@@ -115,19 +115,6 @@
     const activity = $('#activity .wrap');
     if (!activity) return;
     let currentUser = null;
-    window.bloomMusicPlaylists = {
-      isSignedIn: () => Boolean(currentUser),
-      list: async () => await client.from('music_playlists')
-        .select('id,spotify_playlist_id,title,created_at')
-        .order('created_at', { ascending: false }).limit(50),
-      add: async ({ spotifyId, title }) => {
-        if (!currentUser) return { data: null, auth: true, error: { message: 'Sign in to share a playlist with everyone on BLOOM.' } };
-        return await client.from('music_playlists')
-          .insert({ spotify_playlist_id: spotifyId, title, added_by: currentUser.id })
-          .select('id,spotify_playlist_id,title,created_at').single();
-      }
-    };
-    document.dispatchEvent(new CustomEvent('bloom:music-ready'));
     let passwordRecovery = false;
     let activeGroup = null;
     let messageChannel = null;
@@ -143,7 +130,7 @@
         <section class="bloom-live-card" id="bloom-social-rail">
           <h3>✨ Stories & notifications</h3>
           <form id="bloom-story-form" class="bloom-modal-form">
-            <label for="bloom-story-photo">Add a story photo</label><input id="bloom-story-photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" required>
+            <label for="bloom-story-photo">Add a story photo or video</label><input id="bloom-story-photo" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" capture="environment" required><label for="bloom-story-filter">Story filter</label><select id="bloom-story-filter"><option value="none">Original</option><option value="grayscale(1)">Black &amp; white</option><option value="sepia(.35)">Warm</option><option value="contrast(1.12) saturate(1.15)">Crisp</option><option value="saturate(1.4)">Vivid</option><option value="hue-rotate(24deg) saturate(1.25)">Dreamy</option></select><div class="bloom-story-camera"><video id="bloom-story-camera-view" playsinline muted hidden aria-label="BLOOM story camera preview"></video><p id="bloom-story-camera-placeholder" class="bloom-enhance-note">Camera preview appears here after you start the camera.</p><div class="bloom-camera-actions"><button id="bloom-story-camera-start" class="pill white" type="button">Start camera</button><button id="bloom-story-camera-photo" class="pill lavender" type="button" disabled>Take photo</button><button id="bloom-story-camera-record" class="pill lavender" type="button" disabled>● Record</button><button id="bloom-story-camera-stop" class="pill white" type="button" disabled>Stop recording</button><button id="bloom-story-camera-off" class="pill white" type="button" disabled>Turn camera off</button></div></div><div id="bloom-story-preview" class="bloom-story-preview" hidden></div>
             <label for="bloom-story-caption">Caption (optional)</label><input id="bloom-story-caption" maxlength="240" placeholder="A little fandom moment…">
             <button class="pill lavender" type="submit">＋ Share 24-hour story</button>
           </form>
@@ -266,7 +253,7 @@
       loadMarketplaceListings();loadMarketplaceInbox();
     }
 
-    async function prepareSocialImage(file) {
+    async function prepareSocialImage(file, cssFilter = 'none') {
       if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 8 * 1024 * 1024) throw new Error('Choose a JPG, PNG, or WebP image under 8 MB.');
       const bitmap = await createImageBitmap(file), canvas = document.createElement('canvas'), context = canvas.getContext('2d');
       if (!context) { bitmap.close(); throw new Error('This browser cannot prepare the image.'); }
@@ -276,6 +263,7 @@
           const scale = Math.min(1, preset.edge / longest);
           canvas.width = Math.max(1, Math.round(bitmap.width * scale));
           canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          context.filter = cssFilter === 'none' ? 'none' : cssFilter;
           context.clearRect(0, 0, canvas.width, canvas.height);
           context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
           const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', preset.quality));
@@ -288,7 +276,7 @@
       const holder = $('#bloom-live-stories'), status = $('#bloom-story-status');
       if (!currentUser) { holder.replaceChildren(); status.textContent = 'Sign in to share a story or see stories from the community.'; return; }
       status.textContent = 'Loading stories…'; holder.replaceChildren();
-      const { data, error } = await client.from('stories').select('id,user_id,caption,media_path,created_at,expires_at').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }).limit(30);
+      const { data, error } = await client.from('stories').select('id,user_id,caption,media_path,media_type,created_at,expires_at').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }).limit(30);
       if (error) { status.textContent = 'Stories need the BLOOM social-features database setup. Please contact the site owner.'; return; }
       status.textContent = data?.length ? data.length + ' active story/stories · disappear after 24 hours' : 'No active stories yet. Share the first one!';
       const ids = [...new Set((data || []).map(story => story.user_id))];
@@ -302,10 +290,10 @@
       visibleStories.forEach(story => {
         if (!story.signedUrl) return;
         const card = document.createElement('article'); card.className = 'bloom-story-card';
-        const image = document.createElement('img'); image.src = story.signedUrl; image.alt = 'Story from ' + (names.get(story.user_id) || 'a BLOOM fan'); image.loading = 'lazy'; image.decoding = 'async';
+        const media = story.media_type === 'video' ? document.createElement('video') : document.createElement('img'); media.src = story.signedUrl; media.alt = 'Story from ' + (names.get(story.user_id) || 'a BLOOM fan'); media.loading = 'lazy'; if (media.tagName === 'VIDEO') { media.controls = true; media.playsInline = true; media.preload = 'metadata'; } else { media.decoding = 'async'; }
         const caption = document.createElement('p'); caption.textContent = story.caption || 'A little fandom moment ♡';
         const meta = document.createElement('small'); meta.textContent = '@' + (names.get(story.user_id) || 'fan') + (story.user_id === currentUser.id ? ' · You' : '');
-        card.append(image, caption, meta); holder.append(card);
+        card.append(media, caption, meta); holder.append(card);
       });
     }
     async function loadNotifications() {
@@ -339,22 +327,98 @@
       });
     }
     $('#bloom-notifications-refresh').addEventListener('click', loadNotifications);
+    const storyInput = $('#bloom-story-photo'), storyFilter = $('#bloom-story-filter'), storyPreview = $('#bloom-story-preview');
+    let storyPreviewUrl = '', storyCapturedBlob = null;
+    function renderStoryPreview() {
+      if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
+      storyPreviewUrl = ''; storyPreview.replaceChildren(); storyPreview.hidden = true;
+      const file = storyCapturedBlob || storyInput.files?.[0]; if (!file) return;
+      const previewType = (file.type || '').split(';')[0].toLowerCase();
+      const videoFile = previewType === 'video/mp4' || previewType === 'video/webm';
+      const preview = document.createElement(videoFile ? 'video' : 'img');
+      storyPreviewUrl = URL.createObjectURL(file); preview.src = storyPreviewUrl;
+      preview.style.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value;
+      if (videoFile) { preview.controls = true; preview.playsInline = true; preview.preload = 'metadata'; }
+      else { preview.alt = 'Story photo preview'; }
+      storyPreview.append(preview); storyPreview.hidden = false;
+    }
+    storyInput.addEventListener('change', () => { storyCapturedBlob = null; renderStoryPreview(); });
+    const storyCameraView = $('#bloom-story-camera-view'), storyCameraPlaceholder = $('#bloom-story-camera-placeholder');
+    const storyCameraStart = $('#bloom-story-camera-start'), storyCameraPhoto = $('#bloom-story-camera-photo'), storyCameraRecord = $('#bloom-story-camera-record'), storyCameraStop = $('#bloom-story-camera-stop'), storyCameraOff = $('#bloom-story-camera-off');
+    let storyCameraStream = null, storyRecorder = null, storyRecordChunks = [], storyDrawFrame = 0, storyRecordTimeout = null;
+    function stopStoryCamera() {
+      if (storyDrawFrame) cancelAnimationFrame(storyDrawFrame); storyDrawFrame = 0;
+      if (storyCameraStream) storyCameraStream.getTracks().forEach(track => track.stop());
+      storyCameraStream = null; storyCameraView.srcObject = null; storyCameraView.hidden = true; storyCameraPlaceholder.hidden = false;
+      storyCameraStart.disabled = false; storyCameraPhoto.disabled = true; storyCameraRecord.disabled = true; storyCameraStop.disabled = true; storyCameraOff.disabled = true;
+    }
+    storyCameraStart.addEventListener('click', async () => {
+      if (!navigator.mediaDevices?.getUserMedia) { $('#bloom-story-status').textContent = 'Camera access is not supported here. Choose a media file instead.'; return; }
+      try {
+        storyCameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: true });
+        storyCameraView.srcObject = storyCameraStream; storyCameraView.hidden = false; storyCameraPlaceholder.hidden = true;
+        storyCameraView.style.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; await storyCameraView.play();
+        storyCameraStart.disabled = true; storyCameraPhoto.disabled = false; storyCameraRecord.disabled = false; storyCameraOff.disabled = false;
+        $('#bloom-story-status').textContent = 'Camera is on. Pick a filter, take a photo, or record a story video up to 30 seconds.';
+      } catch (error) { stopStoryCamera(); $('#bloom-story-status').textContent = error?.name === 'NotAllowedError' ? 'Camera permission was denied. Allow camera and microphone access, or choose a file.' : 'Could not start the camera. Check device permissions and try again.'; }
+    });
+    storyFilter.addEventListener('change', () => { renderStoryPreview(); if (storyCameraStream) storyCameraView.style.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; });
+    storyCameraPhoto.addEventListener('click', async () => {
+      if (!storyCameraStream || !storyCameraView.videoWidth) return;
+      const canvas = document.createElement('canvas'), scale = Math.min(1, 1600 / Math.max(storyCameraView.videoWidth, storyCameraView.videoHeight));
+      canvas.width = Math.round(storyCameraView.videoWidth * scale); canvas.height = Math.round(storyCameraView.videoHeight * scale);
+      const context = canvas.getContext('2d'); context.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; context.drawImage(storyCameraView, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.86));
+      if (!blob) { $('#bloom-story-status').textContent = 'Could not capture that photo. Try again.'; return; }
+      storyCapturedBlob = blob; storyInput.value = ''; renderStoryPreview(); stopStoryCamera(); $('#bloom-story-status').textContent = 'Filtered photo ready. Preview it before sharing.';
+    });
+    storyCameraRecord.addEventListener('click', () => {
+      if (!storyCameraStream || !storyCameraView.videoWidth) return;
+      if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { $('#bloom-story-status').textContent = 'Video recording is not supported in this browser. Choose a video file instead.'; return; }
+      const canvas = document.createElement('canvas'), scale = Math.min(1, 1280 / Math.max(storyCameraView.videoWidth, storyCameraView.videoHeight));
+      canvas.width = Math.round(storyCameraView.videoWidth * scale); canvas.height = Math.round(storyCameraView.videoHeight * scale);
+      const context = canvas.getContext('2d'), draw = () => { if (!storyCameraStream) return; context.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value; context.drawImage(storyCameraView, 0, 0, canvas.width, canvas.height); storyDrawFrame = requestAnimationFrame(draw); }; draw();
+      const canvasStream = canvas.captureStream(24), stream = new MediaStream([...canvasStream.getVideoTracks(), ...storyCameraStream.getAudioTracks()]);
+      const mime = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'].find(type => MediaRecorder.isTypeSupported(type));
+      try { storyRecorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined); }
+      catch (_) { stream.getTracks().forEach(track => track.stop()); stopStoryCamera(); $('#bloom-story-status').textContent = 'Could not start recording. Try a video file instead.'; return; }
+      storyRecordChunks = []; storyRecorder.ondataavailable = event => { if (event.data?.size) storyRecordChunks.push(event.data); };
+      storyRecorder.onerror = () => { $('#bloom-story-status').textContent = 'Recording failed. Please try again.'; stopStoryCamera(); };
+      storyRecorder.onstop = () => {
+        if (storyRecordTimeout) clearTimeout(storyRecordTimeout); storyRecordTimeout = null;
+        const type = storyRecorder?.mimeType || 'video/webm', blob = new Blob(storyRecordChunks, { type }); stream.getTracks().forEach(track => track.stop());
+        storyCapturedBlob = blob; storyInput.value = ''; renderStoryPreview(); stopStoryCamera();
+        $('#bloom-story-status').textContent = blob.size > 25 * 1024 * 1024 ? 'This recording is over 25 MB. Record a shorter clip.' : 'Filtered recording ready. Preview it before sharing.';
+      };
+      storyRecorder.start(500); storyCameraRecord.disabled = true; storyCameraPhoto.disabled = true; storyCameraStop.disabled = false;
+      $('#bloom-story-status').textContent = 'Recording… it will stop automatically after 30 seconds.';
+      storyRecordTimeout = setTimeout(() => { if (storyRecorder && storyRecorder.state !== 'inactive') storyRecorder.stop(); }, 30000);
+    });
+    storyCameraStop.addEventListener('click', () => { if (storyRecorder && storyRecorder.state !== 'inactive') storyRecorder.stop(); });
+    storyCameraOff.addEventListener('click', () => { if (storyRecorder && storyRecorder.state !== 'inactive') storyRecorder.stop(); stopStoryCamera(); });
+    window.addEventListener('beforeunload', stopStoryCamera, { once: true });
     $('#bloom-story-form').addEventListener('submit', async event => {
       event.preventDefault();
       if (!currentUser) { openAuth(); setAuthMessage('Sign in before sharing a story.'); return; }
       const input = $('#bloom-story-photo'), status = $('#bloom-story-status'), button = $('button[type="submit"]', event.currentTarget);
-      const file = input.files?.[0]; if (!file) { status.textContent = 'Choose a photo first.'; return; }
-      const original = button.textContent; button.disabled = true; button.textContent = 'Sharing…'; status.textContent = 'Preparing your photo…';
+      const file = storyCapturedBlob || input.files?.[0]; if (!file) { status.textContent = 'Choose a photo or video first.'; return; }
+      const fileType = (file.type || '').split(';')[0].toLowerCase();
+      const isVideo = /^video\/(webm|mp4)$/.test(fileType), isImage = /^image\/(jpeg|png|webp)$/.test(fileType);
+      if (!isVideo && !isImage) { status.textContent = 'Choose a JPG, PNG, WebP, MP4, or WebM file.'; return; }
+      if (file.size > (isVideo ? 25 : 8) * 1024 * 1024) { status.textContent = isVideo ? 'Choose a video under 25 MB.' : 'Choose a photo under 8 MB.'; return; }
+      const original = button.textContent; button.disabled = true; button.textContent = 'Sharing…'; status.textContent = isVideo ? 'Preparing your video…' : 'Preparing your photo…';
       let path = null;
       try {
-        const blob = await prepareSocialImage(file);
-        path = currentUser.id + '/story-' + crypto.randomUUID() + '.webp';
-        const upload = await client.storage.from('bloom-story-media').upload(path, blob, { contentType: 'image/webp', upsert: false });
-        if (upload.error) throw new Error('Photo upload failed. Please check your connection and try again.');
+        const blob = isVideo ? file : await prepareSocialImage(file, storyFilter.value);
+        const extension = isVideo ? (fileType === 'video/mp4' ? 'mp4' : 'webm') : 'webp';
+        const contentType = isVideo ? fileType : 'image/webp';
+        path = currentUser.id + '/story-' + crypto.randomUUID() + '.' + extension;
+        const upload = await client.storage.from('bloom-story-media').upload(path, blob, { contentType, upsert: false });
+        if (upload.error) throw new Error('Media upload failed. Please check your connection and try again.');
         const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-        const { error } = await client.from('stories').insert({ user_id: currentUser.id, caption: $('#bloom-story-caption').value.trim(), media_path: path, expires_at: expires });
+        const { error } = await client.from('stories').insert({ user_id: currentUser.id, caption: $('#bloom-story-caption').value.trim(), media_path: path, media_type: isVideo ? 'video' : 'image', expires_at: expires });
         if (error) { await client.storage.from('bloom-story-media').remove([path]); path = null; throw new Error('Story could not be published. Please try again.'); }
-        event.currentTarget.reset(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
+        event.currentTarget.reset(); storyCapturedBlob = null; renderStoryPreview(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
       } catch (error) { status.textContent = error.message || 'Story could not be shared.'; }
       finally { button.disabled = false; button.textContent = original; }
     });
@@ -482,7 +546,7 @@
       card.dataset.postId = post.id;
       card.dataset.fandom = post.fandom || 'Multi-stan';
       const art = document.createElement('div'); art.className = 'feed-art'; art.textContent = '💗';
-      if (post.media_url) { const image = document.createElement('img'); image.className = 'bloom-shared-photo'; image.src = post.media_url; image.alt = 'Photo shared in BLOOM post: ' + post.title; image.loading = 'lazy'; image.decoding = 'async'; art.replaceChildren(image); }
+      if (post.media_url) { const media = post.media_type === 'video' ? document.createElement('video') : document.createElement('img'); media.className = post.media_type === 'video' ? 'bloom-shared-video' : 'bloom-shared-photo'; media.src = post.media_url; media.alt = (post.media_type === 'video' ? 'Video' : 'Photo') + ' shared in BLOOM post: ' + post.title; media.loading = 'lazy'; if (media.tagName === 'VIDEO') { media.controls = true; media.playsInline = true; media.preload = 'metadata'; } else { media.decoding = 'async'; } art.replaceChildren(media); }
       const content = document.createElement('div'); content.className = 'feed-content';
       const meta = document.createElement('div'); meta.className = 'meta';
       meta.textContent = (post.fandom || 'Multi-stan') + ' · ' + new Date(post.created_at).toLocaleString() + ' · BLOOM LIVE';
@@ -577,7 +641,7 @@
     async function loadPosts() {
       const grid = $('#activity .feed-grid');
       $$('.bloom-shared-post', grid || document).forEach(card => card.remove());
-      const { data, error } = await client.from('posts').select('id,author_id,title,body,fandom,link,media_url,created_at,status').eq('status','published').order('created_at',{ascending:false}).limit(50);
+      const { data, error } = await client.from('posts').select('id,author_id,title,body,fandom,link,media_url,media_type,created_at,status').eq('status','published').order('created_at',{ascending:false}).limit(50);
       livePostList.replaceChildren();
       if (error) { livePostList.textContent = 'Could not load shared posts. Check the Supabase posts table and row-level security policies.'; return; }
       if (!data?.length) { livePostList.textContent = 'No shared posts yet. Publish one to have it appear in the FYP below.'; return; }
@@ -641,16 +705,21 @@
       else { e.target.reset(); await loadPosts(); }
     });
     // Shared publisher used by the main FYP composer, including sanitized image uploads.
-    window.bloomPublishPost = async ({ title, body, fandom, link, mediaBlob }) => {
+    window.bloomPublishPost = async ({ title, body, fandom, link, mediaBlob, mediaType = 'image' }) => {
       if (!currentUser) { openAuth(); setAuthMessage('Sign in before publishing to the shared BLOOM FYP.'); return { ok: false, auth: true }; }
       let mediaUrl = null, uploadedPath = null;
       if (mediaBlob) {
-        uploadedPath = currentUser.id + '/post-' + crypto.randomUUID() + '.webp';
-        const upload = await client.storage.from('bloom-post-media').upload(uploadedPath, mediaBlob, { contentType: 'image/webp', upsert: false });
-        if (upload.error) { setLiveStatus('Photo upload failed. Check that BLOOM media storage is configured and try again.'); return { ok: false, error: upload.error }; }
+        const normalizedVideoType = (mediaBlob?.type || '').split(';')[0].toLowerCase();
+        const videoType = mediaType === 'video' && /^video\/(webm|mp4)$/.test(normalizedVideoType);
+        if (mediaType === 'video' && (!videoType || mediaBlob.size > 25 * 1024 * 1024)) { setLiveStatus('Choose an MP4 or WebM video under 25 MB.'); return { ok: false, error: new Error('Unsupported video format or size.') }; }
+        const extension = videoType ? (normalizedVideoType === 'video/mp4' ? 'mp4' : 'webm') : 'webp';
+        const contentType = videoType ? normalizedVideoType : 'image/webp';
+        uploadedPath = currentUser.id + '/post-' + crypto.randomUUID() + '.' + extension;
+        const upload = await client.storage.from('bloom-post-media').upload(uploadedPath, mediaBlob, { contentType, upsert: false });
+        if (upload.error) { setLiveStatus('Media upload failed. Check that BLOOM media storage is configured and try again.'); return { ok: false, error: upload.error }; }
         mediaUrl = client.storage.from('bloom-post-media').getPublicUrl(uploadedPath).data.publicUrl;
       }
-      const { error } = await client.from('posts').insert({ author_id: currentUser.id, title, body, fandom: fandom || 'Multi-stan', link: link || null, media_url: mediaUrl });
+      const { error } = await client.from('posts').insert({ author_id: currentUser.id, title, body, fandom: fandom || 'Multi-stan', link: link || null, media_url: mediaUrl, media_type: mediaType === 'video' ? 'video' : 'image' });
       if (error) {
         if (uploadedPath) await client.storage.from('bloom-post-media').remove([uploadedPath]);
         setLiveStatus('Post could not be published: ' + error.message);
