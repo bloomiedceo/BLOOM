@@ -130,7 +130,7 @@
         <section class="bloom-live-card" id="bloom-social-rail">
           <h3>✨ Stories & notifications</h3>
           <form id="bloom-story-form" class="bloom-modal-form">
-            <label for="bloom-story-photo">Add a story photo or video</label><input id="bloom-story-photo" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" capture="environment" required>
+            <label for="bloom-story-photo">Add a story photo or video</label><input id="bloom-story-photo" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" capture="environment" required><label for="bloom-story-filter">Story filter</label><select id="bloom-story-filter"><option value="none">Original</option><option value="grayscale(1)">Black &amp; white</option><option value="sepia(.35)">Warm</option><option value="contrast(1.12) saturate(1.15)">Crisp</option><option value="saturate(1.4)">Vivid</option><option value="hue-rotate(24deg) saturate(1.25)">Dreamy</option></select><div id="bloom-story-preview" class="bloom-story-preview" hidden></div>
             <label for="bloom-story-caption">Caption (optional)</label><input id="bloom-story-caption" maxlength="240" placeholder="A little fandom moment…">
             <button class="pill lavender" type="submit">＋ Share 24-hour story</button>
           </form>
@@ -253,7 +253,7 @@
       loadMarketplaceListings();loadMarketplaceInbox();
     }
 
-    async function prepareSocialImage(file) {
+    async function prepareSocialImage(file, cssFilter = 'none') {
       if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 8 * 1024 * 1024) throw new Error('Choose a JPG, PNG, or WebP image under 8 MB.');
       const bitmap = await createImageBitmap(file), canvas = document.createElement('canvas'), context = canvas.getContext('2d');
       if (!context) { bitmap.close(); throw new Error('This browser cannot prepare the image.'); }
@@ -263,6 +263,7 @@
           const scale = Math.min(1, preset.edge / longest);
           canvas.width = Math.max(1, Math.round(bitmap.width * scale));
           canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          context.filter = cssFilter === 'none' ? 'none' : cssFilter;
           context.clearRect(0, 0, canvas.width, canvas.height);
           context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
           const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', preset.quality));
@@ -326,6 +327,22 @@
       });
     }
     $('#bloom-notifications-refresh').addEventListener('click', loadNotifications);
+    const storyInput = $('#bloom-story-photo'), storyFilter = $('#bloom-story-filter'), storyPreview = $('#bloom-story-preview');
+    let storyPreviewUrl = '';
+    function renderStoryPreview() {
+      if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
+      storyPreviewUrl = ''; storyPreview.replaceChildren(); storyPreview.hidden = true;
+      const file = storyInput.files?.[0]; if (!file) return;
+      const videoFile = file.type === 'video/mp4' || file.type === 'video/webm';
+      const preview = document.createElement(videoFile ? 'video' : 'img');
+      storyPreviewUrl = URL.createObjectURL(file); preview.src = storyPreviewUrl;
+      preview.style.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value;
+      if (videoFile) { preview.controls = true; preview.playsInline = true; preview.preload = 'metadata'; }
+      else { preview.alt = 'Story photo preview'; }
+      storyPreview.append(preview); storyPreview.hidden = false;
+    }
+    storyInput.addEventListener('change', renderStoryPreview);
+    storyFilter.addEventListener('change', renderStoryPreview);
     $('#bloom-story-form').addEventListener('submit', async event => {
       event.preventDefault();
       if (!currentUser) { openAuth(); setAuthMessage('Sign in before sharing a story.'); return; }
@@ -337,7 +354,7 @@
       const original = button.textContent; button.disabled = true; button.textContent = 'Sharing…'; status.textContent = isVideo ? 'Preparing your video…' : 'Preparing your photo…';
       let path = null;
       try {
-        const blob = isVideo ? file : await prepareSocialImage(file);
+        const blob = isVideo ? file : await prepareSocialImage(file, storyFilter.value);
         const extension = isVideo ? (file.type === 'video/mp4' ? 'mp4' : 'webm') : 'webp';
         const contentType = isVideo ? file.type : 'image/webp';
         path = currentUser.id + '/story-' + crypto.randomUUID() + '.' + extension;
@@ -346,7 +363,7 @@
         const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
         const { error } = await client.from('stories').insert({ user_id: currentUser.id, caption: $('#bloom-story-caption').value.trim(), media_path: path, media_type: isVideo ? 'video' : 'image', expires_at: expires });
         if (error) { await client.storage.from('bloom-story-media').remove([path]); path = null; throw new Error('Story could not be published. Please try again.'); }
-        event.currentTarget.reset(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
+        event.currentTarget.reset(); renderStoryPreview(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
       } catch (error) { status.textContent = error.message || 'Story could not be shared.'; }
       finally { button.disabled = false; button.textContent = original; }
     });
