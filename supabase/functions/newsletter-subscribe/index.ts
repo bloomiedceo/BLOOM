@@ -34,6 +34,15 @@ function page(title: string, message: string, origin: string | null, ok = true) 
   const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} · BLOOM</title><body style="margin:0;background:#fbf9ff;color:#28213b;font:16px system-ui,sans-serif;display:grid;min-height:100vh;place-items:center"><main style="max-width:520px;margin:24px;padding:32px;border:1px solid #e8def6;border-radius:24px;background:white"><p style="font-size:28px">✿ BLOOM</p><h1>${safeTitle}</h1><p style="line-height:1.7">${safeMessage}</p><a href="${link}" style="display:inline-block;margin-top:12px;padding:12px 18px;border-radius:999px;background:#28213b;color:white;text-decoration:none">Back to BLOOM</a></main></body></html>`;
   return new Response(html, { status: ok ? 200 : 400, headers: { ...headers(origin), "Content-Type": "text/html; charset=utf-8" } });
 }
+function actionPage(title: string, message: string, action: "confirm" | "unsubscribe", token: string, origin: string | null) {
+  const endpoint = supabaseUrl.replace(/\/$/, "") + "/functions/v1/newsletter-subscribe";
+  const actionUrl = endpoint + "?action=" + action + "&token=" + encodeURIComponent(token);
+  const button = action === "confirm" ? "Confirm my signup" : "Unsubscribe me";
+  const safeTitle = title.replace(/[&<>"]/g, "");
+  const safeMessage = message.replace(/[&<>"]/g, "");
+  const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} · BLOOM</title><body style="margin:0;background:#fbf9ff;color:#28213b;font:16px system-ui,sans-serif;display:grid;min-height:100vh;place-items:center"><main style="max-width:520px;margin:24px;padding:32px;border:1px solid #e8def6;border-radius:24px;background:white"><p style="font-size:28px">✿ BLOOM</p><h1>${safeTitle}</h1><p style="line-height:1.7">${safeMessage}</p><form method="post" action="${actionUrl}"><button type="submit" style="display:inline-block;margin-top:12px;padding:12px 18px;border:0;border-radius:999px;background:#28213b;color:white;font-weight:700">${button}</button></form></main></body></html>`;
+  return new Response(html, { status: 200, headers: { ...headers(origin), "Content-Type": "text/html; charset=utf-8" } });
+}
 function client() {
   if (!supabaseUrl || !serviceKey) throw new Error("Newsletter database is not configured");
   return createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -84,40 +93,41 @@ Deno.serve(async (req) => {
     ? page("Temporarily unavailable", "Newsletter settings are not ready yet. Please try again later.", origin, false)
     : json(503, { error: "Newsletter is temporarily unavailable. Please try again later." }, origin);
 
-  if (req.method === "POST" && url.searchParams.get("action") === "unsubscribe") {
+  if (req.method === "POST" && ["confirm", "unsubscribe"].includes(url.searchParams.get("action") || "")) {
+    const action = url.searchParams.get("action");
     const token = url.searchParams.get("token") || "";
-    if (!/^[a-f0-9]{64}$/.test(token)) return json(400, { error: "Invalid unsubscribe link" }, origin);
+    if (!/^[a-f0-9]{64}$/.test(token)) return page("Invalid link", "This link is invalid or expired.", origin, false);
     const tokenHash = await sha256(token);
-    const { data, error } = await db.from("newsletter_subscribers").select("id").eq("unsubscribe_token_hash", tokenHash).maybeSingle();
-    if (error || !data) return json(200, { ok: true, message: "This address is already unsubscribed or the link has expired." }, origin);
-    const { error: updateError } = await db.from("newsletter_subscribers").update({
-      unsubscribed_at: new Date().toISOString(), confirmation_token_hash: null, updated_at: new Date().toISOString()
-    }).eq("id", data.id);
-    if (updateError) return json(503, { error: "Could not complete unsubscribe" }, origin);
-    return json(200, { ok: true, message: "You are unsubscribed from BLOOM updates." }, origin);
+    const field = action === "confirm" ? "confirmation_token_hash" : "unsubscribe_token_hash";
+    const { data, error } = await db.from("newsletter_subscribers").select("id").eq(field, tokenHash).maybeSingle();
+    if (error || !data) return page("Link expired", "This link is no longer valid or has already been used.", origin, false);
+    const now = new Date().toISOString();
+    const updates = action === "confirm"
+      ? { confirmed_at: now, confirmation_token_hash: null, updated_at: now }
+      : { unsubscribed_at: now, confirmation_token_hash: null, updated_at: now };
+    const { error: updateError } = await db.from("newsletter_subscribers").update(updates).eq("id", data.id);
+    if (updateError) return page("Could not complete request", "We could not complete your request. Please try again later.", origin, false);
+    return page(action === "confirm" ? "You're in the BLOOM circle!" : "You're unsubscribed",
+      action === "confirm"
+        ? "Your email is confirmed. You can unsubscribe at any time using the link in a BLOOM newsletter."
+        : "You will no longer receive BLOOM newsletter updates at this address.", origin);
   }
   if (req.method === "GET") {
     const action = url.searchParams.get("action");
     const token = url.searchParams.get("token") || "";
     if (!/^[a-f0-9]{64}$/.test(token)) return page("Invalid link", "This link is invalid or expired. You can return to BLOOM and sign up again.", origin, false);
-    const tokenHash = await sha256(token);
-    if (action === "confirm") {
-      const { data, error } = await db.from("newsletter_subscribers").select("id").eq("confirmation_token_hash", tokenHash).maybeSingle();
-      if (error || !data) return page("Link expired", "This confirmation link is no longer valid. Please sign up again if you still want BLOOM updates.", origin, false);
-      const { error: updateError } = await db.from("newsletter_subscribers").update({
-        confirmed_at: new Date().toISOString(), confirmation_token_hash: null, updated_at: new Date().toISOString()
-      }).eq("id", data.id);
-      if (updateError) return page("Could not confirm", "We could not complete confirmation. Please try again later.", origin, false);
-      return page("You're in the BLOOM circle!", "Your email is confirmed. You can unsubscribe at any time using the link in a BLOOM newsletter.", origin);
-    }
-    if (action === "unsubscribe") {
-      const { data, error } = await db.from("newsletter_subscribers").select("id").eq("unsubscribe_token_hash", tokenHash).maybeSingle();
-      if (error || !data) return page("Link expired", "This unsubscribe link is invalid or has already been used.", origin, false);
-      const { error: updateError } = await db.from("newsletter_subscribers").update({
-        unsubscribed_at: new Date().toISOString(), confirmation_token_hash: null, updated_at: new Date().toISOString()
-      }).eq("id", data.id);
-      if (updateError) return page("Could not unsubscribe", "We could not complete your request. Please try again later.", origin, false);
-      return page("You're unsubscribed", "You will no longer receive BLOOM newsletter updates at this address.", origin);
+    if (action === "confirm" || action === "unsubscribe") {
+      const tokenHash = await sha256(token);
+      const field = action === "confirm" ? "confirmation_token_hash" : "unsubscribe_token_hash";
+      const { data, error } = await db.from("newsletter_subscribers").select("id").eq(field, tokenHash).maybeSingle();
+      if (error || !data) return page("Link expired", "This link is no longer valid or has already been used.", origin, false);
+      return actionPage(
+        action === "confirm" ? "Confirm your BLOOM signup" : "Unsubscribe from BLOOM",
+        action === "confirm"
+          ? "Press the button below to confirm you want to receive BLOOM newsletter updates."
+          : "Press the button below to stop receiving BLOOM newsletter updates.",
+        action, token, origin
+      );
     }
     return page("Invalid link", "This link is invalid. Return to BLOOM for more information.", origin, false);
   }
