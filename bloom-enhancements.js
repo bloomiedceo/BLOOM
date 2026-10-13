@@ -10,6 +10,8 @@ const getPosts=()=>safeRead('bloom-demo-posts',[]);
 const getLiked=()=>safeRead('bloom-demo-liked',[]);
 const getSaved=()=>safeRead('bloom-demo-saved',[]);
 const getWishlist=()=>safeRead('bloom-demo-wishlist',[]);
+const retainedPreviewUrls=new Set();
+window.addEventListener('pagehide',()=>{retainedPreviewUrls.forEach(url=>URL.revokeObjectURL(url));retainedPreviewUrls.clear()});
 const fandoms=['All fandoms','BTS','BLACKPINK','Stray Kids','TWICE','SEVENTEEN','ATEEZ','NewJeans','Multi-stan','Other'];
 function addButton(label,action,pressed){const b=document.createElement('button');b.type='button';b.className='small-action';b.textContent=label;b.dataset.action=action;if(pressed!==undefined)b.setAttribute('aria-pressed',String(pressed));return b}
 function makePostCard(post){
@@ -86,10 +88,10 @@ function enhancePostComposer(){
    finally{if(submit){submit.disabled=false;submit.textContent=original||'Publish to BLOOM'}}
    return;
   }
-  const localImage=previewUrl||'';
+  const localImage=previewUrl||'';if(localImage)retainedPreviewUrls.add(localImage);
   const post={id:'local-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title:heading,caption:text,kind:kind.value,fandom:fandom.value,link:url,mediaPreview:localImage,emoji:'💗',demo:true,createdAt:new Date().toISOString()};
   const posts=getPosts();posts.unshift(post);if(!safeWrite('bloom-demo-posts',posts)){toast('Could not save this demo post in browser storage.');return}
-  const grid=$('.feed-grid');if(grid)grid.prepend(makePostCard(post));closeModal('post-modal');form.reset();preview.hidden=true;if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';toast('Post added to this browser preview only.');$('#activity')?.scrollIntoView({behavior:'smooth',block:'start'});
+  const grid=$('.feed-grid');if(grid)grid.prepend(makePostCard(post));closeModal('post-modal');form.reset();preview.hidden=true;previewUrl='';toast('Post added to this browser preview only.');$('#activity')?.scrollIntoView({behavior:'smooth',block:'start'});
  },true);
 }
  function enhanceMarketplace(){
