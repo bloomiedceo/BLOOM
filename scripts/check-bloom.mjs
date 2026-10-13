@@ -41,11 +41,11 @@ assert.ok(newsletterFunction.includes('action=unsubscribe'), 'Newsletter must pr
 assert.ok(newsletterFunction.includes('List-Unsubscribe-Post'), 'Newsletter emails must advertise one-click unsubscribe');
 assert.ok(newsletterFunction.includes('req.method === "POST" && ["confirm", "unsubscribe"]'), 'Newsletter endpoint must require an explicit POST for confirmation and unsubscribe');
 assert.ok(newsletterFunction.includes('api.resend.com/emails'), 'Newsletter function must call Resend API');
-assert.match(newsletterFunction, /new Response\\(null, \\{ status: 204, headers: headers\\(origin\\) \\}\\)/, 'Newsletter CORS preflight must return an empty 204 response body');
+assert.match(newsletterFunction, /new Response\(null, \{ status: 204, headers: headers\(origin\) \}\)/, 'Newsletter CORS preflight must return an empty 204 response body');
 assert.match(enhancements, /bloom-add-playlist-form/, 'BLOOM MUSIC must allow users to add their own Spotify playlist');
 assert.match(enhancements, /parsePlaylistId/, 'Custom playlist URLs must be parsed and validated before embedding');
 assert.match(enhancements, /bloom-custom-playlists/, 'Custom playlists must persist in this browser');
-assert.match(enhancementsCss, /\\.newsletter-status\\{display:block;min-height/, 'Newsletter errors and confirmations must have a visible status area');
+assert.match(enhancementsCss, /\.newsletter-status\{display:block;min-height/, 'Newsletter errors and confirmations must have a visible status area');
 assert.match(upgrades, /#bloom-marketplace-listings/, 'Marketplace discovery links must stay inside BLOOM');
 assert.match(upgrades, /content-visibility:auto;contain-intrinsic-size:auto 520px/, 'Feed cards should skip expensive offscreen rendering work');
 assert.doesNotMatch(upgrades, /shopee\.com\.my|lazada\.com\.my|shop\.weverse\.io/i, 'Marketplace cards must not send buyers to external shopping apps');
