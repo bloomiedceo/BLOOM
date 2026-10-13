@@ -8,6 +8,7 @@ create table if not exists public.music_playlists (
   created_at timestamptz not null default now()
 );
 create index if not exists bloom_music_playlists_created_idx on public.music_playlists(created_at desc);
+create index if not exists bloom_music_playlists_added_by_idx on public.music_playlists(added_by);
 alter table public.music_playlists enable row level security;
 drop policy if exists "BLOOM playlists are publicly readable" on public.music_playlists;
 create policy "BLOOM playlists are publicly readable" on public.music_playlists for select to anon, authenticated using (true);

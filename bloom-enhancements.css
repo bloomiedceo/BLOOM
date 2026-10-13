@@ -188,3 +188,22 @@
 #bloom-spotify-status[data-state="error"]{color:#9d2749}
 #bloom-spotify-status[data-state="success"]{color:#236b56}
 @media(max-width:760px){.bloom-spotify-panel{grid-template-columns:1fr}.bloom-spotify-player iframe{min-height:152px}}
+
+/* Shared official Spotify playlist directory */
+.bloom-spotify-share-form{display:grid;gap:9px;margin:16px 0 8px;padding-top:14px;border-top:1px solid #eee7f7}
+.bloom-spotify-share-form label{font-size:12px;font-weight:800}
+.bloom-spotify-share-form input{width:100%;min-width:0}
+.bloom-spotify-community{margin-top:20px;padding:18px;background:#ffffffa8;border:1px solid #ffffffc9;border-radius:20px}
+.bloom-spotify-community-head{display:flex;align-items:start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.bloom-spotify-community-head h3{margin:0 0 5px}
+.bloom-spotify-community-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.bloom-spotify-community-picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bloom-spotify-community-item{min-width:0;padding:13px;border:1px solid #e8def6;border-radius:15px;background:white}
+.bloom-spotify-community-item h4{font-size:13px;line-height:1.4;overflow-wrap:anywhere;margin:0 0 10px}
+.bloom-spotify-community-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.bloom-spotify-community-actions .pill{font-size:11px;padding:9px 11px}
+#bloom-spotify-share-status[data-state="error"]{color:#9d2749}
+#bloom-spotify-share-status[data-state="success"]{color:#236b56}
+#signup-form button:disabled{opacity:.72;cursor:not-allowed;transform:none;box-shadow:none}
+@media(max-width:900px){.bloom-spotify-community-picks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.bloom-spotify-community-picks{grid-template-columns:1fr}.bloom-spotify-community{padding:13px}}

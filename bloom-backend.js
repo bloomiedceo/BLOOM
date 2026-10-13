@@ -8,6 +8,31 @@
   let newsletterClient = null;
   let newsletterSubmitting = false;
   const newsletterForm = $('#signup-form');
+  if (newsletterForm) {
+    const newsletterStatus = $('#newsletter-status');
+    const newsletterButton = $('button[type="submit"]', newsletterForm);
+    if (cfg.newsletterEnabled === false) {
+      if (newsletterStatus) {
+        newsletterStatus.dataset.state = 'error';
+        newsletterStatus.textContent = 'Newsletter signup is paused while email delivery is configured. No email will be sent or saved yet. Once enabled, you will receive a confirmation link by email, not a code or redirect.';
+      }
+      if (newsletterButton) {
+        newsletterButton.disabled = true;
+        newsletterButton.textContent = 'Coming soon ♡';
+        newsletterButton.title = 'Newsletter email delivery is not configured yet.';
+      }
+    } else {
+      if (newsletterStatus && /signup is paused|email confirmation is still being configured/i.test(newsletterStatus.textContent)) {
+        newsletterStatus.textContent = '';
+        delete newsletterStatus.dataset.state;
+      }
+      if (newsletterButton) {
+        newsletterButton.disabled = false;
+        newsletterButton.textContent = 'Count me in ♡';
+        newsletterButton.removeAttribute('title');
+      }
+    }
+  }
   if (newsletterForm) newsletterForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const emailInput = $('#email');
@@ -171,6 +196,98 @@
     const feed = $('#activity .feed-grid');
     if (feed) feed.before(panel);
     else activity.append(panel);
+    async function loadSpotifyPlaylists() {
+      const holder = $('#bloom-spotify-community-picks');
+      const status = $('#bloom-spotify-community-status');
+      if (!holder || !status) return;
+      holder.replaceChildren();
+      status.textContent = 'Loading community Spotify picks…';
+      const { data, error } = await client.from('music_playlists')
+        .select('id,spotify_playlist_id,title,added_by,created_at')
+        .order('created_at', { ascending: false }).limit(24);
+      if (error) {
+        status.textContent = 'Community picks could not load right now. You can still paste any Spotify link above.';
+        return;
+      }
+      if (!data?.length) {
+        status.textContent = 'No community picks yet. Sign in and share the first Spotify playlist.';
+        return;
+      }
+      status.textContent = data.length + (data.length === 1 ? ' playlist shared by BLOOM fans.' : ' playlists shared by BLOOM fans.');
+      data.forEach(row => {
+        const card = document.createElement('article');
+        card.className = 'bloom-spotify-community-item';
+        const title = document.createElement('h4');
+        title.textContent = row.title;
+        const actions = document.createElement('div');
+        actions.className = 'bloom-spotify-community-actions';
+        const play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'pill lavender';
+        play.textContent = 'Play in BLOOM';
+        play.addEventListener('click', () => {
+          const input = $('#bloom-spotify-url');
+          const form = $('#bloom-spotify-form');
+          if (!input || !form) return;
+          input.value = 'https://open.spotify.com/playlist/' + row.spotify_playlist_id;
+          if (typeof form.requestSubmit === 'function') form.requestSubmit();
+          else form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+          $('#bloom-music')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        const open = document.createElement('a');
+        open.className = 'pill white';
+        open.href = 'https://open.spotify.com/playlist/' + row.spotify_playlist_id;
+        open.target = '_blank';
+        open.rel = 'noopener noreferrer';
+        open.textContent = 'Open Spotify ↗';
+        actions.append(play, open);
+        if (currentUser && row.added_by === currentUser.id) {
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'small-action';
+          remove.textContent = 'Remove my pick';
+          remove.addEventListener('click', async () => {
+            remove.disabled = true;
+            const { error: removeError } = await client.from('music_playlists')
+              .delete().eq('id', row.id).eq('added_by', currentUser.id);
+            if (removeError) {
+              status.textContent = 'Could not remove this pick. Please try again.';
+              remove.disabled = false;
+              return;
+            }
+            await loadSpotifyPlaylists();
+          });
+          actions.append(remove);
+        }
+        card.append(title, actions);
+        holder.append(card);
+      });
+    }
+    window.bloomShareSpotifyPlaylist = async ({ id, title } = {}) => {
+      if (!currentUser) {
+        openAuth();
+        setAuthMessage('Sign in before sharing a Spotify playlist with the community.');
+        return { ok: false, message: 'Please sign in to share a playlist with BLOOM fans.' };
+      }
+      const playlistId = String(id || '');
+      const playlistTitle = String(title || '').trim();
+      if (!/^[A-Za-z0-9]{10,32}$/.test(playlistId) || playlistTitle.length < 2 || playlistTitle.length > 60) {
+        return { ok: false, message: 'Use a valid Spotify playlist link and a title between 2 and 60 characters.' };
+      }
+      const { error } = await client.from('music_playlists').insert({
+        spotify_playlist_id: playlistId,
+        title: playlistTitle,
+        added_by: currentUser.id
+      });
+      if (error) {
+        if (error.code === '23505') return { ok: false, message: 'That Spotify playlist is already in BLOOM community picks.' };
+        console.error('BLOOM Spotify playlist share failed:', error.message);
+        return { ok: false, message: 'BLOOM could not share that playlist. Please try again.' };
+      }
+      await loadSpotifyPlaylists();
+      return { ok: true, message: 'Added to BLOOM community picks. Spotify still hosts the playlist.' };
+    };
+
     function setupMarketplace() {
       const discover = $('#discover .wrap');
       if (!discover || $('#bloom-marketplace-app')) return;
@@ -855,6 +972,7 @@
       await loadPosts();
       await loadGroups();
       await refreshSocialRail();
+      await loadSpotifyPlaylists();
       if (window.bloomMarketplace?.refresh) await window.bloomMarketplace.refresh();
     }
     client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') passwordRecovery = true; setTimeout(() => { void syncSession(session); }, 0); });
