@@ -42,7 +42,7 @@ assert.ok(newsletterFunction.includes('req.method === "POST" && ["confirm", "uns
 assert.ok(newsletterFunction.includes('api.resend.com/emails'), 'Newsletter function must call Resend API');
 assert.match(upgrades, /#bloom-marketplace-listings/, 'Marketplace discovery links must stay inside BLOOM');
 assert.match(upgrades, /content-visibility:auto;contain-intrinsic-size:auto 520px/, 'Feed cards should skip expensive offscreen rendering work');
-assert.doesNotMatch(upgrades, /https:\\/\\/shopee\\.com\\.my|https:\\/\\/www\\.lazada\\.com\\.my|https:\\/\\/shop\\.weverse\\.io/, 'Marketplace cards must not send buyers to external shopping apps');
+assert.doesNotMatch(upgrades, /shopee\.com\.my|lazada\.com\.my|shop\.weverse\.io/i, 'Marketplace cards must not send buyers to external shopping apps');
 assert.match(upgrades, /\$\$\('#product-grid \.product-card'\)\.forEach/, 'Marketplace must iterate over all product cards without a querySelector null error');
 assert.match(upgrades, /const catalogue = \[/, 'Marketplace must render a browseable K-pop product discovery catalogue');
 assert.match(upgrades, /#activity \.feed-card\[hidden\],#product-grid \.product-card\[hidden\]\{display:none!important\}/, 'FYP and marketplace filters must override card display styles when hiding items');
