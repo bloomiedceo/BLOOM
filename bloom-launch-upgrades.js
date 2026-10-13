@@ -76,6 +76,20 @@
         visual.className = 'product-visual ' + item.tone;
         const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = item.tag;
         const heart = document.createElement('button'); heart.className = 'heart'; heart.type = 'button'; heart.setAttribute('aria-label', 'Save ' + item.name); heart.textContent = '♡';
+        const wishlistKey = card.dataset.name;
+        const initialWishlist = read('bloom-demo-wishlist', []);
+        const initiallySaved = Array.isArray(initialWishlist) && initialWishlist.includes(wishlistKey);
+        heart.textContent = initiallySaved ? '♥' : '♡';
+        heart.setAttribute('aria-pressed', String(initiallySaved));
+        heart.addEventListener('click', () => {
+          const saved = read('bloom-demo-wishlist', []);
+          const current = Array.isArray(saved) ? saved : [];
+          const next = current.includes(wishlistKey) ? current.filter(value => value !== wishlistKey) : [...current, wishlistKey];
+          if (!write('bloom-demo-wishlist', next)) { toast('Could not save your wishlist in this browser.'); return; }
+          const isSaved = next.includes(wishlistKey);
+          heart.textContent = isSaved ? '♥' : '♡';
+          heart.setAttribute('aria-pressed', String(isSaved));
+        });
         const emoji = document.createElement('span'); emoji.className = 'product-emoji'; emoji.textContent = item.emoji;
         visual.append(tag, heart, emoji);
         const info = document.createElement('div'); info.className = 'product-info';
