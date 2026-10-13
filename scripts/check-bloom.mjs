@@ -61,7 +61,7 @@ assert.match(backend, /No payment has been taken/, 'Purchase requests must not f
 assert.match(marketplaceSchema, /alter table public\.marketplace_listings enable row level security/, 'Marketplace listings must use RLS');
 assert.match(marketplaceSchema, /marketplace buyers send request to active listing/, 'Only valid requests to another seller active listing should be accepted');
 assert.match(marketplaceSchema, /marketplace sellers update own listings/, 'Only listing owners should be able to update listings');
-assert.match(marketplaceSchema, /grant update\\(status\\) on public\\.marketplace_inquiries to authenticated/i, 'Sellers may update only the inquiry status, not rewrite buyer or message data');
+assert.match(marketplaceSchema, /grant update\(status\) on public\.marketplace_inquiries to authenticated/i, 'Sellers may update only the inquiry status, not rewrite buyer or message data');
 assert.match(upgrades, /bloom-feed-comments/, 'Feed comments must have a persistence key for local preview');
 assert.match(enhancements, /\$\$\('\.feed-card',grid\)\.forEach/, 'Feed cards must be iterated as a collection');
 assert.match(enhancements, /document\.addEventListener\('bloom:feed-updated',apply\)/, 'FYP filters must refresh when shared posts are loaded');
