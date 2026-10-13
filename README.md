@@ -68,7 +68,7 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 
 ### Not included yet / do not advertise as finished
 
-- Photo/video uploads, direct messages, private-group invitations, block/mute, push notifications, a full appeals workflow, seller checkout, inventory, payments, and production affiliate tracking.
+- Direct one-to-one messages, private-group invitations, block/mute, push notifications, a full appeals workflow, seller checkout, inventory, payments, and production affiliate tracking. Stories and in-app notifications use the shared database; push notifications are not included.
 - Formal legal advice or a final privacy policy. The current privacy notice and community guidelines are drafts that must be customized to the real operator, vendors, contact details, retention practices, age policy, and applicable Malaysian/privacy requirements.
 - Automated spam/abuse rate limiting, backups/restore drills, incident response, and full browser/device accessibility testing.
 - Verified Supabase project configuration, production email delivery, a deployed Edge Function, or a tested moderator account. These require owner-side setup and real-world tests.
