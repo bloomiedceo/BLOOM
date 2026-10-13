@@ -26,8 +26,7 @@ create table if not exists public.marketplace_inquiries (
   buyer_id uuid not null references public.profiles(id) on delete cascade,
   message text not null check (char_length(message) between 1 and 600),
   status text not null default 'new' check (status in ('new','closed')),
-  created_at timestamptz not null default now(),
-  constraint marketplace_inquiries_not_self check (buyer_id is not null)
+  created_at timestamptz not null default now()
 );
 
 create index if not exists bloom_marketplace_inquiries_listing_idx
@@ -87,13 +86,13 @@ drop policy if exists "marketplace sellers close own inquiries" on public.market
 create policy "marketplace sellers close own inquiries"
   on public.marketplace_inquiries for update to authenticated
   using (
-    exists (
+    status in ('new','closed') and exists (
       select 1 from public.marketplace_listings l
       where l.id = listing_id and l.seller_id = (select auth.uid())
     )
   )
   with check (
-    exists (
+    status in ('new','closed') and exists (
       select 1 from public.marketplace_listings l
       where l.id = listing_id and l.seller_id = (select auth.uid())
     )
