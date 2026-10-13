@@ -112,27 +112,39 @@ function enhanceMessaging(){
   $$('.room').forEach(card=>card.addEventListener('click',event=>{event.preventDefault();scrollToLiveChat()}));
 }
 function enhanceMusic(){
- if($('#bloom-music'))return;
- const section=document.createElement('section');section.className='section';section.id='bloom-music';
- section.innerHTML='<div class="wrap"><div class="section-head"><div><div class="kicker">Listen your way</div><h2>BLOOM MUSIC ✨</h2></div><p>Your own little listening room. Build playlists from audio files on your device and play them right here in BLOOM.</p></div><div class="bloom-music"><div class="bloom-music-grid"><article class="bloom-track-feature"><h3>🎧 Your player</h3><p class="bloom-enhance-note">Choose music files you have permission to use. Files play locally on this device and are never uploaded by BLOOM.</p><audio id="bloom-local-audio" controls preload="metadata" aria-label="BLOOM local music player"></audio><div class="bloom-player-controls"><button class="pill white" id="bloom-track-prev" type="button">⏮ Previous</button><button class="pill white" id="bloom-track-next" type="button">Next ⏭</button></div><p id="bloom-music-status" class="bloom-enhance-note" role="status" aria-live="polite">Create a playlist, then add MP3 or other supported audio files.</p><ol id="bloom-track-list" class="bloom-track-list"></ol></article><article class="bloom-track-feature"><h3>🌷 Make it yours</h3><form id="bloom-new-playlist-form" class="bloom-add-playlist"><label for="bloom-new-playlist-name">New playlist name</label><input id="bloom-new-playlist-name" maxlength="60" placeholder="e.g. Study with K-pop" required><button class="pill lavender" type="submit">＋ Create playlist</button></form><label for="bloom-playlist-select" class="bloom-music-label">Your playlists</label><select id="bloom-playlist-select" class="bloom-field" aria-label="Choose playlist"></select><label for="bloom-audio-files" class="bloom-music-label">Add music files</label><input id="bloom-audio-files" class="bloom-field" type="file" accept="audio/*" multiple><button id="bloom-clear-playlist" class="pill white" type="button">Clear this playlist</button><p class="bloom-enhance-note">For copyright and privacy, BLOOM does not upload or publicly redistribute MP3s. The playlist is held in this browser session; choose the files again after refreshing.</p></article></div></div></div>';
- const community=$('#community');if(community)community.before(section);else $('main')?.append(section);
- const audio=$('#bloom-local-audio',section),status=$('#bloom-music-status',section),list=$('#bloom-track-list',section),select=$('#bloom-playlist-select',section),fileInput=$('#bloom-audio-files',section);
- const playlists=new Map();let activePlaylist='',activeIndex=-1,serial=0;
- const getTracks=()=>playlists.get(activePlaylist)?.tracks||[];
- const clearAudio=()=>{audio.pause();audio.removeAttribute('src');audio.load();activeIndex=-1};
- function createPlaylist(name){const id='playlist-'+(++serial);playlists.set(id,{name,tracks:[]});activePlaylist=id;renderPlaylists();renderTracks();status.textContent='Created “'+name+'”. Add music files from your device.'}
- function renderPlaylists(){const previous=activePlaylist;select.replaceChildren();playlists.forEach((item,id)=>{const option=document.createElement('option');option.value=id;option.textContent=item.name;select.append(option)});if(playlists.has(previous)){select.value=previous}else if(playlists.size){activePlaylist=playlists.keys().next().value;select.value=activePlaylist}else{activePlaylist='';const option=document.createElement('option');option.value='';option.textContent='Create a playlist first';select.append(option);select.disabled=true;return}select.disabled=false}
- function renderTracks(){list.replaceChildren();const tracks=getTracks();tracks.forEach((track,index)=>{const row=document.createElement('li');row.className='bloom-track-row';const play=document.createElement('button');play.type='button';play.className='bloom-track-play';play.textContent=(index===activeIndex&&!audio.paused?'▶ Playing':'▶ '+track.name);play.addEventListener('click',()=>playTrack(index));const remove=document.createElement('button');remove.type='button';remove.className='bloom-track-remove';remove.textContent='Remove';remove.addEventListener('click',()=>{if(index===activeIndex)clearAudio();URL.revokeObjectURL(track.url);tracks.splice(index,1);if(index<activeIndex)activeIndex--;renderTracks();status.textContent='Track removed from this playlist.'});row.append(play,remove);list.append(row)});if(!tracks.length){const empty=document.createElement('li');empty.textContent='No tracks yet — add your audio files above.';empty.className='bloom-enhance-note';list.append(empty)}}
- function playTrack(index){const tracks=getTracks();if(!tracks[index])return;activeIndex=index;audio.src=tracks[index].url;audio.load();audio.play().then(()=>{status.textContent='Now playing · '+tracks[index].name;renderTracks()}).catch(()=>{status.textContent='Press Play in the audio controls to start “'+tracks[index].name+'”.';renderTracks()})}
- $('#bloom-new-playlist-form',section).addEventListener('submit',e=>{e.preventDefault();const input=$('#bloom-new-playlist-name',section),name=input.value.trim();if(!name)return;createPlaylist(name);input.value=''});
- select.addEventListener('change',()=>{activePlaylist=select.value;clearAudio();renderTracks();status.textContent='Playlist selected. Choose a track to play.'});
- fileInput.addEventListener('change',()=>{const files=[...(fileInput.files||[])];if(!activePlaylist){status.textContent='Create or select a playlist first.';fileInput.value='';return}let added=0;for(const file of files){if(!file.type.startsWith('audio/'))continue;if(file.size>100*1024*1024){status.textContent='Skipped “'+file.name+'” because it is over 100 MB.';continue}getTracks().push({name:file.name.replace(/\.[^.]+$/,''),file,url:URL.createObjectURL(file)});added++}fileInput.value='';renderTracks();status.textContent=added?added+' track(s) added to “'+playlists.get(activePlaylist).name+'”. Files remain on this device.':'No supported audio files were added.'});
- $('#bloom-clear-playlist',section).addEventListener('click',()=>{if(!activePlaylist)return;const tracks=getTracks();tracks.forEach(t=>URL.revokeObjectURL(t.url));tracks.splice(0);clearAudio();renderTracks();status.textContent='Playlist cleared.'});
- $('#bloom-track-prev',section).addEventListener('click',()=>{const tracks=getTracks();if(tracks.length)playTrack((activeIndex<=0?tracks.length:activeIndex)-1)});
- $('#bloom-track-next',section).addEventListener('click',()=>{const tracks=getTracks();if(tracks.length)playTrack((activeIndex+1)%tracks.length)});
- audio.addEventListener('ended',()=>{const tracks=getTracks();if(tracks.length)playTrack((activeIndex+1)%tracks.length)});
- audio.addEventListener('play',renderTracks);audio.addEventListener('pause',renderTracks);
- createPlaylist('My K-pop playlist');
+  if($('#bloom-music'))return;
+  const section=document.createElement('section');section.className='section';section.id='bloom-music';
+  section.innerHTML='<div class="wrap"><div class="section-head"><div><div class="kicker">Listen your way</div><h2>BLOOM MUSIC ✨</h2></div><p>Use Spotify’s own player in BLOOM. Paste a link to a playlist, album, artist, or track you already have on Spotify.</p></div><div class="bloom-music"><div class="bloom-spotify-panel"><div class="bloom-spotify-copy"><h3>🎧 Your Spotify</h3><p class="bloom-enhance-note">BLOOM does not create or upload playlists. This is Spotify’s official embedded player; Spotify controls playback and account requirements.</p><form id="bloom-spotify-form" class="bloom-spotify-form"><label for="bloom-spotify-url">Spotify playlist, album, artist, or track link</label><input id="bloom-spotify-url" class="bloom-field" type="url" inputmode="url" autocomplete="url" placeholder="https://open.spotify.com/playlist/…" required><button class="pill primary" type="submit">Show Spotify player</button></form><p id="bloom-spotify-status" class="bloom-enhance-note" role="status" aria-live="polite">Paste a Spotify share link to load its official player here.</p><a id="bloom-spotify-open" class="pill white bloom-spotify-open" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Open Spotify ↗</a></div><div id="bloom-spotify-player" class="bloom-spotify-player"><div class="bloom-spotify-placeholder"><span>🎵</span><p>Your Spotify player will appear here.</p></div></div></div></div></div>';
+  const community=$('#community');if(community)community.before(section);else $('main')?.append(section);
+  const form=$('#bloom-spotify-form',section),input=$('#bloom-spotify-url',section),status=$('#bloom-spotify-status',section),player=$('#bloom-spotify-player',section),open=$('#bloom-spotify-open',section);
+  const allowedTypes=new Set(['playlist','album','artist','track','show','episode']);
+  function parseSpotify(raw){
+   const value=String(raw||'').trim();
+   const uri=value.match(/^spotify:(playlist|album|artist|track|show|episode):([A-Za-z0-9]{10,32})$/);
+   if(uri)return {type:uri[1],id:uri[2],url:'https://open.spotify.com/'+uri[1]+'/'+uri[2]};
+   let parsed;try{parsed=new URL(value)}catch(_){return null}
+   if(!['open.spotify.com','www.spotify.com'].includes(parsed.hostname.toLowerCase())||!['https:','http:'].includes(parsed.protocol))return null;
+   const segments=parsed.pathname.split('/').filter(Boolean);
+   const index=segments.findIndex(part=>allowedTypes.has(part));
+   if(index<0||!segments[index+1]||!/^[A-Za-z0-9]{10,32}$/.test(segments[index+1]))return null;
+   const type=segments[index],id=segments[index+1];
+   return {type,id,url:'https://open.spotify.com/'+type+'/'+id};
+  }
+  form.addEventListener('submit',event=>{
+   event.preventDefault();
+   const item=parseSpotify(input.value);
+   if(!item){status.textContent='That does not look like a supported Spotify link. Open Spotify, choose Share → Copy link, then paste the link here.';status.dataset.state='error';return}
+   const frame=document.createElement('iframe');
+   frame.title='Official Spotify '+item.type+' player';
+   frame.src='https://open.spotify.com/embed/'+item.type+'/'+item.id+'?utm_source=generator';
+   frame.width='100%';frame.height=item.type==='track'||item.type==='episode'?'152':'352';
+   frame.style.border='0';frame.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+   frame.loading='lazy';frame.referrerPolicy='strict-origin-when-cross-origin';frame.setAttribute('allowfullscreen','');
+   player.replaceChildren(frame);
+   open.href=item.url;
+   status.dataset.state='success';
+   status.textContent='Spotify player loaded. Sign in to Spotify if it asks; playback availability is controlled by Spotify.';
+  });
 }
 function addMusicNav(){const nav=$('#navlinks');if(nav&&!$('a[href="#bloom-music"]',nav)){const a=document.createElement('a');a.href='#bloom-music';a.textContent='BLOOM MUSIC';nav.append(a)}}
 function init(){enhanceFeed();enhancePostComposer();enhanceMarketplace();enhanceMessaging();enhanceMusic();addMusicNav()}
