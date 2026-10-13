@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
   const origin = req.headers.get("Origin");
   if (req.method === "OPTIONS") {
     if (origin && !allowedOrigins.includes(origin)) return new Response("Origin not allowed", { status: 403, headers: headers(origin) });
-    return new Response("ok", { status: 204, headers: headers(origin) });
+    return new Response(null, { status: 204, headers: headers(origin) });
   }
   if (origin && !allowedOrigins.includes(origin)) return json(403, { error: "Origin not allowed" }, origin);
   const url = new URL(req.url);
