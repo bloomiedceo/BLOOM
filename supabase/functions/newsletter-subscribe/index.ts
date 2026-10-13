@@ -84,6 +84,18 @@ Deno.serve(async (req) => {
     ? page("Temporarily unavailable", "Newsletter settings are not ready yet. Please try again later.", origin, false)
     : json(503, { error: "Newsletter is temporarily unavailable. Please try again later." }, origin);
 
+  if (req.method === "POST" && url.searchParams.get("action") === "unsubscribe") {
+    const token = url.searchParams.get("token") || "";
+    if (!/^[a-f0-9]{64}$/.test(token)) return json(400, { error: "Invalid unsubscribe link" }, origin);
+    const tokenHash = await sha256(token);
+    const { data, error } = await db.from("newsletter_subscribers").select("id").eq("unsubscribe_token_hash", tokenHash).maybeSingle();
+    if (error || !data) return json(200, { ok: true, message: "This address is already unsubscribed or the link has expired." }, origin);
+    const { error: updateError } = await db.from("newsletter_subscribers").update({
+      unsubscribed_at: new Date().toISOString(), confirmation_token_hash: null, updated_at: new Date().toISOString()
+    }).eq("id", data.id);
+    if (updateError) return json(503, { error: "Could not complete unsubscribe" }, origin);
+    return json(200, { ok: true, message: "You are unsubscribed from BLOOM updates." }, origin);
+  }
   if (req.method === "GET") {
     const action = url.searchParams.get("action");
     const token = url.searchParams.get("token") || "";
