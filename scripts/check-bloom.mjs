@@ -54,6 +54,8 @@ assert.match(html, /there is no code or redirect on this page/i, 'Newsletter ins
 assert.match(enhancementsCss, /\.newsletter-status\{display:block;min-height/, 'Newsletter errors and confirmations must have a visible status area');
 assert.match(upgrades, /#bloom-marketplace-listings/, 'Marketplace discovery links must stay inside BLOOM');
 assert.match(upgrades, /content-visibility:auto;contain-intrinsic-size:auto 520px/, 'Feed cards should skip expensive offscreen rendering work');
+assert.match(upgrades, /#activity \.feed-grid\{max-height:none;overflow:visible/, 'Mobile FYP must use page scrolling rather than a constrained nested feed');
+assert.match(upgrades, /#activity \.feed-card\{min-height:0;max-height:none\}/, 'Mobile feed cards must not be forced to viewport height');
 assert.doesNotMatch(upgrades, /shopee\.com\.my|lazada\.com\.my|shop\.weverse\.io/i, 'Marketplace cards must not send buyers to external shopping apps');
 assert.match(upgrades, /\$\$\('#product-grid \.product-card'\)\.forEach/, 'Marketplace must iterate over all product cards without a querySelector null error');
 assert.match(upgrades, /const catalogue = \[/, 'Marketplace must render a browseable K-pop product discovery catalogue');
@@ -70,6 +72,14 @@ assert.match(backend, /id="bloom-marketplace-listings"/, 'In-app marketplace lis
 assert.match(backend, /from\('marketplace_listings'\)/, 'Marketplace must read and publish shared database listings');
 assert.match(backend, /from\('marketplace_inquiries'\)/, 'Marketplace must support in-app purchase requests and seller inbox');
 assert.match(backend, /No payment has been taken/, 'Purchase requests must not falsely claim payment was processed');
+assert.match(backend, /bloom-market-cart-v1/, 'Marketplace cart must persist listing IDs and quantities in browser storage');
+assert.match(backend, /bloom-market-cart-open/, 'Marketplace must expose a cart call-to-action');
+assert.match(backend, /bloom-market-checkout-form/, 'Marketplace must provide a checkout preview form');
+assert.match(backend, /Your test address and payment preference were not sent or saved/, 'Checkout preview must not falsely claim to collect address or payment data');
+assert.match(backend, /Shipping estimate <small>\(RM8 per seller · demo\)<\/small>/, 'Demo shipping estimate must be clearly labeled and not misrepresented as a final quote');
+assert.match(backend, /Tax.*Calculated before live payment/, 'Marketplace must not invent tax calculations before payment setup');
+assert.match(backend, /Maybank2u \/ DuitNow Online Banking/, 'Checkout preview must list local online banking options');
+assert.match(backend, /Touch ‘n Go eWallet/, 'Checkout preview must list TNG eWallet as a future supported method');
 assert.match(marketplaceSchema, /alter table public\.marketplace_listings enable row level security/, 'Marketplace listings must use RLS');
 assert.match(marketplaceSchema, /marketplace buyers send request to active listing/, 'Only valid requests to another seller active listing should be accepted');
 assert.match(marketplaceSchema, /marketplace sellers update own listings/, 'Only listing owners should be able to update listings');
