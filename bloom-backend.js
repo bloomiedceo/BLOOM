@@ -130,7 +130,7 @@
         <section class="bloom-live-card" id="bloom-social-rail">
           <h3>✨ Stories & notifications</h3>
           <form id="bloom-story-form" class="bloom-modal-form">
-            <label for="bloom-story-photo">Add a story photo</label><input id="bloom-story-photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" required>
+            <label for="bloom-story-photo">Add a story photo or video</label><input id="bloom-story-photo" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" capture="environment" required>
             <label for="bloom-story-caption">Caption (optional)</label><input id="bloom-story-caption" maxlength="240" placeholder="A little fandom moment…">
             <button class="pill lavender" type="submit">＋ Share 24-hour story</button>
           </form>
