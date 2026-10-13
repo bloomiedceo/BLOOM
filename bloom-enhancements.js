@@ -114,54 +114,43 @@ function enhanceMessaging(){
 function enhanceMusic(){
   if($('#bloom-music'))return;
   const section=document.createElement('section');section.className='section';section.id='bloom-music';
-  section.innerHTML='<div class="wrap"><div class="section-head"><div><div class="kicker">Listen your way</div><h2>BLOOM MUSIC ✨</h2></div><p>Use Spotify’s own player in BLOOM. Paste a link to a playlist, album, artist, or track you already have on Spotify.</p></div><div class="bloom-music"><div class="bloom-spotify-panel"><div class="bloom-spotify-copy"><h3>🎧 Your Spotify</h3><p class="bloom-enhance-note">BLOOM does not create or upload playlists. This is Spotify’s official embedded player; Spotify controls playback and account requirements.</p><form id="bloom-spotify-form" class="bloom-spotify-form"><label for="bloom-spotify-url">Spotify playlist, album, artist, or track link</label><input id="bloom-spotify-url" class="bloom-field" type="text" inputmode="url" autocomplete="url" placeholder="https://open.spotify.com/playlist/…" required><button class="pill primary" type="submit">Show Spotify player</button></form><p id="bloom-spotify-status" class="bloom-enhance-note" role="status" aria-live="polite">Paste a Spotify share link to load its official player here.</p><a id="bloom-spotify-open" class="pill white bloom-spotify-open" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Open Spotify ↗</a><form id="bloom-spotify-share-form" class="bloom-spotify-form"><label for="bloom-spotify-title">Name this playlist for BLOOM fans</label><input id="bloom-spotify-title" class="bloom-field" type="text" minlength="2" maxlength="60" placeholder="e.g. K-pop study mix" required><button class="pill lavender" type="submit">Share playlist with BLOOM</button></form><p id="bloom-spotify-share-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to share a Spotify playlist with the community.</p></div><div id="bloom-spotify-player" class="bloom-spotify-player"><div class="bloom-spotify-placeholder"><span>🎵</span><p>Your Spotify player will appear here.</p></div></div></div><section class="bloom-spotify-community" aria-labelledby="bloom-spotify-community-title"><div class="bloom-spotify-community-head"><h3 id="bloom-spotify-community-title">🌷 Community Spotify picks</h3><p>Real Spotify playlists shared by BLOOM fans. Playback stays on Spotify.</p></div><p id="bloom-spotify-community-status" class="bloom-enhance-note" role="status" aria-live="polite">Loading community picks…</p><div id="bloom-spotify-community-picks" class="bloom-spotify-community-picks"></div></section></div></div>';
+  section.innerHTML='<div class="wrap"><div class="section-head"><div><div class="kicker">Listen your way</div><h2>BLOOM MUSIC ✨</h2></div><p>Use Spotify’s original player. Paste a Spotify share link to add its official player here; add as many as you like without making or uploading a BLOOM playlist.</p></div><div class="bloom-music"><div class="bloom-spotify-panel"><div class="bloom-spotify-copy"><h3>🎧 Spotify players</h3><p class="bloom-enhance-note">These are Spotify’s own embeds. BLOOM does not create playlists or host music. Spotify controls playback, ads, sign-in, and availability.</p><form id="bloom-spotify-form" class="bloom-spotify-form"><label for="bloom-spotify-url">Spotify playlist, album, artist, or track link</label><input id="bloom-spotify-url" class="bloom-field" type="url" inputmode="url" autocomplete="url" placeholder="https://open.spotify.com/playlist/…" required><button class="pill primary" type="submit">＋ Add Spotify player</button></form><p id="bloom-spotify-status" class="bloom-enhance-note" role="status" aria-live="polite">Paste a Spotify Share → Copy link URL, then add the player.</p><a id="bloom-spotify-open" class="pill white bloom-spotify-open" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Open Spotify ↗</a></div><div id="bloom-spotify-players" class="bloom-spotify-players" aria-live="polite"><div class="bloom-spotify-placeholder"><span>🎵</span><p>Add a Spotify playlist to start listening.</p></div></div></div></div></div>';
   const community=$('#community');if(community)community.before(section);else $('main')?.append(section);
-  const form=$('#bloom-spotify-form',section),input=$('#bloom-spotify-url',section),status=$('#bloom-spotify-status',section),player=$('#bloom-spotify-player',section),open=$('#bloom-spotify-open',section);
-  const shareForm=$('#bloom-spotify-share-form',section),shareTitle=$('#bloom-spotify-title',section),shareStatus=$('#bloom-spotify-share-status',section);
+  const form=$('#bloom-spotify-form',section),input=$('#bloom-spotify-url',section),status=$('#bloom-spotify-status',section),players=$('#bloom-spotify-players',section),open=$('#bloom-spotify-open',section);
   const allowedTypes=new Set(['playlist','album','artist','track','show','episode']);
   function parseSpotify(raw){
    const value=String(raw||'').trim();
    const uri=value.match(/^spotify:(playlist|album|artist|track|show|episode):([A-Za-z0-9]{10,32})$/);
-   if(uri)return {type:uri[1],id:uri[2],url:'https://open.spotify.com/'+uri[1]+'/'+uri[2]};
+   if(uri)return {type:uri[1],id:uri[2],url:'https://open.spotify.com/'+uri[1]+'/'+uri[2],key:uri[1]+':'+uri[2]};
    let parsed;try{parsed=new URL(value)}catch(_){return null}
    if(!['open.spotify.com','www.spotify.com'].includes(parsed.hostname.toLowerCase())||!['https:','http:'].includes(parsed.protocol))return null;
    const segments=parsed.pathname.split('/').filter(Boolean);
    const index=segments.findIndex(part=>allowedTypes.has(part));
    if(index<0||!segments[index+1]||!/^[A-Za-z0-9]{10,32}$/.test(segments[index+1]))return null;
    const type=segments[index],id=segments[index+1];
-   return {type,id,url:'https://open.spotify.com/'+type+'/'+id};
+   return {type,id,url:'https://open.spotify.com/'+type+'/'+id,key:type+':'+id};
   }
-  function showSpotify(item){
-   const frame=document.createElement('iframe');
-   frame.title='Official Spotify '+item.type+' player';
-   frame.src='https://open.spotify.com/embed/'+item.type+'/'+item.id+'?utm_source=generator';
-   frame.width='100%';frame.height=item.type==='track'||item.type==='episode'?'152':'352';
-   frame.style.border='0';frame.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-   frame.loading='lazy';frame.referrerPolicy='strict-origin-when-cross-origin';frame.setAttribute('allowfullscreen','');
-   player.replaceChildren(frame);open.href=item.url;
-   status.dataset.state='success';status.textContent='Spotify player loaded. Sign in to Spotify if it asks; playback availability is controlled by Spotify.';
+  function addSpotifyPlayer(item){
+   const key=item.key||item.type+':'+item.id;
+   const existing=$('[data-spotify-key="'+key+'"]',players);
+   if(existing){status.dataset.state='success';status.textContent='That Spotify player is already on this page. Scroll down to it.';existing.scrollIntoView({behavior:'smooth',block:'center'});return}
+   if(players.querySelector('.bloom-spotify-placeholder'))players.replaceChildren();
+   const card=document.createElement('article');card.className='bloom-spotify-player-card';card.dataset.spotifyKey=key;
+   const head=document.createElement('div');head.className='bloom-spotify-player-head';
+   const label=document.createElement('strong');label.textContent='Spotify '+item.type;
+   const remove=document.createElement('button');remove.type='button';remove.className='small-action';remove.textContent='Remove player';remove.setAttribute('aria-label','Remove Spotify '+item.type+' player');
+   remove.addEventListener('click',()=>{card.remove();if(!players.children.length){const empty=document.createElement('div');empty.className='bloom-spotify-placeholder';const icon=document.createElement('span');icon.textContent='🎵';const message=document.createElement('p');message.textContent='Add a Spotify playlist to start listening.';empty.append(icon,message);players.append(empty)}});
+   head.append(label,remove);
+   const frame=document.createElement('iframe');frame.title='Official Spotify '+item.type+' player';frame.src='https://open.spotify.com/embed/'+item.type+'/'+item.id+'?utm_source=generator';frame.width='100%';frame.height=item.type==='track'||item.type==='episode'?'152':'352';frame.style.border='0';frame.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';frame.loading='lazy';frame.referrerPolicy='strict-origin-when-cross-origin';frame.setAttribute('allowfullscreen','');
+   const footer=document.createElement('a');footer.className='pill white bloom-spotify-open';footer.href=item.url;footer.target='_blank';footer.rel='noopener noreferrer';footer.textContent='Open this in Spotify ↗';
+   card.append(head,frame,footer);players.append(card);open.href=item.url;
+   status.dataset.state='success';status.textContent='Added Spotify’s original '+item.type+' player. Add another link to keep another player on this page.';
   }
   form.addEventListener('submit',event=>{
    event.preventDefault();
    const item=parseSpotify(input.value);
-   if(!item){status.textContent='That does not look like a supported Spotify link. Open Spotify, choose Share → Copy link, then paste the link here.';status.dataset.state='error';return}
-   showSpotify(item);
-  });
-  shareForm.addEventListener('submit',async event=>{
-   event.preventDefault();
-   const item=parseSpotify(input.value),title=shareTitle.value.trim();
-   if(!item||item.type!=='playlist'){shareStatus.textContent='To share a community pick, paste a Spotify playlist link above (not an album, artist, or track).';shareStatus.dataset.state='error';return}
-   if(title.length<2||title.length>60){shareTitle.reportValidity();return}
-   if(typeof window.bloomShareSpotifyPlaylist!=='function'){shareStatus.textContent='BLOOM is still connecting to its community service. Please wait a moment and try again.';shareStatus.dataset.state='error';return}
-   const button=$('button[type="submit"]',shareForm),original=button.textContent;
-   button.disabled=true;button.textContent='Sharing…';
-   try{
-    const result=await window.bloomShareSpotifyPlaylist({id:item.id,title});
-    shareStatus.textContent=result?.message||(result?.ok?'Playlist shared with BLOOM fans.':'Playlist could not be shared.');
-    shareStatus.dataset.state=result?.ok?'success':'error';
-    if(result?.ok)shareTitle.value='';
-   }catch(_){shareStatus.textContent='Playlist could not be shared right now. Please try again.';shareStatus.dataset.state='error'}
-   finally{button.disabled=false;button.textContent=original}
+   if(!item){status.dataset.state='error';status.textContent='Use a direct Spotify link from Spotify → Share → Copy link (open.spotify.com). Short spotify.link links cannot be resolved here; open them in Spotify and copy the full link.';return}
+   addSpotifyPlayer(item);input.value='';
   });
 }
 function addMusicNav(){const nav=$('#navlinks');if(nav&&!$('a[href="#bloom-music"]',nav)){const a=document.createElement('a');a.href='#bloom-music';a.textContent='BLOOM MUSIC';nav.append(a)}}
