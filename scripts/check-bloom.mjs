@@ -17,6 +17,7 @@ const deleteAccount = read('../supabase/functions/delete-account/index.ts');
 const engagementSchema = read('../supabase/feed-engagement.sql');
 const marketplaceSchema = read('../supabase/marketplace.sql');
 const socialSchema = read('../supabase/social-features.sql');
+const musicSchema = read('../supabase/music-playlists.sql');
 const css = read('../bloom-enhancements.css');
 
 assert.match(html, /id="safety-modal"[^>]*role="dialog"[^>]*aria-modal="true"/, 'Safety Center dialog must exist and expose dialog semantics');
@@ -46,6 +47,12 @@ assert.match(newsletterFunction, /new Response\(null, \{ status: 204, headers: h
 assert.match(enhancements, /bloom-add-playlist-form/, 'BLOOM MUSIC must allow users to add their own Spotify playlist');
 assert.match(enhancements, /parsePlaylistId/, 'Custom playlist URLs must be parsed and validated before embedding');
 assert.match(enhancements, /bloom-custom-playlists/, 'Custom playlists must persist in this browser');
+assert.match(enhancements, /bloom-community-playlists/, 'BLOOM MUSIC must render a shared playlist library');
+assert.match(enhancements, /public Spotify playlist link/, 'Invalid music links must explain which playlist URLs are supported');
+assert.match(backend, /from\('music_playlists'\)/, 'Shared music playlists must use the database');
+assert.match(musicSchema, /alter table public\.music_playlists enable row level security/i, 'Shared playlists must have RLS enabled');
+assert.match(musicSchema, /added_by = \(select auth\.uid\(\)\)/, 'Only the signed-in playlist owner may add or remove their shared playlist');
+assert.match(html, /there is no code or redirect on this page/i, 'Newsletter instructions must explain that confirmation arrives by email');
 assert.match(enhancementsCss, /\.newsletter-status\{display:block;min-height/, 'Newsletter errors and confirmations must have a visible status area');
 assert.match(upgrades, /#bloom-marketplace-listings/, 'Marketplace discovery links must stay inside BLOOM');
 assert.match(upgrades, /content-visibility:auto;contain-intrinsic-size:auto 520px/, 'Feed cards should skip expensive offscreen rendering work');
