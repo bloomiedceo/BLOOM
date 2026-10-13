@@ -101,4 +101,6 @@ create policy "marketplace sellers close own inquiries"
 grant usage on schema public to anon, authenticated;
 grant select on public.marketplace_listings to anon, authenticated;
 grant insert, update, delete on public.marketplace_listings to authenticated;
-grant select, insert, update on public.marketplace_inquiries to authenticated;
+grant select, insert on public.marketplace_inquiries to authenticated;
+revoke update on public.marketplace_inquiries from public, anon, authenticated;
+grant update(status) on public.marketplace_inquiries to authenticated;
