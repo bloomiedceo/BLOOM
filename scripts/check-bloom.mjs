@@ -31,6 +31,8 @@ assert.match(backend, /newsletter-consent/, 'Newsletter submission must check ex
 assert.match(backend, /newsletter-website/, 'Newsletter form must submit the honeypot field for basic bot filtering');
 assert.ok(html.includes('id="newsletter-consent"') && html.includes('type="checkbox" required'), 'Newsletter requires explicit consent');
 assert.ok(newsletterProviderSchema.includes('revoke all on public.newsletter_subscribers from public, anon, authenticated'), 'Subscriber table must not be publicly accessible');
+assert.ok(newsletterProviderSchema.includes('grant select, insert, update, delete on public.newsletter_subscribers to service_role'), 'Only the server-side service role should manage subscriber records');
+assert.ok(newsletterFunction.includes('https://bloomiedceo.github.io'), 'Newsletter CORS must default to the published GitHub Pages origin');
 assert.ok(newsletterFunction.includes('RESEND_API_KEY'), 'Newsletter email provider key must stay server-side');
 assert.ok(newsletterFunction.includes('action=confirm'), 'Newsletter must use double opt-in confirmation');
 assert.ok(newsletterFunction.includes('action=unsubscribe'), 'Newsletter must provide an unsubscribe path');
