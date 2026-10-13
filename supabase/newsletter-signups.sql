@@ -32,3 +32,8 @@ create policy "Visitors may submit newsletter opt-ins"
 
 -- No public SELECT, UPDATE, or DELETE policy is created.
 -- Only trusted project admins/server-side code should read or manage this table.
+
+-- Legacy direct-insert path is retired. The website now uses newsletter_subscribers
+-- through the newsletter-subscribe Edge Function for double opt-in and unsubscribe.
+revoke all on public.newsletter_signups from public, anon, authenticated;
+drop policy if exists "Visitors may submit newsletter opt-ins" on public.newsletter_signups;
