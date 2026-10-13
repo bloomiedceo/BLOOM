@@ -333,7 +333,8 @@
       if (storyPreviewUrl) URL.revokeObjectURL(storyPreviewUrl);
       storyPreviewUrl = ''; storyPreview.replaceChildren(); storyPreview.hidden = true;
       const file = storyCapturedBlob || storyInput.files?.[0]; if (!file) return;
-      const videoFile = file.type === 'video/mp4' || file.type === 'video/webm';
+      const previewType = (file.type || '').split(';')[0].toLowerCase();
+      const videoFile = previewType === 'video/mp4' || previewType === 'video/webm';
       const preview = document.createElement(videoFile ? 'video' : 'img');
       storyPreviewUrl = URL.createObjectURL(file); preview.src = storyPreviewUrl;
       preview.style.filter = storyFilter.value === 'none' ? 'none' : storyFilter.value;
@@ -342,7 +343,6 @@
       storyPreview.append(preview); storyPreview.hidden = false;
     }
     storyInput.addEventListener('change', () => { storyCapturedBlob = null; renderStoryPreview(); });
-    storyFilter.addEventListener('change', renderStoryPreview);
     const storyCameraView = $('#bloom-story-camera-view'), storyCameraPlaceholder = $('#bloom-story-camera-placeholder');
     const storyCameraStart = $('#bloom-story-camera-start'), storyCameraPhoto = $('#bloom-story-camera-photo'), storyCameraRecord = $('#bloom-story-camera-record'), storyCameraStop = $('#bloom-story-camera-stop'), storyCameraOff = $('#bloom-story-camera-off');
     let storyCameraStream = null, storyRecorder = null, storyRecordChunks = [], storyDrawFrame = 0, storyRecordTimeout = null;
