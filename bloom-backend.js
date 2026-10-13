@@ -18,16 +18,19 @@
     if (!emailInput || !consentInput || !status || !submitButton) return;
     if (!emailInput.checkValidity()) {
       emailInput.reportValidity();
+      status.dataset.state = 'error';
       status.textContent = 'Please enter a valid email address.';
       return;
     }
     if (!consentInput.checked) {
+      status.dataset.state = 'error';
       status.textContent = 'Please confirm that you want to receive BLOOM email updates.';
       consentInput.focus();
       return;
     }
     if (!cfg.url || !cfg.anonKey) {
-      status.textContent = 'Newsletter signup is temporarily unavailable. Please try again later.';
+      status.dataset.state = 'error';
+      status.textContent = 'Newsletter email delivery is not configured yet. Your email has not been subscribed. Please try again later.';
       return;
     }
     if (newsletterSubmitting) return;
@@ -35,6 +38,7 @@
     submitButton.disabled = true;
     const originalLabel = submitButton.textContent;
     submitButton.textContent = 'Sending…';
+    status.dataset.state = 'pending';
     status.textContent = 'Requesting your confirmation email…';
     try {
       const response = await fetch(cfg.url.replace(/\/$/, '') + '/functions/v1/newsletter-subscribe', {
@@ -48,13 +52,16 @@
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        status.textContent = result.error || 'We could not send your confirmation email. Please try again later.';
+        status.dataset.state = 'error';
+        status.textContent = response.status === 503 && /not configured/i.test(result.error || '') ? 'BLOOM email delivery is not configured yet. Your email has not been subscribed.' : (result.error || 'We could not send your confirmation email. Please try again later.');
       } else {
+        status.dataset.state = 'success';
         status.textContent = result.message || 'Check your inbox for a confirmation link to finish signing up.';
         emailInput.value = '';
         consentInput.checked = false;
       }
     } catch (_) {
+      status.dataset.state = 'error';
       status.textContent = 'We could not reach the newsletter service. Your signup is not confirmed; please try again.';
     } finally {
       newsletterSubmitting = false;
@@ -115,6 +122,19 @@
     panel.innerHTML = `
       <div class="bloom-live-heading"><div><div class="kicker">Connected community</div><h2>BLOOM LIVE ✨</h2></div><p id="bloom-live-status" role="status">Connecting securely…</p></div>
       <div class="bloom-live-grid">
+        <section class="bloom-live-card" id="bloom-social-rail">
+          <h3>✨ Stories & notifications</h3>
+          <form id="bloom-story-form" class="bloom-modal-form">
+            <label for="bloom-story-photo">Add a story photo</label><input id="bloom-story-photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" required>
+            <label for="bloom-story-caption">Caption (optional)</label><input id="bloom-story-caption" maxlength="240" placeholder="A little fandom moment…">
+            <button class="pill lavender" type="submit">＋ Share 24-hour story</button>
+          </form>
+          <p id="bloom-story-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to share a story. Stories are public for 24 hours. Don't share private or identifying images.</p>
+          <div id="bloom-live-stories" class="bloom-live-stories"></div>
+          <div class="bloom-social-notifications-head"><h4>🔔 Notifications</h4><button id="bloom-notifications-refresh" class="small-action" type="button">Refresh</button></div>
+          <p id="bloom-notification-status" class="bloom-enhance-note" role="status" aria-live="polite">Sign in to view activity on your posts and groups.</p>
+          <div id="bloom-live-notifications" class="bloom-live-notifications"></div>
+        </section>
         <section class="bloom-live-card">
           <h3>🌷 Community posts</h3>
           <form id="bloom-live-post-form" class="bloom-modal-form">
@@ -227,7 +247,95 @@
       window.bloomMarketplace={refresh:async()=>{await loadMarketplaceListings();await loadMarketplaceInbox();}};
       loadMarketplaceListings();loadMarketplaceInbox();
     }
+
+    async function prepareSocialImage(file) {
+      if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 8 * 1024 * 1024) throw new Error('Choose a JPG, PNG, or WebP image under 8 MB.');
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      const context = canvas.getContext('2d');
+      if (!context) { bitmap.close(); throw new Error('This browser cannot prepare the image.'); }
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close();
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.84));
+      if (!blob) throw new Error('Could not prepare the image. Please try another one.');
+      return blob;
+    }
+    async function loadStories() {
+      const holder = $('#bloom-live-stories'), status = $('#bloom-story-status');
+      if (!currentUser) { holder.replaceChildren(); status.textContent = 'Sign in to share a story or see stories from the community.'; return; }
+      status.textContent = 'Loading stories…'; holder.replaceChildren();
+      const { data, error } = await client.from('stories').select('id,user_id,caption,media_url,created_at,expires_at').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }).limit(30);
+      if (error) { status.textContent = 'Stories need the BLOOM social-features database setup. Please contact the site owner.'; return; }
+      status.textContent = data?.length ? data.length + ' active story/stories · disappear after 24 hours' : 'No active stories yet. Share the first one!';
+      const ids = [...new Set((data || []).map(story => story.user_id))];
+      const profiles = ids.length ? await client.from('profiles').select('id,username').in('id', ids) : { data: [] };
+      const names = new Map((profiles.data || []).map(profile => [profile.id, profile.username]));
+      (data || []).forEach(story => {
+        const card = document.createElement('article'); card.className = 'bloom-story-card';
+        const image = document.createElement('img'); image.src = story.media_url; image.alt = 'Story from ' + (names.get(story.user_id) || 'a BLOOM fan'); image.loading = 'lazy'; image.decoding = 'async';
+        const caption = document.createElement('p'); caption.textContent = story.caption || 'A little fandom moment ♡';
+        const meta = document.createElement('small'); meta.textContent = '@' + (names.get(story.user_id) || 'fan') + (story.user_id === currentUser.id ? ' · You' : '');
+        card.append(image, caption, meta); holder.append(card);
+      });
+    }
+    async function loadNotifications() {
+      const holder = $('#bloom-live-notifications'), status = $('#bloom-notification-status');
+      if (!currentUser) { holder.replaceChildren(); status.textContent = 'Sign in to see likes, comments, and group activity.'; return; }
+      status.textContent = 'Loading notifications…'; holder.replaceChildren();
+      const { data, error } = await client.from('notifications').select('id,actor_id,kind,entity_id,body,created_at,read_at').order('created_at', { ascending: false }).limit(30);
+      if (error) { status.textContent = 'Notifications need the BLOOM social-features database setup. Please try again later.'; return; }
+      const rows = data || [], unread = rows.filter(row => !row.read_at).length;
+      status.textContent = rows.length ? rows.length + ' recent notification(s) · ' + unread + ' unread' : 'You are all caught up. Likes, comments, and group messages will appear here.';
+      const actors = [...new Set(rows.map(row => row.actor_id).filter(Boolean))];
+      const profiles = actors.length ? await client.from('profiles').select('id,username').in('id', actors) : { data: [] };
+      const names = new Map((profiles.data || []).map(profile => [profile.id, profile.username]));
+      rows.forEach(row => {
+        const button = document.createElement('button'); button.type = 'button'; button.className = 'bloom-notification' + (row.read_at ? '' : ' is-unread');
+        const title = document.createElement('strong'); title.textContent = row.kind === 'like' ? '♡ Like' : row.kind === 'comment' ? '💬 Comment' : '✉ Group message';
+        const body = document.createElement('span'); body.textContent = (row.actor_id ? '@' + (names.get(row.actor_id) || 'fan') + ' · ' : '') + row.body;
+        const when = document.createElement('small'); when.textContent = new Date(row.created_at).toLocaleString();
+        button.append(title, body, when);
+        button.addEventListener('click', async () => {
+          if (!row.read_at) {
+            const { error: readError } = await client.from('notifications').update({ read_at: new Date().toISOString() }).eq('id', row.id);
+            if (readError) { status.textContent = 'Could not mark this notification as read.'; return; }
+            row.read_at = new Date().toISOString(); button.classList.remove('is-unread');
+            status.textContent = 'Notification marked as read.';
+          }
+          if (row.kind === 'group_message') $('#bloom-live-chat-title')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          else $('#activity')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        holder.append(button);
+      });
+    }
+    $('#bloom-notifications-refresh').addEventListener('click', loadNotifications);
+    $('#bloom-story-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!currentUser) { openAuth(); setAuthMessage('Sign in before sharing a story.'); return; }
+      const input = $('#bloom-story-photo'), status = $('#bloom-story-status'), button = $('button[type="submit"]', event.currentTarget);
+      const file = input.files?.[0]; if (!file) { status.textContent = 'Choose a photo first.'; return; }
+      const original = button.textContent; button.disabled = true; button.textContent = 'Sharing…'; status.textContent = 'Preparing your photo…';
+      let path = null;
+      try {
+        const blob = await prepareSocialImage(file);
+        path = currentUser.id + '/story-' + crypto.randomUUID() + '.webp';
+        const upload = await client.storage.from('bloom-post-media').upload(path, blob, { contentType: 'image/webp', upsert: false });
+        if (upload.error) throw new Error('Photo upload failed. Please check your connection and try again.');
+        const mediaUrl = client.storage.from('bloom-post-media').getPublicUrl(path).data.publicUrl;
+        const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+        const { error } = await client.from('stories').insert({ user_id: currentUser.id, caption: $('#bloom-story-caption').value.trim(), media_url: mediaUrl, expires_at: expires });
+        if (error) { await client.storage.from('bloom-post-media').remove([path]); path = null; throw new Error('Story could not be published. Please try again.'); }
+        event.currentTarget.reset(); status.textContent = 'Your story is live and will expire in 24 hours.'; await loadStories();
+      } catch (error) { status.textContent = error.message || 'Story could not be shared.'; }
+      finally { button.disabled = false; button.textContent = original; }
+    });
+    async function refreshSocialRail() { await Promise.all([loadStories(), loadNotifications()]); }
+
     setupMarketplace();
+    $('#bloom-social-rail')?.setAttribute('data-social-ready','true');
 
 
     const authButton = document.createElement('button');
@@ -348,6 +456,7 @@
       card.dataset.postId = post.id;
       card.dataset.fandom = post.fandom || 'Multi-stan';
       const art = document.createElement('div'); art.className = 'feed-art'; art.textContent = '💗';
+      if (post.media_url) { const image = document.createElement('img'); image.className = 'bloom-shared-photo'; image.src = post.media_url; image.alt = 'Photo shared in BLOOM post: ' + post.title; image.loading = 'lazy'; image.decoding = 'async'; art.replaceChildren(image); }
       const content = document.createElement('div'); content.className = 'feed-content';
       const meta = document.createElement('div'); meta.className = 'meta';
       meta.textContent = (post.fandom || 'Multi-stan') + ' · ' + new Date(post.created_at).toLocaleString() + ' · BLOOM LIVE';
@@ -442,7 +551,7 @@
     async function loadPosts() {
       const grid = $('#activity .feed-grid');
       $$('.bloom-shared-post', grid || document).forEach(card => card.remove());
-      const { data, error } = await client.from('posts').select('id,author_id,title,body,fandom,link,created_at,status').eq('status','published').order('created_at',{ascending:false}).limit(50);
+      const { data, error } = await client.from('posts').select('id,author_id,title,body,fandom,link,media_url,created_at,status').eq('status','published').order('created_at',{ascending:false}).limit(50);
       livePostList.replaceChildren();
       if (error) { livePostList.textContent = 'Could not load shared posts. Check the Supabase posts table and row-level security policies.'; return; }
       if (!data?.length) { livePostList.textContent = 'No shared posts yet. Publish one to have it appear in the FYP below.'; return; }
@@ -505,6 +614,26 @@
       if (error) window.alert('Post could not be published: ' + error.message);
       else { e.target.reset(); await loadPosts(); }
     });
+    // Shared publisher used by the main FYP composer, including sanitized image uploads.
+    window.bloomPublishPost = async ({ title, body, fandom, link, mediaBlob }) => {
+      if (!currentUser) { openAuth(); setAuthMessage('Sign in before publishing to the shared BLOOM FYP.'); return { ok: false, auth: true }; }
+      let mediaUrl = null, uploadedPath = null;
+      if (mediaBlob) {
+        uploadedPath = currentUser.id + '/post-' + crypto.randomUUID() + '.webp';
+        const upload = await client.storage.from('bloom-post-media').upload(uploadedPath, mediaBlob, { contentType: 'image/webp', upsert: false });
+        if (upload.error) { setLiveStatus('Photo upload failed. Check that BLOOM media storage is configured and try again.'); return { ok: false, error: upload.error }; }
+        mediaUrl = client.storage.from('bloom-post-media').getPublicUrl(uploadedPath).data.publicUrl;
+      }
+      const { error } = await client.from('posts').insert({ author_id: currentUser.id, title, body, fandom: fandom || 'Multi-stan', link: link || null, media_url: mediaUrl });
+      if (error) {
+        if (uploadedPath) await client.storage.from('bloom-post-media').remove([uploadedPath]);
+        setLiveStatus('Post could not be published: ' + error.message);
+        return { ok: false, error };
+      }
+      await loadPosts();
+      await loadNotifications();
+      return { ok: true };
+    };
 
     async function loadGroups() {
       const { data, error } = await client.from('groups').select('id,name,owner_id,is_public,created_at').order('created_at',{ascending:false}).limit(40);
@@ -540,7 +669,7 @@
       messageInput.disabled = false; messageSend.disabled = false;
       await loadMessages(group.id);
       messageChannel = client.channel('bloom-group-'+group.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'group_id=eq.'+group.id},payload => {
-        if (payload.new) appendMessage(payload.new);
+        if (payload.new) { appendMessage(payload.new); void loadNotifications(); }
       }).subscribe();
     }
     function appendMessage(msg) {
@@ -628,6 +757,7 @@
       }
       await loadPosts();
       await loadGroups();
+      await refreshSocialRail();
       if (window.bloomMarketplace?.refresh) await window.bloomMarketplace.refresh();
     }
     client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') passwordRecovery = true; setTimeout(() => { void syncSession(session); }, 0); });
