@@ -67,6 +67,7 @@ assert.match(enhancements, /id="bloom-mini-dock"/, 'Spotify dock control must ex
 assert.match(enhancements, /slot\.append\(frame\)/, 'Dock must move the real Spotify iframe');
 
 assert.match(backend, /client\.auth\.onAuthStateChange/, 'Auth session listener must exist');
+assert.match(backend, /await syncSession\(sessionData\.session\)/, 'Successful password reset must restore the signed-in account UI');
 assert.match(backend, /setTimeout\(\(\) => \{ void syncSession\(session\); \}, 0\)/, 'Auth session work must run after the auth callback returns');
 assert.match(backend, /from\('reports'\)/, 'Reporting flow must use the reports table');
 assert.match(backend, /from\('post_likes'\)/, 'Shared likes must use the backend');
