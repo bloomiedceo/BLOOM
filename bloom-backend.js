@@ -115,19 +115,6 @@
     const activity = $('#activity .wrap');
     if (!activity) return;
     let currentUser = null;
-    window.bloomMusicPlaylists = {
-      isSignedIn: () => Boolean(currentUser),
-      list: async () => await client.from('music_playlists')
-        .select('id,spotify_playlist_id,title,created_at')
-        .order('created_at', { ascending: false }).limit(50),
-      add: async ({ spotifyId, title }) => {
-        if (!currentUser) return { data: null, auth: true, error: { message: 'Sign in to share a playlist with everyone on BLOOM.' } };
-        return await client.from('music_playlists')
-          .insert({ spotify_playlist_id: spotifyId, title, added_by: currentUser.id })
-          .select('id,spotify_playlist_id,title,created_at').single();
-      }
-    };
-    document.dispatchEvent(new CustomEvent('bloom:music-ready'));
     let passwordRecovery = false;
     let activeGroup = null;
     let messageChannel = null;
