@@ -87,6 +87,11 @@ assert.match(enhancements, /new MediaRecorder\(stream/, 'Camera recording must u
 assert.match(enhancements, /Choose a video under 25 MB/, 'Post composer must enforce the video size limit');
 assert.match(backend, /media_type: mediaType === 'video' \? 'video' : 'image'/, 'Published posts must persist their media type');
 assert.match(backend, /story\.media_type === 'video'/, 'Stories must render uploaded video as video');
+assert.match(backend, /storyCameraRecord\.addEventListener/, 'Stories must support direct camera video recording');
+assert.match(backend, /storyCameraPhoto\.addEventListener/, 'Stories must support direct camera photo capture');
+assert.match(backend, /storyRecordTimeout = setTimeout/, 'Story camera recording must have a 30-second safety cap');
+assert.match(backend, /prepareSocialImage\(file, storyFilter\.value\)/, 'Story photo filters must be applied before upload');
+assert.match(backend, /media_type text not null default 'image'/, 'Stories and posts must store media type safely');
 assert.match(backend, /media_type: isVideo \? 'video' : 'image'/, 'Stories must persist their media type');
 assert.match(socialSchema, /allowed_mime_types=excluded\.allowed_mime_types/, 'Media storage must configure allowed image and video types');
 
