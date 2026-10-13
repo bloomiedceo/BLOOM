@@ -121,17 +121,17 @@ function enhancePostComposer(){
  $('.product-type',card).textContent=$('#bloom-product-category').value;$('.product-info h3',card).textContent=name;$('.price',card).textContent=price||'Price not set';const a=$('.shop-link',card);if(url){a.href=url;a.target='_blank'}else{a.href='#';a.addEventListener('click',ev=>{ev.preventDefault();toast('Add a shop URL before publishing this listing.')})}grid.prepend(card);closeModal(modal.id);e.target.reset();applyFilters();toast('Demo listing added on this browser.')});
  applyFilters();
 }
-const demoMessages={'Stanner Lounge':[{from:'BLOOM guide',text:'Welcome! This is a local-only room preview.'},{from:'Fan friend',text:'What song has been on repeat for you lately?'}],'Comeback Central':[{from:'BLOOM guide',text:'Use this room to talk about official comeback news and theories.'}],'Concert Buddies':[{from:'BLOOM guide',text:'Share general event tips; avoid posting private contact details.'}]};
-let activeRoom='Stanner Lounge';
-function openMessages(room){activeRoom=room||activeRoom;const m=$('#bloom-message-modal');if(!m){toast('Messaging preview is loading.');return}m.classList.add('open');document.body.style.overflow='hidden';$$('#bloom-room-list button').forEach(b=>b.classList.toggle('active',b.textContent===activeRoom));renderRoom();$('#bloom-message-input')?.focus()}
-function renderRoom(){const title=$('#bloom-message-room');if(title)title.textContent=activeRoom;const list=$('#bloom-message-list');if(!list)return;list.replaceChildren();const messages=safeRead('bloom-demo-messages',demoMessages);(messages[activeRoom]||[]).forEach(msg=>{const item=document.createElement('div');item.className='bloom-message'+(msg.mine?' mine':'');const who=document.createElement('small');who.textContent=msg.from;const body=document.createElement('span');body.textContent=msg.text;item.append(who,body);list.append(item)});list.scrollTop=list.scrollHeight}
+function scrollToLiveChat(){
+  const panel=$('#bloom-live-community');
+  if(!panel){toast('BLOOM LIVE is still connecting. Refresh the page and try again.');return}
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+  const heading=$('#bloom-live-chat-title');
+  if(heading){heading.setAttribute('tabindex','-1');heading.focus({preventScroll:true})}
+  toast('Use Groups & live chat in BLOOM LIVE. Sign in and join a group to send shared messages.');
+}
 function enhanceMessaging(){
- const modal=document.createElement('div');modal.className='modal-backdrop';modal.id='bloom-message-modal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','bloom-message-heading');
- modal.innerHTML='<div class="modal"><div class="modal-head"><h2 id="bloom-message-heading">Fan rooms & messages 💬</h2><button class="modal-close" id="bloom-message-close" type="button" aria-label="Close">×</button></div><p class="bloom-inline-status">Demo only: messages are stored in this browser and are not delivered to other people. Real-time chat needs a secure backend, accounts, and moderation.</p><div class="bloom-message-shell"><div class="bloom-room-list" id="bloom-room-list"></div><div class="bloom-message-panel"><h3 id="bloom-message-room">Stanner Lounge</h3><div class="bloom-message-list" id="bloom-message-list" aria-live="polite"></div><form class="bloom-message-form" id="bloom-message-form"><input id="bloom-message-input" maxlength="500" required aria-label="Demo message" placeholder="Write a demo message…"><button type="submit">Send</button></form></div></div></div>';
- document.body.append(modal);$('#bloom-message-close').addEventListener('click',()=>closeModal(modal.id));modal.addEventListener('click',e=>{if(e.target===modal)closeModal(modal.id)});
- const roomList=$('#bloom-room-list');Object.keys(demoMessages).forEach(room=>{const b=document.createElement('button');b.type='button';b.textContent=room;b.addEventListener('click',()=>{activeRoom=room;$$('button',roomList).forEach(x=>x.classList.toggle('active',x===b));renderRoom()});if(room===activeRoom)b.classList.add('active');roomList.append(b)});
- $('#bloom-message-form').addEventListener('submit',e=>{e.preventDefault();const text=$('#bloom-message-input').value.trim();if(!text)return;const all=safeRead('bloom-demo-messages',demoMessages);all[activeRoom]=all[activeRoom]||[];all[activeRoom].push({from:'You (this browser)',text,mine:true});if(!safeWrite('bloom-demo-messages',all)){toast('Could not save the demo message.');return}e.target.reset();renderRoom()});
- $$('.room').forEach(card=>card.addEventListener('click',e=>{e.preventDefault();openMessages($('h3',card)?.textContent||'Stanner Lounge')}));
+  window.scrollToBloomChat=scrollToLiveChat;
+  $$('.room').forEach(card=>card.addEventListener('click',event=>{event.preventDefault();scrollToLiveChat()}));
 }
 function enhanceMusic(){
  if($('#bloom-music'))return;const section=document.createElement('section');section.className='section';section.id='bloom-music';
