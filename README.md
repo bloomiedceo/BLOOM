@@ -79,7 +79,7 @@ When `bloom-config.js` has blank values, the website deliberately stays in previ
 
 ## Automated checks
 
-GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which guards against the single-element selector bug that previously stopped the enhancement script, verifies Safety Center wiring and Spotify docking hooks, and checks key RLS/security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
+GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which guards against the single-element selector bug that previously stopped the enhancement script, verifies Safety Center wiring and Spotify embed validation, and checks key RLS/security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
 
 ## Pre-launch smoke-test checklist
 
