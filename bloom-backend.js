@@ -18,16 +18,19 @@
     if (!emailInput || !consentInput || !status || !submitButton) return;
     if (!emailInput.checkValidity()) {
       emailInput.reportValidity();
+      status.dataset.state = 'error';
       status.textContent = 'Please enter a valid email address.';
       return;
     }
     if (!consentInput.checked) {
+      status.dataset.state = 'error';
       status.textContent = 'Please confirm that you want to receive BLOOM email updates.';
       consentInput.focus();
       return;
     }
     if (!cfg.url || !cfg.anonKey) {
-      status.textContent = 'Newsletter signup is temporarily unavailable. Please try again later.';
+      status.dataset.state = 'error';
+      status.textContent = 'Newsletter email delivery is not configured yet. Your email has not been subscribed. Please try again later.';
       return;
     }
     if (newsletterSubmitting) return;
@@ -35,6 +38,7 @@
     submitButton.disabled = true;
     const originalLabel = submitButton.textContent;
     submitButton.textContent = 'Sending…';
+    status.dataset.state = 'pending';
     status.textContent = 'Requesting your confirmation email…';
     try {
       const response = await fetch(cfg.url.replace(/\/$/, '') + '/functions/v1/newsletter-subscribe', {
@@ -48,13 +52,16 @@
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        status.textContent = result.error || 'We could not send your confirmation email. Please try again later.';
+        status.dataset.state = 'error';
+        status.textContent = response.status === 503 && /not configured/i.test(result.error || '') ? 'BLOOM email delivery is not configured yet. Your email has not been subscribed.' : (result.error || 'We could not send your confirmation email. Please try again later.');
       } else {
+        status.dataset.state = 'success';
         status.textContent = result.message || 'Check your inbox for a confirmation link to finish signing up.';
         emailInput.value = '';
         consentInput.checked = false;
       }
     } catch (_) {
+      status.dataset.state = 'error';
       status.textContent = 'We could not reach the newsletter service. Your signup is not confirmed; please try again.';
     } finally {
       newsletterSubmitting = false;
