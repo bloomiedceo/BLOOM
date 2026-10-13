@@ -42,6 +42,7 @@ assert.ok(newsletterFunction.includes('api.resend.com/emails'), 'Newsletter func
 assert.match(upgrades, /Shopee/, 'Marketplace cards must have real marketplace destinations');
 assert.match(upgrades, /\$\$\('#product-grid \.product-card'\)\.forEach/, 'Marketplace must iterate over all product cards without a querySelector null error');
 assert.match(upgrades, /const catalogue = \[/, 'Marketplace must render a browseable K-pop product discovery catalogue');
+assert.match(upgrades, /#activity \.feed-card\[hidden\],#product-grid \.product-card\[hidden\]\{display:none!important\}/, 'FYP and marketplace filters must override card display styles when hiding items');
 assert.equal((upgrades.match(/heart\.addEventListener\('click'/g) || []).length, 1, 'New catalogue wishlist buttons must have exactly one click handler');
 assert.match(upgrades, /const initiallySaved = Array\.isArray\(initialWishlist\) && initialWishlist\.includes\(wishlistKey\)/, 'New catalogue wishlist buttons must restore saved state');
 assert.match(upgrades, /if \(!write\('bloom-demo-wishlist', next\)\)/, 'New catalogue wishlist changes must report storage failures');
