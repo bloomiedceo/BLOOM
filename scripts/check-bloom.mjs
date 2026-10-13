@@ -72,6 +72,11 @@ assert.match(backend, /from\('reports'\)/, 'Reporting flow must use the reports 
 assert.match(backend, /from\('post_likes'\)/, 'Shared likes must use the backend');
 assert.match(backend, /from\('post_comments'\)/, 'Shared comments must use the backend');
 assert.match(upgrades, /bloom-shared-post/, 'Preview interactions must not override shared-post controls');
+assert.doesNotMatch(upgrades, /bloom-launch-feed-search|bloom-launch-feed-filter/, 'FYP must not create a second filter bar that competes with the shared search/fandom/saved filter');
+assert.match(upgrades, /like\.removeAttribute\('data-action'\)/, 'Preview likes must use one click handler instead of updating two independent stores');
+assert.match(upgrades, /const save = actionButtons\.find\(button => button\.dataset\.action === 'save'\)/, 'Decorating preview feed cards must preserve the Save control');
+assert.match(upgrades, /let comment = \$\('\[data-bloom-action="comment"\]', actions\)/, 'Comment control must be separate from Save');
+
 assert.match(config, /url:\s*"https:\/\/[^\"]+\.supabase\.co"/, 'Supabase project URL must be configured');
 assert.match(config, /anonKey:\s*"[^\"]+"/, 'Supabase public frontend key must be configured');
 assert.doesNotMatch(config, /service_role\s*:/i, 'Browser config must never contain a service-role key');
