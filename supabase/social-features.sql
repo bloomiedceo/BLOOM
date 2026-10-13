@@ -18,15 +18,7 @@ drop policy if exists "BLOOM users update own media" on storage.objects;
 create policy "BLOOM users update own media" on storage.objects for update to authenticated using (bucket_id = 'bloom-post-media' and (storage.foldername(name))[1] = (select auth.uid())::text) with check (bucket_id = 'bloom-post-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
 drop policy if exists "BLOOM users delete own media" on storage.objects;
 create policy "BLOOM users delete own media" on storage.objects for delete to authenticated using (bucket_id = 'bloom-post-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
-drop policy if exists "BLOOM story media visible while active" on storage.objects;
-create policy "BLOOM story media visible while active" on storage.objects for select to anon, authenticated
-using (bucket_id = 'bloom-story-media' and exists (select 1 from public.stories s where s.media_path = name and s.expires_at > now()));
-drop policy if exists "BLOOM users upload own story media" on storage.objects;
-create policy "BLOOM users upload own story media" on storage.objects for insert to authenticated
-with check (bucket_id = 'bloom-story-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
-drop policy if exists "BLOOM users delete own story media" on storage.objects;
-create policy "BLOOM users delete own story media" on storage.objects for delete to authenticated
-using (bucket_id = 'bloom-story-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
 
 
 create table if not exists public.stories (
@@ -50,6 +42,16 @@ drop policy if exists "BLOOM users delete own stories" on public.stories;
 create policy "BLOOM users delete own stories" on public.stories for delete to authenticated using (user_id = (select auth.uid()));
 grant select on public.stories to anon, authenticated;
 grant insert, delete on public.stories to authenticated;
+
+drop policy if exists "BLOOM story media visible while active" on storage.objects;
+create policy "BLOOM story media visible while active" on storage.objects for select to anon, authenticated
+using (bucket_id = 'bloom-story-media' and exists (select 1 from public.stories s where s.media_path = name and s.expires_at > now()));
+drop policy if exists "BLOOM users upload own story media" on storage.objects;
+create policy "BLOOM users upload own story media" on storage.objects for insert to authenticated
+with check (bucket_id = 'bloom-story-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists "BLOOM users delete own story media" on storage.objects;
+create policy "BLOOM users delete own story media" on storage.objects for delete to authenticated
+using (bucket_id = 'bloom-story-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
 
 create table if not exists public.notifications (
  id uuid primary key default gen_random_uuid(),
