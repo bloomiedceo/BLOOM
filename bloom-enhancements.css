@@ -119,3 +119,23 @@
 #bloom-user-playlists:empty{display:none}
 .newsletter-status{display:block;min-height:1.4em;margin:10px 0 0;font-size:13px;line-height:1.55;font-weight:750;overflow-wrap:anywhere}
 .newsletter-status:empty{min-height:0;margin:0}
+
+/* BLOOM LIVE social column: 24-hour stories and private notification inbox */
+.bloom-live-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(250px,.9fr)}
+.bloom-social-card{max-height:920px;overflow:auto;scrollbar-gutter:stable}
+.bloom-social-divider{height:1px;background:var(--line);margin:18px 0}
+.bloom-notification-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bloom-notification-head h4{margin:0;font-size:14px}
+.bloom-story-list,.bloom-notification-list{display:grid;gap:10px;margin-top:10px}
+.bloom-story-card,.bloom-notification-item{min-width:0;border:1px solid var(--line);border-radius:13px;padding:10px;background:#fff}
+.bloom-story-card img{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:9px;background:#f4effb}
+.bloom-story-card strong{font-size:12px}
+.bloom-story-card p,.bloom-notification-item p{margin:6px 0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.bloom-story-card time,.bloom-notification-item time{display:block;font-size:10px;color:var(--muted);margin:5px 0 8px}
+.bloom-notification-item.is-unread{border-color:#cbb7ff;background:#faf7ff}
+.bloom-notification-item button,.bloom-story-card button{margin-top:4px}
+#bloom-story-preview{width:100%;max-height:220px;object-fit:cover;border-radius:12px}
+#bloom-story-preview[hidden]{display:none}
+#bloom-story-file{width:100%;min-width:0;font-size:12px}
+@media(max-width:1100px){.bloom-live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bloom-social-card{grid-column:1/-1;max-height:none}.bloom-story-list,.bloom-notification-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.bloom-live-grid{grid-template-columns:1fr}.bloom-social-card{grid-column:auto}.bloom-story-list,.bloom-notification-list{grid-template-columns:1fr}}
