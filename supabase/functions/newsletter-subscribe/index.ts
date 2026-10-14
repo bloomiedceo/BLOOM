@@ -5,7 +5,7 @@
 // Never expose any secret in browser code or GitHub.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const siteDefault = "https://bloomiedceo.github.io/Bloom-Kpop-Community/";
+const siteDefault = "https://bloomiedceo.github.io/BLOOM/";
 const allowedOrigins = (Deno.env.get("BLOOM_ALLOWED_ORIGINS") || "https://bloomiedceo.github.io")
   .split(",").map((value) => value.trim()).filter(Boolean);
 const siteUrl = (Deno.env.get("BLOOM_SITE_URL") || siteDefault).replace(/\/$/, "");
