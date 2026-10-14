@@ -181,10 +181,32 @@ footer{border-color:#eee7f7}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 
+
+<style id="bloom-v2-refresh">
+:root{--ink:#211b36;--muted:#716a83;--paper:#fcfaff;--lilac:#d9c8ff;--purple:#7654d8;--pink:#ffb9d0;--line:#e9e2f4;--mint:#d6f5e9;--yellow:#ffe7a8;--radius:26px}
+body{background:radial-gradient(ellipse at 8% 8%,#f2ebff 0,transparent 34%),radial-gradient(ellipse at 92% 18%,#fff0f6 0,transparent 30%),var(--paper)}
+.bloom-v2-note{gap:8px 12px;padding:12px 18px;background:linear-gradient(100deg,#28203d,#48326f);border-bottom:1px solid #d9c8ff;color:#f7f1ff;font-size:12px}
+.bloom-v2-note strong{color:#ffbdd6;letter-spacing:.08em;font-size:13px}
+.bloom-v2-status{padding:4px 9px;border:1px solid #ffffff38;border-radius:999px;color:#e5dafa;font-size:10px}
+.topline{background:#181326;letter-spacing:.12em}
+header{background:rgba(252,250,255,.9);border-bottom-color:#e6ddf2}
+.logo.bloom-flower-logo{width:44px;height:44px;padding:4px;border-radius:15px;background:white;box-shadow:0 7px 24px #7654d81c;border:1px solid #eee6f7}
+.hero{padding-top:54px}
+.hero h1{max-width:670px;font-size:clamp(46px,6.3vw,82px);line-height:.96;letter-spacing:-.078em}
+.hero h1 span{background:linear-gradient(100deg,#7853d6,#d45c9c);background-clip:text;-webkit-background-clip:text;color:transparent}
+.hero-art{box-shadow:0 26px 80px #6c4bb31c;border:1px solid #ffffffa8}
+.pill{box-shadow:0 4px 14px #34244a0a}
+.primary{background:linear-gradient(110deg,#28203d,#49336c)}
+.section-head h2,.community-banner h2{letter-spacing:-.055em}
+.product-card,.feed-card,.tool-card,.room{border:1px solid #ece5f5;box-shadow:0 12px 36px #4a326c0a}
+.product-card:hover,.feed-card:hover,.tool-card:hover,.room:hover{box-shadow:0 18px 44px #4a326c16}
+@media(max-width:640px){.hero{padding-top:34px}.bloom-v2-status{width:100%;max-width:max-content}}
+</style>
+
 </head>
 <body>
 
-<div class="bloom-launch-note" role="note"><strong>🌸 BLOOM launch preview</strong><span>Brand refresh in progress · Community features are demo previews until a secure backend is connected.</span></div>
+<div class="bloom-launch-note bloom-v2-note" role="note"><strong>✿ BLOOM 2.0</strong><span>Your K-pop universe · Fan feed, music & marketplace preview</span><span class="bloom-v2-status">Some community actions are previews until backend setup is complete.</span></div>
 <style>
 .bloom-launch-note{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 16px;background:#f6f0ff;border-bottom:1px solid #e9defb;color:#5e4b80;font-size:12px;text-align:center}
 .bloom-launch-note strong{color:#7855c9}
@@ -199,7 +221,7 @@ footer{border-color:#eee7f7}
 <main id="home">
 <section class="hero"><div class="wrap hero-grid"><div>
 <div class="eyebrow"><i></i> your fandom, your people</div>
-<h1>Made for the<br>love of <span>K-pop.</span></h1>
+<h1>Your K-pop<br>world, in <span>full bloom.</span></h1>
 <p>Meet your fandom friends, find your next favorite merch, and make every comeback feel a little more magical. Welcome to your internet fan corner.</p>
 <div class="hero-buttons"><a class="pill primary" href="#discover">Explore fan favorites <span>↗</span></a><a class="pill white" href="#community">Find your fan room ♡</a></div>
 <div class="social-proof"><div class="avatars"><span>🐰</span><span>🐻</span><span>🐱</span><span>🐣</span></div><span><strong style="color:var(--ink)">Your people are here.</strong> Come say hi ✨</span></div>
