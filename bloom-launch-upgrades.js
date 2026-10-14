@@ -39,7 +39,7 @@
       .bloom-market-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:8px}
       .bloom-market-links a{display:inline-flex;align-items:center;gap:4px;border:1px solid #e8def6;background:#faf7ff;color:#7556cf;border-radius:999px;padding:8px 10px;font-size:10px;font-weight:900}
       .bloom-market-links a:hover{background:#eafcff;border-color:#bceef4}
-      @media(max-width:640px){#activity .feed-grid{max-height:75svh;padding:2px 2px 12px}#activity .feed-card{min-height:min(68svh,620px)}#activity .feed-art{min-height:150px}#activity .feed-content{padding:15px}.bloom-comments-panel{padding:17px}}
+      @media(max-width:640px){#activity .feed-grid{max-height:none;overflow:visible;padding:2px 2px 12px}#activity .feed-card{min-height:0;max-height:none}#activity .feed-art{min-height:150px}#activity .feed-content{padding:15px}.bloom-comments-panel{padding:17px}}
     `;
     document.head.append(style);
   }
