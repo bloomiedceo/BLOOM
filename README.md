@@ -1,6 +1,6 @@
 # BLOOM — K-pop Community
 
-BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery website. The original single-page design and founder dashboard are preserved.
+BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery website. The original single-page design and founder dashboard are preserved alongside the current feed, community, music, and marketplace interface upgrades.
 
 ## Main files
 
@@ -32,7 +32,7 @@ Then open `http://localhost:8000`.
 
 1. Open **Settings → Pages**.
 2. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/(root)`, then save.
-3. Wait for the Pages deployment to finish and use the URL GitHub displays. The usual project-site URL is `https://bloomiedceo.github.io/Bloom-Kpop-Community/`.
+3. Wait for the Pages deployment to finish and use the URL GitHub displays. The current project-site URL after the repository rename is `https://bloomiedceo.github.io/BLOOM/`.
 4. Check the **Actions** tab for failed deployments or validation checks.
 
 ## Safety Center
