@@ -1,6 +1,6 @@
-# BLOOM — K-pop Community
+# BLOOM — Social Media Platform
 
-BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery website. The original single-page design and founder dashboard are preserved alongside the current feed, community, music, and marketplace interface upgrades.
+BLOOM is a mobile-first social media platform concept for sharing photos and videos, discovering creators and communities, messaging, profiles, and community safety. A creator marketplace is an optional supporting feature. The existing integrations are being preserved while the new social-first interface is reviewed and tested.
 
 ## Main files
 
@@ -8,7 +8,7 @@ BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery webs
 - `bloom-enhancements.css` / `bloom-enhancements.js` — responsive feed, media composer, in-app Spotify embed, and interface upgrades.
 - `bloom-config.js` — public Supabase Project URL and publishable/anon key placeholders. It must never contain a service-role key.
 - `bloom-backend.js` — optional Supabase Auth, shared posts, public groups, real-time group messages, shared post likes/comments, reporting, and moderator queue UI.
-- `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
+- `bloom-launch-upgrades.js` — vertical scrollable feed layout, community discovery/search, preview-only local likes/comments, sharing controls, and marketplace links.
 - `supabase/schema.sql` — core database tables, indexes, triggers, grants, and row-level security (RLS) policies.
 - `supabase/feed-engagement.sql` — additional RLS-protected tables and RPC for shared post likes/comment counts; run after the core schema.
 - `supabase/newsletter-signups.sql` — legacy signup table migration, now locked down.
@@ -103,7 +103,7 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 
 ## Unified BLOOM upgrade (staged for review)
 
-- `bloom-unified-preview.html` is a working-branch preview that brings the K-pop community (Stanner Circles, Album Display Edit, Comeback Central, Curated Finds) together with a social feed, creator drafts, Greenhouse chat preview, marketplace/cart preview, profile preferences, currency display, and founder/safety panels.
+- `bloom-unified-preview.html` is a working-branch preview that brings a social-first experience with a feed, creator drafts, community discovery, Greenhouse chat preview, marketplace/cart preview, profile preferences, currency display, and founder/safety panels.
 - The preview intentionally uses local demo interactions. It does **not** claim that login, email verification, private chat, media publishing, seller onboarding, checkout, or payouts are live.
 - The production entry point remains `index.html` while the unified preview is reviewed. This preserves the existing Supabase integration, Spotify embed work, moderation/reporting paths, marketplace inquiry flow, and current regression checks until the replacement UI has been integrated with and tested against those services.
 - Next integration gate: adapt the unified screens to the existing Supabase auth/feed/groups/messages/reports/marketplace APIs, verify every relevant RLS policy with test accounts, and then run the browser/device test matrix in `docs/LAUNCH_READINESS.md`. Do not switch the published entry point until this passes.
