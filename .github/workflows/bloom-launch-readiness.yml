@@ -1,0 +1,37 @@
+name: BLOOM Launch Readiness
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "launch/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bloom-launch-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-checks:
+    name: static-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check JavaScript syntax
+        run: |
+          node --check bloom-config.js
+          node --check bloom-enhancements.js
+          node --check bloom-backend.js
+          node --check bloom-launch-upgrades.js
+          node --check scripts/check-bloom.mjs
+      - name: Run BLOOM static security and regression checks
+        run: node scripts/check-bloom.mjs
