@@ -33,5 +33,8 @@ jobs:
           node --check bloom-backend.js
           node --check bloom-launch-upgrades.js
           node --check scripts/check-bloom.mjs
+          node --check scripts/check-unified-preview.mjs
       - name: Run BLOOM static security and regression checks
-        run: node scripts/check-bloom.mjs
+        run: |
+            node scripts/check-bloom.mjs
+            node scripts/check-unified-preview.mjs
