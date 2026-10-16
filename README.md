@@ -99,3 +99,12 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
 - [ ] Set Resend API key, verified sender address, and published site URL as Edge Function secrets; then set `newsletterEnabled: true` in `bloom-config.js` and test confirmation, duplicate signup, and one-click unsubscribe.
 - [ ] Enable leaked-password protection, configure Supabase Auth custom SMTP, add abuse controls/CAPTCHA, verify backups/monitoring, and establish a real moderation rota before announcing launch.
+
+
+## Unified BLOOM upgrade (staged for review)
+
+- `bloom-unified-preview.html` is a working-branch preview that brings the K-pop community (Stanner Circles, Album Display Edit, Comeback Central, Curated Finds) together with a social feed, creator drafts, Greenhouse chat preview, marketplace/cart preview, profile preferences, currency display, and founder/safety panels.
+- The preview intentionally uses local demo interactions. It does **not** claim that login, email verification, private chat, media publishing, seller onboarding, checkout, or payouts are live.
+- The production entry point remains `index.html` while the unified preview is reviewed. This preserves the existing Supabase integration, Spotify embed work, moderation/reporting paths, marketplace inquiry flow, and current regression checks until the replacement UI has been integrated with and tested against those services.
+- Next integration gate: adapt the unified screens to the existing Supabase auth/feed/groups/messages/reports/marketplace APIs, verify every relevant RLS policy with test accounts, and then run the browser/device test matrix in `docs/LAUNCH_READINESS.md`. Do not switch the published entry point until this passes.
+
