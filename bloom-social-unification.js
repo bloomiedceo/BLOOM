@@ -36,6 +36,56 @@
     }
     try { const saved = sessionStorage.getItem('bloom-interest-filter'); if (saved && interestLabels[saved]) chooseInterest(saved); } catch (_) {}
   }
+
+  function initMyMix() {
+    const panel = $('#bloom-my-mix');
+    if (!panel) return;
+    const buttons = $$('.bloom-preference-chip', panel);
+    const status = $('#bloom-mix-status', panel);
+    let pending = new Set();
+    try {
+      const saved = JSON.parse(localStorage.getItem('bloom-interest-preferences-v1') || '[]');
+      if (Array.isArray(saved)) pending = new Set(saved.filter((key) => buttons.some((button) => button.dataset.bloomPref === key)));
+    } catch (_) {}
+    function paint() {
+      buttons.forEach((button) => button.setAttribute('aria-pressed', String(pending.has(button.dataset.bloomPref))));
+      if (status) {
+        const enabled = localStorage.getItem('bloom-interest-mix-enabled-v1') === 'true';
+        if (enabled && pending.size) status.textContent = 'Your mix is active with ' + pending.size + ' interest' + (pending.size === 1 ? '' : 's') + '. Change your picks and apply again any time.';
+        else if (pending.size) status.textContent = pending.size + ' interest' + (pending.size === 1 ? '' : 's') + ' selected. Apply your mix to filter the For You feed.';
+        else status.textContent = 'No interests selected yet. BLOOM will show the full range of topics.';
+      }
+    }
+    buttons.forEach((button) => button.addEventListener('click', () => {
+      const key = button.dataset.bloomPref;
+      if (pending.has(key)) pending.delete(key); else pending.add(key);
+      paint();
+    }));
+    $('#bloom-apply-mix', panel)?.addEventListener('click', () => {
+      const selected = [...pending];
+      try {
+        localStorage.setItem('bloom-interest-preferences-v1', JSON.stringify(selected));
+        localStorage.setItem('bloom-interest-mix-enabled-v1', String(selected.length > 0));
+      } catch (_) { toast('Browser storage is unavailable, so these preferences may not persist.'); }
+      document.dispatchEvent(new Event('bloom:interest-preferences-updated'));
+      paint();
+      $('#activity')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      toast(selected.length ? 'Your BLOOM Mix is ready with ' + selected.length + ' interest' + (selected.length === 1 ? '' : 's') + ' ✿' : 'Showing every interest in BLOOM.');
+    });
+    $('#bloom-clear-mix', panel)?.addEventListener('click', () => {
+      pending.clear();
+      try {
+        localStorage.setItem('bloom-interest-preferences-v1', '[]');
+        localStorage.setItem('bloom-interest-mix-enabled-v1', 'false');
+      } catch (_) { toast('Browser storage is unavailable, so this change may not persist.'); }
+      document.dispatchEvent(new Event('bloom:interest-preferences-updated'));
+      paint();
+      toast('Your feed is open to all interests again.');
+    });
+    paint();
+    document.dispatchEvent(new Event('bloom:interest-preferences-updated'));
+  }
+
   function initDock() {
     const dock = $('.bloom-mobile-dock');
     if (!dock) return;
@@ -64,6 +114,6 @@
     }), {rootMargin:'-30% 0px -60% 0px',threshold:0});
     sections.forEach((section) => observer.observe(section));
   }
-  function init() { initInterestSearch(); initInterestNavigation(); initDock(); initMobileDockState(); }
+  function init() { initInterestSearch(); initInterestNavigation(); initMyMix(); initDock(); initMobileDockState(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true}); else init();
 })();
