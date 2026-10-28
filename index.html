@@ -73,34 +73,32 @@ tailwind.config = {
       <div class="glass rounded-full px-4 py-2 text-xs text-zinc-300"><span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>Community growing</div>
     </header>
 
+    <nav class="bloom-global-categories" aria-label="Explore BLOOM platforms">
+      <a href="your-mix.html">✿ Your Mix</a><a href="stanner-circles.html">Circles</a><a href="album-display.html">Album Display</a><a href="curated-finds.html">Curated Finds</a><a href="feedback-booth.html">Feedback Booth</a>
+    </nav>
     <div class="mb-12">
-      <p class="eyebrow mb-4">A little corner of the internet, made to feel like yours</p>
+      <p class="eyebrow mb-4 of the internet, made to feel like yours</p>
       <h1 class="text-5xl xl:text-6xl font-black leading-[.98] tracking-[-.065em] max-w-3xl">Your whole world.<br><span class="text-emerald-400">In full bloom.</span></h1>
       <p class="text-zinc-400 mt-5 leading-7 max-w-xl text-sm">A premium social garden to share what you make, meet your people, and celebrate every interest that makes you feel like you.</p>
-      <div class="flex flex-wrap gap-3 mt-7"><a href="#finds" class="grow-btn no-underline">Explore the garden ↗</a><button class="glass rounded-xl px-4 py-3 text-xs font-semibold" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Founder space ↓</button></div>
+      <div class="flex flex-wrap gap-3 mt-7"><a href="your-mix.html" class="grow-btn no-underline">Explore Your Mix ↗</a><a class="glass rounded-xl px-4 py-3 text-xs font-semibold no-underline" href="curated-finds.html?compose=1">Create an inspiration post ＋</a></div>
     </div>
 
     <section class="mb-12" id="album-edit">
-      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Curate your corner</p><h2 class="text-2xl font-bold tracking-tight">The Album Display Edit</h2></div><span class="text-xs text-zinc-500">01 / your shelf</span></div>
+      <div class="flex items-end justify-between gap-4 mb-5"><div><p class="eyebrow mb-2">Curate your corner</p><h2 class="text-2xl font-bold tracking-tight">The Album Display Edit</h2><p class="text-sm text-zinc-500 mt-2">A dedicated shelf-styling and collection-inspiration space.</p></div><a class="bloom-inline-action" href="album-display.html">Enter platform ↗</a></div>
       <div class="grid grid-cols-2 gap-4">
-        <article class="platform-card">
-          <div class="platform-art"><span class="product-symbol">💿</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">shelf styling</span></div>
-          <div class="p-4"><p class="text-sm font-bold">The Album Display Edit</p><p class="text-xs text-zinc-500 mt-1">Make your favourite era a little shrine.</p><div class="flex items-center justify-between mt-4"><span class="text-sm font-semibold">From $12</span><a class="product-link" href="https://www.pinterest.com/search/pins/?q=kpop%20album%20display" target="_blank" rel="noopener noreferrer">Shop the find <span>↗</span></a></div></div>
-        </article>
-        <article class="platform-card">
-          <div class="platform-art pink"><span class="product-symbol">🧥</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">off-duty energy</span></div>
-          <div class="p-4"><p class="text-sm font-bold">Off-Duty Idol Layers</p><p class="text-xs text-zinc-500 mt-1">Comfy layers, airport-fit inspiration.</p><div class="flex items-center justify-between mt-4"><span class="text-sm font-semibold">From $28</span><a class="product-link" href="https://www.pinterest.com/search/pins/?q=kpop%20airport%20fashion" target="_blank" rel="noopener noreferrer">Shop the find <span>↗</span></a></div></div>
-        </article>
+        <a class="platform-card bloom-hub-card" href="album-display.html"><div class="platform-art"><span class="product-symbol">💿</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">shelf styling</span></div><div class="p-4"><p class="text-sm font-bold">The Album Display Edit</p><p class="text-xs text-zinc-500 mt-1">Shelf layouts, album collections, and tiny display details.</p><span class="product-link mt-4">Explore album displays ↗</span></div></a>
+        <a class="platform-card bloom-hub-card" href="album-display.html#shelf-inspo"><div class="platform-art pink"><span class="product-symbol">🎀</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">collection care</span></div><div class="p-4"><p class="text-sm font-bold">Collection Corners</p><p class="text-xs text-zinc-500 mt-1">Photocard storage, colour themes, and personal shelves.</p><span class="product-link mt-4">See the inspiration ↗</span></div></a>
       </div>
     </section>
 
     <section class="mb-12" id="finds">
-      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Little Things, Big Joy</p><h2 class="text-2xl font-bold tracking-tight">Curated Finds</h2></div><span class="text-xs text-zinc-500">For every interest</span></div>
+      <div class="flex items-end justify-between gap-4 mb-5"><div><p class="eyebrow mb-2">Little Things, Big Joy</p><h2 class="text-2xl font-bold tracking-tight">Curated Finds</h2><p class="text-sm text-zinc-500 mt-2">Inspiration posted by people with every kind of interest.</p></div><a class="grow-btn no-underline shrink-0" href="curated-finds.html?compose=1">＋ Create post</a></div>
       <div class="grid grid-cols-3 gap-3">
-        <div class="glass rounded-2xl p-3"><div class="text-2xl mb-3">🪴</div><p class="text-xs font-bold">Shelf Garden</p><p class="text-[10px] text-zinc-500 mt-1">Display inspo</p></div>
-        <div class="glass rounded-2xl p-3"><div class="text-2xl mb-3">📸</div><p class="text-xs font-bold">PC Protectors</p><p class="text-[10px] text-zinc-500 mt-1">Tiny treasures</p></div>
-        <div class="glass rounded-2xl p-3"><div class="text-2xl mb-3">🎧</div><p class="text-xs font-bold">Comeback Kit</p><p class="text-[10px] text-zinc-500 mt-1">Ready to stream</p></div>
+        <a class="glass rounded-2xl p-3 bloom-hub-card" href="curated-finds.html?category=creative"><div class="text-2xl mb-3">🎨</div><p class="text-xs font-bold">Art & Design</p><p class="text-[10px] text-zinc-500 mt-1">Creative finds</p></a>
+        <a class="glass rounded-2xl p-3 bloom-hub-card" href="curated-finds.html?category=gaming"><div class="text-2xl mb-3">🎮</div><p class="text-xs font-bold">Gaming</p><p class="text-[10px] text-zinc-500 mt-1">Setups & gear</p></a>
+        <a class="glass rounded-2xl p-3 bloom-hub-card" href="curated-finds.html?category=albums"><div class="text-2xl mb-3">💿</div><p class="text-xs font-bold">Albums & Displays</p><p class="text-[10px] text-zinc-500 mt-1">Collection inspo</p></a>
       </div>
+      <div class="text-center mt-5"><a class="product-link" href="curated-finds.html">Explore every category ↗</a></div>
     </section>
 
     <section id="bloom-desktop-market" class="mb-12">
@@ -109,41 +107,27 @@ tailwind.config = {
       <div id="bloom-desktop-market-grid" class="bloom-desktop-market-grid"><div class="bloom-empty-state">Live listings appear here when connected.</div></div>
     </section>
 
-    <section class="mb-12">
-      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Find your people</p><h2 class="text-2xl font-bold tracking-tight">Stanner Circles</h2></div><span class="text-xs text-zinc-500">3 circles open</span></div>
+    <section class="mb-12" id="circles-preview">
+      <div class="flex items-end justify-between gap-4 mb-5"><div><p class="eyebrow mb-2">Find your people</p><h2 class="text-2xl font-bold tracking-tight">Stanner Circles</h2><p class="text-sm text-zinc-500 mt-2">One place for every circle, conversation, and shared obsession.</p></div><a class="bloom-inline-action" href="stanner-circles.html">Open platform ↗</a></div>
       <div class="space-y-3">
-        <button class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left" onclick="openRoom('Stanner Lounge')"><div class="avatar">💬</div><div class="flex-1"><div class="text-sm font-bold">Stanner Lounge</div><div class="text-xs text-zinc-500 mt-1">The general chat for every thought.</div></div><span class="text-emerald-400">↗</span></button>
-        <button class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left" onclick="openRoom('Comeback Central')"><div class="avatar">🎤</div><div class="flex-1"><div class="text-sm font-bold">Comeback Central</div><div class="text-xs text-zinc-500 mt-1">Theories, teasers, countdown energy.</div></div><span class="text-emerald-400">↗</span></button>
-        <button class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left" onclick="openRoom('Idol Updates')"><div class="avatar">🌟</div><div class="flex-1"><div class="text-sm font-bold">Idol Updates</div><div class="text-xs text-zinc-500 mt-1">Little updates, big feelings.</div></div><span class="text-emerald-400">↗</span></button>
+        <a class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left bloom-hub-card" href="stanner-circles.html"><div class="avatar">💬</div><div class="flex-1"><div class="text-sm font-bold">Stanner Lounge</div><div class="text-xs text-zinc-500 mt-1">The general chat for every thought.</div></div><span class="text-emerald-400">↗</span></a>
+        <a class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left bloom-hub-card" href="stanner-circles.html?interest=fandom"><div class="avatar">🎤</div><div class="flex-1"><div class="text-sm font-bold">Comeback Central</div><div class="text-xs text-zinc-500 mt-1">Theories, teasers, countdown energy.</div></div><span class="text-emerald-400">↗</span></a>
+        <a class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left bloom-hub-card" href="stanner-circles.html?interest=music"><div class="avatar">🌟</div><div class="flex-1"><div class="text-sm font-bold">Listening Parties</div><div class="text-xs text-zinc-500 mt-1">Listen together and meet your people.</div></div><span class="text-emerald-400">↗</span></a>
       </div>
     </section>
 
-    <section id="dashboard" class="platform-card dashboard mb-10">
-      <div class="p-5 flex items-center justify-between gap-4">
-        <div><p class="eyebrow mb-2">Founder-only view · mock data</p><h2 class="text-xl font-bold">CEO Dashboard</h2><p class="text-xs text-zinc-500 mt-1">A small snapshot of the growing garden.</p></div>
-        <button class="dashboard-toggle glass rounded-xl w-10 h-10" id="dashboardToggle" aria-expanded="true" aria-label="Collapse dashboard">⌃</button>
-      </div>
-      <div class="dashboard-body px-5 pb-5">
-        <div class="grid grid-cols-3 gap-2 mb-6">
-          <div class="glass rounded-xl p-3"><strong class="text-lg">1,284</strong><p class="text-[10px] text-zinc-500 mt-1">Community members</p></div>
-          <div class="glass rounded-xl p-3"><strong class="text-lg">68%</strong><p class="text-[10px] text-zinc-500 mt-1">Weekly engagement</p></div>
-          <div class="glass rounded-xl p-3"><strong class="text-lg" id="checkCount">0/8</strong><p class="text-[10px] text-zinc-500 mt-1">Launch checklist</p></div>
-        </div>
-        <div class="flex items-center justify-between mb-2"><h3 class="text-sm font-bold">Technical launch checklist</h3><span id="checkPercent" class="text-[10px] text-emerald-300">0 of 8 completed</span></div>
-        <div class="h-1.5 rounded-full bg-white/10 overflow-hidden mb-3"><div id="checkBar" class="h-full bg-emerald-400 rounded-full transition-all" style="width:0%"></div></div>
-        <div id="checklist">
-          <label class="check-row"><input type="checkbox"><span>Responsive layouts tested</span></label>
-          <label class="check-row"><input type="checkbox"><span>Navigation and tab switching</span></label>
-          <label class="check-row"><input type="checkbox"><span>Feed likes and double-tap</span></label>
-          <label class="check-row"><input type="checkbox"><span>Chat previews and sending</span></label>
-          <label class="check-row"><input type="checkbox"><span>Profile follow interaction</span></label>
-          <label class="check-row"><input type="checkbox"><span>Keyboard focus states</span></label>
-          <label class="check-row"><input type="checkbox"><span>Reduced-motion preference</span></label>
-          <label class="check-row"><input type="checkbox"><span>Final content and link review</span></label>
+    <section class="mb-10">
+      <div class="platform-card p-5">
+        <p class="eyebrow mb-2">Keep growing</p><h2 class="text-xl font-bold">Your BLOOM spaces</h2>
+        <div class="grid grid-cols-2 gap-3 mt-4">
+          <a class="glass rounded-xl p-3 bloom-hub-card" href="your-mix.html"><span class="text-lg">✿</span><strong class="block text-sm mt-2">Your Mix</strong><span class="text-xs text-zinc-500">A world tuned to you</span></a>
+          <a class="glass rounded-xl p-3 bloom-hub-card" href="feedback-booth.html"><span class="text-lg">💌</span><strong class="block text-sm mt-2">Feedback Booth</strong><span class="text-xs text-zinc-500">Ideas, bugs, and honest feedback</span></a>
+          <a class="glass rounded-xl p-3 bloom-hub-card" href="stanner-circles.html"><span class="text-lg">🫶</span><strong class="block text-sm mt-2">Circles</strong><span class="text-xs text-zinc-500">Join a conversation</span></a>
+          <a class="glass rounded-xl p-3 bloom-hub-card" href="curated-finds.html"><span class="text-lg">🔎</span><strong class="block text-sm mt-2">Curated Finds</strong><span class="text-xs text-zinc-500">Share and discover inspiration</span></a>
         </div>
       </div>
     </section>
-    <footer class="flex items-center justify-between text-[10px] text-zinc-600 border-t border-white/10 pt-5"><span>© 2026 BLOOM COMMUNITY</span><span>Grow at your own pace ✿</span></footer>
+    <footer class="flex items-center justify-between gap-4 flex-wrap text-[10px] text-zinc-600 border-t border-white/10 pt-5"><span>© 2026 BLOOM COMMUNITY · Grow at your own pace ✿</span><span class="flex gap-4"><a class="product-link" href="feedback-booth.html">Feedback Booth</a><a class="product-link" href="curated-finds.html">Curated Finds</a></span></footer>
   </section>
 
   <!-- Live responsive mobile application -->
@@ -164,7 +148,7 @@ tailwind.config = {
               </div>
             </div>
             <div class="bloom-feed-interest-filter" id="bloom-feed-interest-filter" aria-label="Filter your feed">
-              <button type="button" data-feed-interest="mix" class="is-active">For you</button>
+              <button type="button" data-feed-interest="mix" class="is-active" aria-pressed="true">Your Mix</button>
               <button type="button" data-feed-interest="all">All</button>
               <button type="button" data-feed-interest="creative">Art</button>
               <button type="button" data-feed-interest="gaming">Gaming</button>
@@ -222,7 +206,7 @@ tailwind.config = {
           <section class="tab-panel" id="tab-profile" aria-label="The Garden Grid">
             <div class="profile-scroll">
               <div class="profile-top">
-                <div class="flex items-center justify-between mb-5"><div><p class="eyebrow">Your little corner</p><h2 class="text-2xl font-black mt-1">the.gardeners</h2></div><button class="text-xl text-zinc-300" id="bloomProfileSettingsButton" onclick="openBloomAccount()" aria-label="Account and profile settings">☷</button></div>
+                <div class="flex items-center justify-between mb-5"><div><p class="eyebrow">Your little corner</p><h2 class="text-2xl font-black mt-1">the.gardeners</h2></div><button class="text-xl text-zinc-300" id="bloomProfileSettingsButton" aria-label="Account and profile settings">☷</button></div>
                 <div class="flex items-center gap-4">
                   <div class="relative w-[78px] h-[78px] rounded-[28px] bg-gradient-to-br from-emerald-400 to-pink-400 p-[2px]"><div class="w-full h-full rounded-[26px] bg-[#151915] grid place-items-center text-3xl">🌿</div></div>
                   <div class="grid grid-cols-3 gap-2 flex-1">
@@ -251,6 +235,8 @@ tailwind.config = {
                 <p class="bloom-market-note">Discover community listings. Requests are not payments — checkout is a future step.</p>
                 <div id="bloom-market-grid" class="bloom-market-grid"><div class="bloom-empty-state">Connect to BLOOM to browse listings.</div></div>
                 <div id="bloom-market-inbox" class="bloom-market-inbox"></div>
+                <div class="bloom-profile-section-head"><div><p class="eyebrow">Need a listening ear?</p><h3>Feedback Booth</h3></div><a class="bloom-inline-action" href="feedback-booth.html">Share feedback ↗</a></div>
+                <p class="bloom-market-note">Tell us what feels good, what feels confusing, or what BLOOM should grow next.</p>
               </section>
             </div>
           </section>
@@ -293,22 +279,7 @@ tailwind.config = {
     panels.forEach(p => p.classList.toggle('active', p.id === `tab-${tab.dataset.tab}`));
   }));
 
-  // Founder checklist: interactive progress and completion state.
-  const checks = [...document.querySelectorAll('#checklist input[type="checkbox"]')];
-  function updateChecklist() {
-    const done = checks.filter(c => c.checked).length;
-    document.getElementById('checkCount').textContent = `${done}/8`;
-    document.getElementById('checkPercent').textContent = `${done} of 8 completed`;
-    document.getElementById('checkBar').style.width = `${done / checks.length * 100}%`;
-  }
-  checks.forEach(c => c.addEventListener('change', updateChecklist));
-  const dashboard = document.getElementById('dashboard');
-  document.getElementById('dashboardToggle').addEventListener('click', e => {
-    dashboard.classList.toggle('collapsed');
-    const expanded = !dashboard.classList.contains('collapsed');
-    e.currentTarget.textContent = expanded ? '⌃' : '⌄';
-    e.currentTarget.setAttribute('aria-expanded', String(expanded));
-  });
+  // Founder dashboard is intentionally on its separate, role-gated page.
 
   // Feed actions and double-tap flower burst.
   const lastTap = new WeakMap();
