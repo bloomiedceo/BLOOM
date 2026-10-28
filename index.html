@@ -235,6 +235,23 @@ header{background:rgba(252,250,255,.9);border-bottom-color:#e6ddf2}
 
 <section class="section bloom-explore" id="explore"><div class="wrap">
 <div class="section-head"><div><div class="kicker">Find your next little world</div><h2>Every interest has a place here.</h2></div><p>Art, gaming, recipes, everyday life, the outdoors, music, fandom and whatever comes next — all belong in BLOOM.</p></div>
+
+<div class="bloom-my-mix" id="bloom-my-mix" aria-labelledby="bloom-my-mix-title">
+  <div class="bloom-my-mix-head"><div><div class="kicker">A BLOOM signature</div><h3 id="bloom-my-mix-title">Make your own mix.</h3><p>Choose the interests you want to see more of. Your world can change whenever you do.</p></div><span class="bloom-mix-flower" aria-hidden="true">✿</span></div>
+  <div class="bloom-preference-options" role="group" aria-label="Choose your interests">
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="creative" aria-pressed="false">🎨 Art & design</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="gaming" aria-pressed="false">🎮 Gaming</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="lifestyle" aria-pressed="false">🌱 Everyday life</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="food" aria-pressed="false">🍜 Food & drink</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="outdoors" aria-pressed="false">🥾 Outdoors</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="music" aria-pressed="false">🎧 Music</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="fandom" aria-pressed="false">✿ K-pop</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="books" aria-pressed="false">📚 Books</button>
+    <button class="bloom-preference-chip" type="button" data-bloom-pref="tech" aria-pressed="false">💡 Tech & making</button>
+  </div>
+  <div class="bloom-my-mix-foot"><p id="bloom-mix-status" role="status" aria-live="polite">Choose a few interests, then apply your mix. You can still switch back to everything.</p><div class="bloom-mix-buttons"><button class="pill white" id="bloom-clear-mix" type="button">Show everything</button><button class="pill primary" id="bloom-apply-mix" type="button">Apply my mix ✿</button></div></div>
+  <p class="bloom-mix-disclaimer">Preview only: this preference is saved in this browser, not to a BLOOM account yet.</p>
+</div>
 <label class="bloom-interest-search"><span aria-hidden="true">⌕</span><input id="bloom-interest-search" type="search" placeholder="Search interests and communities…" aria-label="Search interests and communities"></label>
 <div class="bloom-interest-grid" id="bloom-interest-grid">
 <a class="bloom-interest-card" href="#activity" data-bloom-interest-target="creative" data-bloom-search="art design drawing illustration creators crafts"><span class="bloom-interest-icon">🎨</span><strong>Art & design</strong><small>Share what you're making and find your creative people.</small></a>
@@ -298,6 +315,9 @@ header{background:rgba(252,250,255,.9);border-bottom-color:#e6ddf2}
 <article class="feed-card" data-bloom-interest="gaming"><div class="feed-art" style="background:linear-gradient(135deg,#242b5a,#9384e2)">🎮</div><div class="feed-content"><div class="meta">Gaming · Sample post</div><h3>Player two, this one's for you</h3><p>Find teammates, share your favourite games, and celebrate the wins that deserve a little confetti.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
 <article class="feed-card" data-bloom-interest="food"><div class="feed-art" style="background:linear-gradient(135deg,#884b38,#f3c782)">🍜</div><div class="feed-content"><div class="meta">Food & drink · Sample post</div><h3>The recipe you keep coming back to</h3><p>Swap quick meals, cafe finds, baking experiments and the dishes that bring people together.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
 <article class="feed-card" data-bloom-interest="outdoors"><div class="feed-art" style="background:linear-gradient(135deg,#224a47,#a3d2a7)">🥾</div><div class="feed-content"><div class="meta">Outdoors & wellbeing · Sample post</div><h3>Outside, even for twenty minutes</h3><p>Post your local walks, nature finds, travel notes and gentle reminders to make room for yourself.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
+
+<article class="feed-card" data-bloom-interest="books"><div class="feed-art" style="background:linear-gradient(135deg,#f8e2c4,#c9b8ff)">📚</div><div class="feed-content"><div class="meta">Books & learning · Sample post</div><h3>The book you wish you could read again for the first time</h3><p>Share reading lists, learning notes, writing prompts and recommendations that stay with you.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
+<article class="feed-card" data-bloom-interest="tech"><div class="feed-art" style="background:linear-gradient(135deg,#c5ddf5,#d9c8ff)">💡</div><div class="feed-content"><div class="meta">Tech & making · Sample post</div><h3>A small idea turned into a weekend project</h3><p>Show what you're building, ask for feedback, share useful tools and learn together.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
 </div>
 <p class="disclosure">These are sample feed cards. Shared posts, group messages, media uploads and cross-device activity depend on the connected backend and its security configuration.</p>
 </div></section>
