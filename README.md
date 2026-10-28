@@ -1,12 +1,13 @@
-# BLOOM — Your whole world, in full bloom
+# BLOOM — your world, in full colour
 
-BLOOM is an evolving all-in-one social experience for short-form content, posts, messaging, interest-based communities, creator discovery and shopping. The original K-pop fandom experience remains one interest space inside a broader BLOOM world; the existing single-page website, music embeds, marketplace, backend starter and founder dashboard are preserved.
+BLOOM is an all-in-one social garden for posts and short videos, Stories, community chat, interest discovery, profiles, and community marketplace finds. The founder-uploaded premium prototype is the design source of truth: dark ink surfaces, emerald and orchid accents, the editorial desktop panel, and the phone-style Wild Feed / Greenhouse / Garden Grid are retained while live features are added inside that experience. K-pop remains one interest among many.
 
 ## Main files
 
-- `index.html` — GitHub Pages entry point and original design.
-- `bloom-enhancements.css` / `bloom-enhancements.js` — responsive feed, media composer, in-app Spotify embed, and existing interface upgrades.
-- `bloom-social-unification.css` / `bloom-social-unification.js` — additive all-interest discovery, mobile navigation, and topic filtering without replacing existing features.
+- `index.html` — GitHub Pages entry point, based directly on the premium prototype uploaded by the founder.
+- `bloom-prototype-live.css` / `bloom-prototype-app.js` — premium-styled auth, profile interests, shared feed, comments/likes, Stories, notifications, community chat, reporting, and marketplace integration inside the prototype UI.
+- `bloom-enhancements.css` / `bloom-enhancements.js` — legacy standalone enhancements retained for reference; they are not loaded into the premium prototype because their selectors target the previous layout.
+- `bloom-social-unification.css` / `bloom-social-unification.js` — previous all-interest layout iteration retained in Git history and source files, not loaded into the premium prototype.
 - `bloom-config.js` — public Supabase Project URL and publishable/anon key placeholders. It must never contain a service-role key.
 - `bloom-backend.js` — optional Supabase Auth, shared posts, public groups, real-time group messages, shared post likes/comments, reporting, and moderator queue UI.
 - `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
@@ -19,11 +20,13 @@ BLOOM is an evolving all-in-one social experience for short-form content, posts,
 - `supabase/functions/newsletter-subscribe/index.ts` — Resend-backed confirmation/unsubscribe endpoint.
 - `bloom_kpop_community_launch_preview (1).html` and `bloom_ceo_dashboard.html` — original files retained.
 
-## Phase 1 direction
+## Design direction and current feature stage
 
-The existing site is being broadened rather than replaced. Explore surfaces multiple interests; the feed includes general sample topics as well as K-pop; communities keep the original fandom rooms and add creative, gaming, food, and outdoors spaces; and the marketplace includes illustrative creator, home, digital, gaming, style, and fandom finds. Sample cards remain distinct from live community records.
+The premium prototype is the active design foundation, not a reference to be replaced. The black/ink canvas, emerald-and-orchid bloom identity, splash animation, desktop editorial panel, and phone-style three-tab interface stay in place. Feature additions should extend these surfaces in the same visual language rather than swap in a different site layout.
 
-Phase 1 is primarily an interface and navigation upgrade. It does not create direct messages, enable payments, or prove that live services are online. Shared account, feed, group-chat, story, notification and marketplace features still depend on a reachable Supabase project, database schema, configured policies and testing.
+The prototype integration uses the existing Supabase project and current schema for email/password accounts, profile privacy and saved interests, shared posts and media, likes/comments, 24-hour Stories, notifications, public community groups and live group messages, post reports, marketplace listings, and buyer requests. Sample posts and local sample rooms are labelled/handled as previews; they are not real community activity.
+
+The current iteration is not a full production social network: checkout/payments, one-to-one direct messages, cross-device saves/follows, private groups, block/mute controls, creator monetization, and push notifications remain future work. Supabase Pro is not required for these code changes; no plan upgrade is assumed.
 
 ## Preview locally
 
@@ -42,13 +45,13 @@ Then open `http://localhost:8000`.
 3. Wait for the Pages deployment to finish and use the URL GitHub displays. The current project-site URL after the repository rename is `https://bloomiedceo.github.io/BLOOM/`.
 4. Check the **Actions** tab for failed deployments or validation checks.
 
-## Safety Center
+## Safety and reporting
 
-The top navigation and footer Safety links open a dedicated Safety Center dialog with account security, privacy, community conduct, and reporting guidance. The report button opens the existing feedback preview with the safety category selected. **The feedback form is still a preview and does not send or store reports**, so do not rely on it for urgent or monitored support until a private, staffed reporting service is connected.
+Signed-in users can report a live post into the existing Supabase moderation queue. That is not an emergency response service, and staff monitoring and an appeals workflow still need to be established. Do not rely on reporting for urgent safety support.
 
-## Spotify in BLOOM MUSIC
+## Music
 
-BLOOM MUSIC uses Spotify's official embedded player. Open Spotify, choose **Share → Copy link**, paste a direct `open.spotify.com` link into BLOOM MUSIC, and select **Add Spotify player**. You can add multiple original Spotify playlist, album, artist, track, show, and episode embeds on the page. BLOOM does not create or store playlists or upload audio files; Spotify handles playback, sign-in, and availability. Short `spotify.link` URLs must be opened in Spotify first so you can copy the full link.
+The current premium prototype keeps the original visual direction and sample music-oriented posts. The previous standalone Spotify embed implementation remains in the repository but is not loaded into this prototype page; Spotify player placement will be integrated as a separate design-matched step.
 
 ## Connect the real backend (required before opening accounts/chat publicly)
 
@@ -75,18 +78,18 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 
 ### Not included yet / do not advertise as finished
 
-- Photo/video uploads, direct messages, private-group invitations, block/mute, push notifications, a full appeals workflow, seller checkout, inventory, payments, and production affiliate tracking.
+- One-to-one direct messages, private-group invitations, durable cross-device follows/saves, block/mute, push notifications, a full appeals workflow, seller checkout, inventory, payments, and production affiliate tracking.
 - Formal legal advice or a final privacy policy. The current privacy notice and community guidelines are drafts that must be customized to the real operator, vendors, contact details, retention practices, age policy, and applicable Malaysian/privacy requirements.
 - Automated spam/abuse rate limiting, backups/restore drills, incident response, and full browser/device accessibility testing.
 - Verified Supabase project configuration, production email delivery, a deployed Edge Function, or a tested moderator account. These require owner-side setup and real-world tests.
 
-## Preview-only features
+## Preview and live features
 
-When `bloom-config.js` has blank values, the website deliberately stays in preview mode. Likes, saved posts, demo posts, wishlist items, seller listings, and demo chat are saved only in the current browser; they are not shared with other visitors. Do not enter real passwords or private information into preview forms.
+When `bloom-config.js` is missing or Supabase cannot initialize, the prototype deliberately falls back to sample posts and local demo chat. Live account, post, media, Story, group, report, and marketplace features require Supabase policies and configuration to remain correct. Sample posts are not real user activity. Do not treat local sample interactions as shared data.
 
 ## Automated checks
 
-GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which guards against the single-element selector bug that previously stopped the enhancement script, verifies Safety Center wiring and Spotify embed validation, and checks key RLS/security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
+GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which verifies the premium prototype remains the entry point, its connected feature wiring, and key database/RLS security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
 
 ## Pre-launch smoke-test checklist
 
