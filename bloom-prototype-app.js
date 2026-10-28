@@ -30,7 +30,7 @@
   let client = null;
   let currentUser = null;
   let currentProfile = null;
-  let activeInterest = 'all';
+  let activeInterest = 'mix';
   let liveGroups = [];
   let activeLiveGroup = null;
   let realtimeChannel = null;
@@ -173,18 +173,23 @@
   }
 
   function activeInterestFilter(key) {
-    activeInterest = key || 'all';
-    $$('#bloom-feed-interest-filter [data-feed-interest]').forEach((node) => {
+    activeInterest = key || 'mix';
+    $('#bloom-feed-interest-filter [data-feed-interest]').forEach((node) => {
       node.classList.toggle('is-active', node.dataset.feedInterest === activeInterest);
       node.setAttribute('aria-pressed', String(node.dataset.feedInterest === activeInterest));
     });
-    $$('#feed .feed-post').forEach((post) => {
+    let mix = [];
+    if (Array.isArray(currentProfile?.interests) && currentProfile.interests.length) mix = currentProfile.interests;
+    else mix = readLocalInterests();
+    $('#feed .feed-post').forEach((post) => {
+      const actual = normalizeInterest(post.dataset.interest || post.dataset.fandom || '');
       if (activeInterest === 'all') {
         post.hidden = false;
-        return;
+      } else if (activeInterest === 'mix') {
+        post.hidden = mix.length > 0 && !mix.includes(actual);
+      } else {
+        post.hidden = actual !== activeInterest;
       }
-      const actual = normalizeInterest(post.dataset.interest || post.dataset.fandom || '');
-      post.hidden = actual !== activeInterest;
     });
   }
 
@@ -362,7 +367,7 @@
         currentProfile = Object.assign({}, currentProfile, {display_name:display.value.trim(),bio:bio.value.trim(),is_private:privateInput.checked,interests:interests});
         writeLocalInterests(interests, interests.length > 0);
         buildProfileInterests(interests);
-        activeInterestFilter('all');
+        activeInterestFilter('mix');
         await refreshAccountSurface();
         setSheetStatus('Your profile and interests are saved ✿');
         toast('Your BLOOM profile has bloomed.');
@@ -395,6 +400,7 @@
     if (currentProfile) {
       const values = Array.isArray(currentProfile.interests) ? currentProfile.interests : [];
       buildProfileInterests(values.length ? values : readLocalInterests());
+      activeInterestFilter('mix');
       const headerName = $('.profile-top h2');
       const headerBio = $('.profile-top .text-xs.font-bold.mt-4');
       const headerBioCopy = headerBio?.nextElementSibling;
@@ -417,6 +423,7 @@
     } else {
       currentProfile = null;
       buildProfileInterests(readLocalInterests());
+      activeInterestFilter('mix');
       setLiveStatus('Connected · sign in to publish, join live circles, and save your interests.');
       if (changed) {
         activeLiveGroup = null;
@@ -543,7 +550,7 @@
     }
     const nodes = rows.map((post) => renderLivePost(post, statsById.get(post.id) || {}, names.get(post.author_id)));
     const firstDemo = $('.feed-post:not(.bloom-shared-post)', feed);
-    nodes.reverse().forEach((node) => {
+    nodes.forEach((node) => {
       if (firstDemo) firstDemo.before(node);
       else feed.append(node);
     });
@@ -913,7 +920,7 @@
       card.append(el('p','',item.description));
       card.append(el('p','',String(item.category||'other').replaceAll('_',' ')+' · '+(names.get(item.seller_id)||'Community seller')));
       card.append(el('div','bloom-market-price',(item.currency==='MYR'?'RM ':'')+Number(item.price||0).toFixed(2)));
-      const request=button('Message seller','',()=>openMarketplaceRequest(item));
+      const request=button('Request item','',()=>openMarketplaceRequest(item));
       card.append(request); grid.append(card);
     });
   }
