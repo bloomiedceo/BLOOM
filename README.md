@@ -5,7 +5,7 @@ BLOOM is an all-in-one social garden for posts and short videos, Stories, commun
 ## Main files
 
 - `index.html` — GitHub Pages entry point, based directly on the premium prototype uploaded by the founder.
-- `bloom-prototype-live.css` / `bloom-prototype-app.js` — premium-styled auth, profile interests, shared feed, comments/likes, Stories, notifications, community chat, reporting, and marketplace integration inside the prototype UI.
+- `bloom-prototype-live.css` / `bloom-prototype-app.js` — premium-styled auth, profile interests, shared feed, comments/likes, Stories, notifications, community chat, reporting, and marketplace integration inside the prototype UI. The feed interest filter uses querySelectorAll correctly, and public circles save an interest category.
 - `bloom-enhancements.css` / `bloom-enhancements.js` — legacy standalone enhancements retained for reference; they are not loaded into the premium prototype because their selectors target the previous layout.
 - `bloom-social-unification.css` / `bloom-social-unification.js` — previous all-interest layout iteration retained in Git history and source files, not loaded into the premium prototype.
 - `bloom-config.js` — public Supabase Project URL and publishable/anon key placeholders. It must never contain a service-role key.
@@ -109,3 +109,16 @@ GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, whic
 - [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
 - [ ] Set Resend API key, verified sender address, and published site URL as Edge Function secrets; then set `newsletterEnabled: true` in `bloom-config.js` and test confirmation, duplicate signup, and one-click unsubscribe.
 - [ ] Enable leaked-password protection, configure Supabase Auth custom SMTP, add abuse controls/CAPTCHA, verify backups/monitoring, and establish a real moderation rota before announcing launch.
+
+
+## Dedicated BLOOM spaces
+
+- `stanner-circles.html` — a dedicated, searchable space for communities, interest filters, joining, and chat.
+- `album-display.html` — collection and shelf inspiration with a route into Curated Finds.
+- `curated-finds.html` — a cross-interest inspiration feed with a real Create Post form.
+- `your-mix.html` — saves interest preferences locally and to `profiles.interests` for signed-in users, and keeps sample content visible when not personalized.
+- `feedback-booth.html` — collects ideas, bug reports, and complaints in the RLS-protected `feedback_submissions` table.
+- `ceo-dashboard.html` — a separate, role-gated dashboard; it is not embedded in the public app.
+- `bloom-platforms.css` / `bloom-platforms.js` — shared layout and behavior for platform pages.
+
+Feedback submissions can be sent while signed out, but the database only allows an authenticated submitter or founder/moderator to read them. The dashboard checks the trusted Supabase `app_metadata.role` claim. This is separate from a public frontend route and does not expose the inbox to ordinary visitors.
