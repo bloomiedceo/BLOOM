@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 const read = (path) => readFileSync(new URL(path, import.meta.url).pathname, 'utf8');
 const html = read('../index.html');
 const enhancements = read('../bloom-enhancements.js');
+const unification = read('../bloom-social-unification.js');
+const unificationCss = read('../bloom-social-unification.css');
 const upgrades = read('../bloom-launch-upgrades.js');
 const backend = read('../bloom-backend.js');
 const config = read('../bloom-config.js');
@@ -149,6 +151,27 @@ for (const index of ['bloom_groups_owner_idx','bloom_messages_author_idx','bloom
 assert.match(newsletterSchema, /enable row level security/i, 'Newsletter signups must use row-level security');
 assert.match(newsletterSchema, /create policy/i, 'Newsletter signups must have an explicit insert policy');
 console.log('BLOOM static checks passed: safety navigation, Spotify embeds, media capture, newsletter status, social columns, frontend selector safety, and backend security invariants.');
+
+assert.match(html, /id="explore"/, 'The unified Explore section must be present');
+assert.match(html, /href="#explore" data-i18n="nav_explore">Explore/, 'Primary navigation must expose Explore');
+assert.match(html, /href="#activity" data-i18n="nav_feed">Feed/, 'Primary navigation must expose the feed');
+assert.match(html, /href="#community" data-i18n="nav_rooms">Communities/, 'Primary navigation must expose communities');
+assert.match(html, /bloom-social-unification\.css/, 'The additive unified experience stylesheet must load');
+assert.match(html, /src="bloom-social-unification\.js" defer/, 'The unified interaction script must load');
+assert.match(html, /class="bloom-mobile-dock" aria-label="BLOOM mobile navigation"/, 'BLOOM must provide a mobile-first navigation dock');
+assert.match(html, /data-dock-action="create"/, 'Mobile navigation must offer a create-post action');
+assert.match(html, /data-dock-action="chat"/, 'Mobile navigation must offer a chat action');
+assert.match(html, /data-bloom-interest="creative"/, 'The feed must include general-interest sample content');
+assert.match(html, /data-bloom-interest="gaming"/, 'The feed must include gaming sample content');
+assert.match(html, /data-bloom-interest="fandom"/, 'The original K-pop fandom remains a first-class interest');
+assert.match(unification, /function chooseInterest\(key\)/, 'Interest chips must be wired to the main feed filter');
+assert.match(unification, /function initInterestSearch\(\)/, 'Explore must support searching interests');
+assert.match(unificationCss, /\.bloom-mobile-dock/, 'Mobile navigation must have responsive styling');
+assert.match(upgrades, /category:'home'/, 'Marketplace must include home and living products');
+assert.match(upgrades, /category:'digital'/, 'Marketplace must include digital creator products');
+assert.match(upgrades, /category:'gaming'/, 'Marketplace must include gaming products');
+assert.match(backend, /Interest or topic/, 'Shared post composer labels must support broader interests');
+
 
 assert.match(enhancements, /prepareImage\(file,filter\.value\)/, 'FYP image filters must be applied before upload');
 assert.match(enhancements, /window\.bloomPublishPost/, 'The FYP composer must publish to the shared backend when connected');
