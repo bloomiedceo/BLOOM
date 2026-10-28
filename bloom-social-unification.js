@@ -47,6 +47,14 @@
       const saved = JSON.parse(localStorage.getItem('bloom-interest-preferences-v1') || '[]');
       if (Array.isArray(saved)) pending = new Set(saved.filter((key) => buttons.some((button) => button.dataset.bloomPref === key)));
     } catch (_) {}
+    function resetFeedControls() {
+      const filter = $('#bloom-fandom-filter');
+      if (filter) filter.value = 'all';
+      const search = $('#bloom-feed-search');
+      if (search) search.value = '';
+      const saved = $('#bloom-show-saved');
+      if (saved) { saved.setAttribute('aria-pressed', 'false'); saved.textContent = '☆ Saved posts'; }
+    }
     function paint() {
       buttons.forEach((button) => button.setAttribute('aria-pressed', String(pending.has(button.dataset.bloomPref))));
       if (status) {
@@ -67,6 +75,7 @@
         localStorage.setItem('bloom-interest-preferences-v1', JSON.stringify(selected));
         localStorage.setItem('bloom-interest-mix-enabled-v1', String(selected.length > 0));
       } catch (_) { toast('Browser storage is unavailable, so these preferences may not persist.'); }
+      resetFeedControls();
       document.dispatchEvent(new Event('bloom:interest-preferences-updated'));
       paint();
       $('#activity')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
