@@ -18,6 +18,7 @@ const hardeningSchema = read('../supabase/launch-hardening.sql');
 const deleteAccount = read('../supabase/functions/delete-account/index.ts');
 const engagementSchema = read('../supabase/feed-engagement.sql');
 const marketplaceSchema = read('../supabase/marketplace.sql');
+const profileInterestsSchema = read('../supabase/profile-interests.sql');
 const socialSchema = read('../supabase/social-features.sql');
 const musicSchema = read('../supabase/music-playlists.sql');
 const css = read('../bloom-enhancements.css');
@@ -204,3 +205,13 @@ assert.match(socialSchema, /bloom_notify_post_like/i, 'Likes must generate notif
 assert.match(socialSchema, /bloom_notify_post_comment/i, 'Comments must generate notifications');
 assert.match(socialSchema, /bloom_notify_group_message/i, 'Group messages must generate notifications');
 assert.match(newsletterFunction, /new Response\(null, \{ status: 204/, 'Newsletter CORS preflight must return an empty valid 204 response');
+
+assert.ok(schema.includes("interests text[] not null default '{}'::text[]"), 'Core profiles schema must store account-level My Mix interests');
+assert.match(schema, /profiles_interests_valid_check/, 'Profile interest values must be constrained to supported categories');
+assert.match(profileInterestsSchema, /add column if not exists interests text\[\]/i, 'Existing BLOOM databases need an idempotent profile-interest upgrade');
+assert.match(backend, /name="bloom-profile-interest"/, 'Account settings must let signed-in users choose profile interests');
+assert.ok(backend.includes("select('username,display_name,is_private,interests')"), 'Account settings must load saved profile interests');
+assert.ok(backend.includes("        interests\n      }).eq('id', currentUser.id)"), 'Account settings must save profile interests under the authenticated user row');
+assert.match(unification, /bloom:interest-preferences-updated/, 'My Mix controls must resync when profile interests change');
+assert.match(html, /Guests keep their mix in this browser/, 'My Mix must explain guest and account preference storage');
+
