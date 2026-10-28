@@ -58,7 +58,8 @@
     function paint() {
       buttons.forEach((button) => button.setAttribute('aria-pressed', String(pending.has(button.dataset.bloomPref))));
       if (status) {
-        const enabled = localStorage.getItem('bloom-interest-mix-enabled-v1') === 'true';
+        let enabled = false;
+        try { enabled = localStorage.getItem('bloom-interest-mix-enabled-v1') === 'true'; } catch (_) {}
         if (enabled && pending.size) status.textContent = 'Your mix is active with ' + pending.size + ' interest' + (pending.size === 1 ? '' : 's') + '. Change your picks and apply again any time.';
         else if (pending.size) status.textContent = pending.size + ' interest' + (pending.size === 1 ? '' : 's') + ' selected. Apply your mix to filter the For You feed.';
         else status.textContent = 'No interests selected yet. BLOOM will show the full range of topics.';
