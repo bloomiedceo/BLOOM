@@ -2,507 +2,414 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f8f5ff">
-<title>BLOOM — Your whole world, in full bloom</title>
-<meta name="description" content="BLOOM brings videos, posts, messaging, communities, creator finds and shopping together in one social space for every side of you.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D0D0C">
+<title>BLOOM — your world, in full colour</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: { ink:'#0D0D0C', moss:'#171A17', leaf:'#10B981', orchid:'#F472B6', muted:'#9A9D96' },
+    fontFamily: { sans:['Inter','ui-sans-serif','system-ui','sans-serif'] },
+    boxShadow: { bloom:'0 0 70px rgba(16,185,129,.14)' }
+  }}
+}
+</script>
 <style>
-:root{--ink:#201a2b;--muted:#756c83;--paper:#fbf9ff;--lilac:#d9c8ff;--purple:#7452d6;--pink:#ffb9d0;--line:#ece5f5;--mint:#d6f5e9;--yellow:#ffe7a8;--radius:24px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:inherit;text-decoration:none}button,input{font:inherit}button{cursor:pointer}.wrap{width:min(1160px,calc(100% - 40px));margin:auto}
-.topline{background:#211a30;color:#fff;text-align:center;padding:9px 16px;font-size:12px;letter-spacing:.08em}.topline b{color:#ffbdd5}
-header{position:sticky;top:0;z-index:10;background:rgba(251,249,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid #eee8f5}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;letter-spacing:-.06em}.logo-mark{width:36px;height:36px;border-radius:13px;background:linear-gradient(135deg,#bda5ff,#ffb9d0);display:grid;place-items:center;font-size:19px}.navlinks{display:flex;align-items:center;gap:27px;color:#665d74;font-size:13px;font-weight:700}.navlinks a:hover{color:var(--purple)}.nav-actions{display:flex;gap:9px;align-items:center}.icon-btn{border:1px solid var(--line);background:white;width:40px;height:40px;border-radius:50%;display:grid;place-items:center}.pill{border:0;border-radius:999px;padding:13px 19px;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s,box-shadow .2s}.pill:hover{transform:translateY(-2px);box-shadow:0 8px 22px #4e36751b}.primary{background:var(--ink);color:white}.lavender{background:var(--lilac);color:#31234d}.white{background:white;color:var(--ink);border:1px solid var(--line)}.menu-toggle{display:none}
-.hero{padding:44px 0 54px}.hero-grid{display:grid;grid-template-columns:1.04fr .96fr;gap:34px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #e7def6;background:white;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:850;letter-spacing:.11em;text-transform:uppercase;color:#7452d6}.eyebrow i{width:7px;height:7px;border-radius:50%;background:#ff83b0;display:block}.hero h1{font-size:clamp(44px,6vw,76px);line-height:.99;letter-spacing:-.075em;margin:22px 0 20px;max-width:630px}.hero h1 span{color:var(--purple);font-family:Georgia,serif;font-weight:500;font-style:italic;letter-spacing:-.07em}.hero p{font-size:16px;line-height:1.75;color:var(--muted);max-width:480px;margin:0 0 26px}.hero-buttons{display:flex;gap:10px;flex-wrap:wrap}.social-proof{display:flex;align-items:center;gap:12px;margin-top:28px;font-size:12px;color:var(--muted)}.avatars{display:flex}.avatars span{width:30px;height:30px;border-radius:50%;border:2px solid var(--paper);display:grid;place-items:center;margin-left:-7px;font-size:14px;background:var(--pink)}.avatars span:first-child{margin-left:0;background:var(--mint)}.avatars span:nth-child(3){background:var(--lilac)}.avatars span:nth-child(4){background:var(--yellow)}
-.hero-art{position:relative;min-height:490px;border-radius:34px;background:linear-gradient(145deg,#e7dcff 0%,#f8c9dd 52%,#ffe7bc 100%);overflow:hidden;padding:22px;isolation:isolate}.hero-art:before{content:"";position:absolute;width:290px;height:290px;border-radius:50%;background:#ffffff65;top:42px;left:50%;transform:translateX(-50%);z-index:-1}.art-note{position:absolute;top:23px;left:24px;background:#fff9;border:1px solid #fff;border-radius:15px;padding:10px 13px;font-size:11px;font-weight:800;transform:rotate(-5deg)}.art-note span{display:block;font-size:16px;margin-top:3px}.album-stack{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%) rotate(-5deg);width:250px;height:310px}.album{position:absolute;width:220px;height:270px;border-radius:18px;box-shadow:0 22px 45px #3d275d2c;display:flex;flex-direction:column;justify-content:space-between;padding:18px;overflow:hidden}.album.one{background:linear-gradient(145deg,#8e74e9,#c8b7ff);transform:rotate(-13deg) translate(-32px,9px);color:white}.album.two{background:linear-gradient(145deg,#ffadc8,#ffe5b4);transform:rotate(9deg) translate(28px,-8px);color:#382239}.album .tiny{font-size:9px;letter-spacing:.18em;font-weight:900}.album .bigtype{font-size:40px;line-height:.85;font-weight:950;letter-spacing:-.08em}.album .orb{position:absolute;width:120px;height:120px;border-radius:50%;background:#fff7;right:-20px;top:70px;box-shadow:inset -10px -10px 25px #a66b9a30}.album .star{font-size:42px;align-self:flex-end}.floating{position:absolute;border-radius:18px;background:#fffdf5;padding:13px 15px;box-shadow:0 12px 28px #3d275d1b;font-size:12px;font-weight:800}.floating b{display:block;font-size:19px;margin-bottom:2px}.float-left{bottom:34px;left:23px;transform:rotate(-4deg)}.float-right{right:20px;bottom:90px;transform:rotate(5deg);background:#e0faef}.spark{position:absolute;font-size:27px}.s1{top:90px;right:70px}.s2{bottom:45px;right:45px}.s3{top:155px;left:37px}
-.section{padding:44px 0 64px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:25px}.kicker{color:var(--purple);font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.section h2{font-size:clamp(28px,4vw,43px);letter-spacing:-.065em;line-height:1.06;margin:9px 0 0}.section-head p{color:var(--muted);font-size:13px;max-width:370px;line-height:1.65;margin:0}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}.filter{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 15px;color:#756c83;font-size:12px;font-weight:800}.filter.active,.filter:hover{background:var(--ink);border-color:var(--ink);color:#fff}
-.products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}.product-card{min-width:0}.product-visual{height:245px;border-radius:22px;position:relative;display:grid;place-items:center;overflow:hidden}.product-visual:before{content:"";position:absolute;width:175px;height:175px;border-radius:50%;background:#ffffff58}.product-visual .product-emoji{font-size:86px;z-index:1;filter:drop-shadow(0 15px 12px #3320471e);transition:transform .25s}.product-card:hover .product-emoji{transform:scale(1.08) rotate(-4deg)}.v-lilac{background:linear-gradient(145deg,#e9e0ff,#cbb8ff)}.v-pink{background:linear-gradient(145deg,#ffe1ec,#ffb7ce)}.v-mint{background:linear-gradient(145deg,#dff9ed,#a7e6d0)}.v-yellow{background:linear-gradient(145deg,#fff1c9,#ffd88a)}.tag{position:absolute;top:12px;left:12px;z-index:2;background:#fffdf2;border-radius:999px;padding:7px 9px;font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}.heart{position:absolute;right:12px;top:12px;border:0;background:#fffdf2e8;width:34px;height:34px;border-radius:50%;font-size:17px;z-index:2}.product-info{padding:13px 3px 0}.product-type{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.1em;text-transform:uppercase}.product-info h3{font-size:16px;letter-spacing:-.035em;margin:6px 0 6px}.product-info p{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 13px;min-height:36px}.product-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px}.price{font-size:14px;font-weight:900}.shop-link{font-size:11px;font-weight:900;color:var(--purple);white-space:nowrap}.disclosure{font-size:10px;color:#8d829d;margin-top:18px}
-.community{padding:32px 0 70px}.community-banner{background:#241b35;border-radius:30px;padding:40px;display:grid;grid-template-columns:.8fr 1.2fr;gap:35px;color:#fff;position:relative;overflow:hidden}.community-banner:after{content:"✳";position:absolute;font-size:240px;color:#ffffff08;right:-25px;top:-100px;pointer-events:none}.community-banner h2{font-size:clamp(31px,4vw,48px);line-height:1;letter-spacing:-.07em;margin:14px 0}.community-banner p{font-size:13px;color:#c9bfd8;line-height:1.7;max-width:350px}.community-banner .kicker{color:#d4bfff}.room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;z-index:1}.room{background:#ffffff0e;border:1px solid #ffffff20;border-radius:20px;padding:19px;display:flex;gap:14px;align-items:flex-start;transition:background .2s}.room:hover{background:#ffffff18}.room-icon{width:47px;height:47px;border-radius:15px;display:grid;place-items:center;font-size:23px;flex-shrink:0}.room h3{font-size:14px;margin:2px 0 6px}.room p{font-size:11px;line-height:1.55;margin:0;color:#c9bfd8}.room small{display:inline-block;color:#d6c4ff;font-size:10px;font-weight:800;margin-top:10px}
-.editorial{display:grid;grid-template-columns:1fr 1fr;gap:18px}.editor-card{border-radius:26px;min-height:260px;padding:28px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}.editor-card h3{font-size:27px;line-height:1.05;letter-spacing:-.06em;max-width:270px;margin:12px 0}.editor-card p{font-size:12px;line-height:1.6;color:#6d6078;max-width:260px}.editor-card .deco{position:absolute;right:15px;bottom:-10px;font-size:125px;transform:rotate(9deg);filter:drop-shadow(0 10px 8px #3a224522)}.editor-card .pill{align-self:flex-start;position:relative;z-index:1}.edit-a{background:#e4d8ff}.edit-b{background:#ffe0e9}
-.newsletter{padding:10px 0 74px}.newsletter-box{background:linear-gradient(120deg,#f8d9e7,#e2d8ff 65%,#d6f5e9);border-radius:30px;padding:38px;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:28px}.newsletter h2{font-size:clamp(28px,4vw,42px);line-height:1;letter-spacing:-.065em;margin:10px 0}.newsletter p{font-size:13px;color:#655a73;line-height:1.7;max-width:390px}.signup{display:flex;gap:8px;background:#fff;padding:7px;border-radius:999px;box-shadow:0 8px 25px #49336610}.signup input{border:0;outline:0;background:transparent;padding:0 14px;min-width:0;flex:1;font-size:13px}.signup .pill{flex-shrink:0}.fineprint{font-size:10px!important;color:#82768e!important;margin:10px 0 0}.newsletter-status{font-size:12px!important;color:#49366d!important;margin:10px 4px 0;min-height:1.3em}.newsletter-status:empty{display:none}.newsletter-consent{display:flex;align-items:flex-start;gap:9px;font-size:11px;line-height:1.55;color:#655a73;margin:12px 5px}.newsletter-consent input{flex:0 0 auto;width:16px;height:16px;margin:1px 0 0;accent-color:#7452d6}.newsletter-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}.signup input:focus-visible{outline:2px solid #7452d6;outline-offset:2px;border-radius:8px}
-footer{border-top:1px solid var(--line);padding:26px 0 32px}.footer-row{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}.footer-note{font-size:11px;color:var(--muted)}.footer-links{display:flex;gap:18px;color:var(--muted);font-size:11px;font-weight:700}
-.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#241b35;color:#fff;padding:13px 18px;border-radius:999px;font-size:12px;box-shadow:0 12px 30px #241b3533;transition:.25s;z-index:30}.toast.show{opacity:1;transform:translate(-50%,0)}
-
-
-.complaint-banner{background:linear-gradient(120deg,#fff0d4,#ffe0eb);border:1px solid #f2d9e2;border-radius:24px;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:20px}
-.complaint-banner h3{font-size:22px;letter-spacing:-.05em;margin:6px 0}.complaint-banner p{font-size:12px;line-height:1.65;color:#6d6078;max-width:560px;margin:0}
-.roadmap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.roadmap-step{border:1px solid var(--line);background:white;border-radius:18px;padding:17px}
-.roadmap-step .num{width:29px;height:29px;display:grid;place-items:center;border-radius:10px;background:#e7ddff;color:#6745b5;font-size:12px;font-weight:900}
-.roadmap-step h3{font-size:13px;margin:12px 0 7px}.roadmap-step p{font-size:11px;line-height:1.6;color:var(--muted);margin:0}
-@media(max-width:900px){.roadmap{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.complaint-banner{align-items:flex-start;flex-direction:column;padding:20px}.roadmap{grid-template-columns:1fr}}
-
-/* Community, profile and policy additions */
-.community-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}
-.tool-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
-.tool-card .tool-emoji{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:23px;background:#eee5ff}
-.tool-card h3{font-size:17px;margin:2px 0 0;letter-spacing:-.04em}
-.tool-card p{font-size:12px;color:var(--muted);line-height:1.65;margin:0;flex:1}
-.feed-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
-.feed-card{border-radius:22px;background:#fff;border:1px solid var(--line);overflow:hidden}
-.feed-art{height:150px;display:grid;place-items:center;font-size:55px}
-.feed-content{padding:16px}
-.feed-content .meta{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase}
-.feed-content h3{font-size:15px;margin:8px 0}
-.feed-content p{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 13px}
-.feed-actions{display:flex;gap:8px;flex-wrap:wrap}
-.small-action{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:800}
-.small-action:hover{background:#f4efff}
-.policy-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.policy-links a{font-size:11px;text-decoration:underline;text-underline-offset:3px;color:#6b587f}
-.modal-backdrop{position:fixed;inset:0;background:#211a30a6;z-index:50;display:none;align-items:center;justify-content:center;padding:18px}
-.modal-backdrop.open{display:flex}
-.modal{width:min(560px,100%);max-height:min(85vh,760px);overflow:auto;background:var(--paper);border-radius:25px;padding:24px;box-shadow:0 25px 80px #10081e55}
-.modal-head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:15px}
-.modal-head h2{font-size:25px;letter-spacing:-.06em;margin:0}
-.modal-close{border:1px solid var(--line);background:white;width:36px;height:36px;border-radius:50%;font-size:20px}
-.modal p,.modal li{font-size:13px;line-height:1.75;color:#655a73}
-.modal label{display:block;font-size:11px;font-weight:850;margin:12px 0 6px}
-.modal input,.modal textarea,.modal select{width:100%;border:1px solid var(--line);background:white;border-radius:12px;padding:12px;font-size:13px;outline-color:#b8a2f2}
-.modal .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.notice{background:#fff1c9;border-radius:13px;padding:12px;font-size:11px;color:#655a45;line-height:1.6}
-@media(max-width:900px){.community-tools{grid-template-columns:1fr 1fr}.feed-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.community-tools,.feed-grid{grid-template-columns:1fr}.tool-card{padding:19px}.feed-art{height:170px}.modal{padding:19px}.modal .form-row{grid-template-columns:1fr}}
-
-@media(max-width:900px){.navlinks{gap:15px}.hero-grid{gap:20px}.hero-art{min-height:420px}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.product-visual{height:260px}.community-banner{grid-template-columns:1fr;padding:30px}.community-banner p{max-width:600px}.newsletter-box{padding:30px;grid-template-columns:1fr}.section-head p{max-width:300px}}
-@media(max-width:640px){.wrap{width:min(100% - 28px,520px)}.topline{font-size:10px}.nav{height:65px}.navlinks{display:none;position:absolute;top:65px;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--line);padding:18px 22px;flex-direction:column;align-items:flex-start}.navlinks.open{display:flex}.menu-toggle{display:grid}.nav-actions .join-nav{display:none}.hero{padding:28px 0 38px}.hero-grid{grid-template-columns:1fr}.hero h1{font-size:54px}.hero p{font-size:14px}.hero-art{min-height:390px}.album-stack{transform:translate(-50%,-46%) scale(.85) rotate(-5deg)}.float-right{right:12px;bottom:70px}.float-left{left:12px;bottom:20px}.section{padding:35px 0 45px}.section-head{align-items:flex-start;flex-direction:column}.section-head p{max-width:100%}.products{gap:12px}.product-visual{height:190px;border-radius:18px}.product-visual .product-emoji{font-size:66px}.product-info h3{font-size:14px}.product-info p{font-size:11px;min-height:48px}.product-bottom{align-items:flex-start;flex-direction:column;gap:6px}.community{padding:12px 0 48px}.community-banner{padding:25px 19px;border-radius:24px}.room-grid{grid-template-columns:1fr}.room{padding:15px}.editorial{grid-template-columns:1fr}.editor-card{min-height:245px;padding:24px}.newsletter{padding-bottom:48px}.newsletter-box{padding:25px 18px;border-radius:24px}.signup{border-radius:18px;flex-direction:column;padding:10px}.signup input{padding:13px 10px}.signup .pill{width:100%}.footer-row{align-items:flex-start;flex-direction:column}.footer-links{flex-wrap:wrap}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
-
-/* CEO dashboard, safety center, launch checklist and preferences */
-.nav-settings{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 13px;font-size:12px;font-weight:800;color:var(--ink)}
-.ops-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}
-.metric-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 8px 24px #4e36750a}
-.metric-card .metric-label{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.06em;text-transform:uppercase}
-.metric-card strong{display:block;font-size:29px;letter-spacing:-.06em;margin:9px 0 5px}
-.metric-card small{font-size:11px;color:var(--muted);line-height:1.5}
-.ops-panels{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
-.ops-panel,.safety-card,.launch-panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:23px}
-.ops-panel h3,.safety-card h3,.launch-panel h3{margin:0 0 10px;font-size:17px;letter-spacing:-.03em}
-.ops-panel p,.safety-card p,.launch-panel p{font-size:12px;line-height:1.7;color:var(--muted)}
-.ops-list,.safety-list,.launch-list{list-style:none;margin:15px 0 0;padding:0;display:grid;gap:11px}
-.ops-list li,.safety-list li,.launch-list li{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.55}
-.list-dot{display:grid;place-items:center;flex:0 0 25px;height:25px;border-radius:9px;background:#f0e9ff;color:var(--purple);font-weight:900}
-.mini-status{display:inline-block;padding:5px 8px;border-radius:999px;background:#fff0d6;color:#855817;font-size:10px;font-weight:900}
-.safety-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.safety-icon{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:#e8defe;font-size:21px;margin-bottom:14px}
-.safety-card:nth-child(2) .safety-icon{background:#dff7eb}.safety-card:nth-child(3) .safety-icon{background:#ffe3ec}
-.safety-card .pill{margin-top:8px}
-.launch-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:18px;align-items:start}
-.launch-checks{display:grid;gap:10px;margin-top:14px}
-.launch-check{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--line);padding:12px 13px;border-radius:13px;font-size:12px;line-height:1.5}
-.launch-check input{margin-top:2px;accent-color:var(--purple)}
-.progress-track{height:8px;background:#eee8f5;border-radius:999px;overflow:hidden;margin:12px 0 8px}
-.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#bda5ff,#ffb9d0);transition:width .2s}
-.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.settings-help{background:#f7f2ff;border-radius:14px;padding:13px;font-size:11px;line-height:1.65;color:#645578;margin-top:14px}
-#settings-modal select{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;color:var(--ink);margin-top:7px}
-.pref-badge{display:inline-flex;gap:6px;align-items:center;background:#e2f7ee;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:900;color:#28634d}
-@media(max-width:900px){.ops-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.safety-grid{grid-template-columns:1fr}.launch-layout,.ops-panels{grid-template-columns:1fr}}
-@media(max-width:600px){.ops-grid{gap:9px}.metric-card{padding:14px}.metric-card strong{font-size:24px}.settings-grid{grid-template-columns:1fr}.nav-settings{padding:9px 10px}.ops-panel,.safety-card,.launch-panel{padding:18px}}
-
-
-.brand-flower{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:11px;background:linear-gradient(135deg,#e7d9ff,#ffcfe3);color:#7552c7;font-size:22px;margin-right:8px;box-shadow:0 4px 12px #b79ae522}
-.brand-wordmark{font-weight:900;letter-spacing:-.055em}
-.brand-period{color:#e99bc2}
-
+:root{color-scheme:dark;--ink:#0D0D0C;--panel:rgba(25,28,25,.78);--line:rgba(255,255,255,.09);--leaf:#10B981;--pink:#F472B6}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--ink);color:#f5f5f1;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{overflow-x:hidden}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #F472B6;outline-offset:3px}
+.glass{background:rgba(20,23,21,.72);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#a5aba2;font-weight:700}
+.petal{position:absolute;width:42px;height:72px;border-radius:100% 100% 18% 100%;transform-origin:50% 100%;background:linear-gradient(145deg,#10B981,#F472B6);opacity:.92;animation:petal-bloom 1.7s cubic-bezier(.2,.8,.2,1) both;filter:drop-shadow(0 0 12px rgba(16,185,129,.24))}
+@keyframes petal-bloom{0%{transform:rotate(var(--r)) translateY(0) scale(.05);opacity:0}75%{opacity:1}100%{transform:rotate(var(--r)) translateY(-24px) scale(1);opacity:.92}}
+@keyframes slowspin{to{transform:rotate(360deg)}}@keyframes fade-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.45)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
+@keyframes splash-out{to{opacity:0;visibility:hidden;pointer-events:none}}@keyframes particle{0%{transform:translate(0,0) scale(.3);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.4);opacity:0}}
+.splash{position:fixed;inset:0;z-index:1000;background:#0D0D0C;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s ease,visibility .8s ease}.splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.flower{width:128px;height:128px;position:relative;display:grid;place-items:center}.flower .petal{width:34px;height:58px;left:47px;top:6px}.flower .core{width:20px;height:20px;border-radius:50%;background:#f5f5f1;box-shadow:0 0 28px rgba(244,114,182,.65);z-index:2}
+.splash-word{opacity:0;animation:fade-up .7s ease 1.1s forwards}.splash-sub{opacity:0;animation:fade-up .7s ease 1.35s forwards}
+.app-shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:42px;max-width:1500px;margin:0 auto;padding:28px 32px;align-items:start}
+.desktop-panel{padding:8px 0 40px;min-width:0}.brand-mark{width:38px;height:38px;border-radius:14px;background:linear-gradient(140deg,#10B981,#F472B6);display:grid;place-items:center;color:#0D0D0C;font-size:22px;font-weight:900}
+.phone-wrap{position:sticky;top:20px;display:flex;justify-content:center}.phone{width:100%;max-width:430px;height:min(890px,calc(100dvh - 40px));min-height:640px;background:#101210;border:1px solid rgba(255,255,255,.18);border-radius:42px;padding:9px;box-shadow:0 28px 90px rgba(0,0,0,.6),0 0 0 7px rgba(255,255,255,.025);position:relative;overflow:hidden}
+.phone-inner{width:100%;height:100%;background:#0D0D0C;border-radius:33px;overflow:hidden;position:relative;isolation:isolate}.phone-status{height:28px;position:absolute;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:10px;font-weight:700;pointer-events:none;background:linear-gradient(#0D0D0C,transparent)}
+.mobile-content{position:absolute;inset:0;overflow:hidden}.tab-panel{position:absolute;inset:0;display:none;overflow:hidden}.tab-panel.active{display:block;animation:fade-up .25s ease}.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:76px;padding:8px 12px max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);z-index:25;border-top:1px solid rgba(255,255,255,.08);background:rgba(16,18,16,.82);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.nav-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:#8d938a;font-size:10px;font-weight:650;letter-spacing:.02em;border:0;background:transparent}.nav-tab .nav-icon{font-size:20px;line-height:1}.nav-tab.active{color:#fff}.nav-tab.active .nav-icon{color:#10B981;text-shadow:0 0 18px rgba(16,185,129,.45)}
+.feed{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;padding-bottom:76px}.feed::-webkit-scrollbar{display:none}.feed-post{height:calc(100% - 0px);min-height:560px;max-height:820px;position:relative;scroll-snap-align:start;overflow:hidden;background:#20271f}.feed-post img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.84}.feed-post:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28),transparent 28%,transparent 47%,rgba(0,0,0,.82) 100%);pointer-events:none}
+.post-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.post-art .orb{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e8c7d8,#8c5b8b 35%,#252a3c 70%);filter:blur(.3px);box-shadow:0 0 90px rgba(244,114,182,.25)}.post-art .stage{position:absolute;bottom:15%;width:120%;height:40%;background:linear-gradient(160deg,transparent,#10B981 48%,#172b22 49%);transform:rotate(-14deg);opacity:.8}.post-art .art-label{position:absolute;top:31%;font-size:clamp(44px,9vw,76px);font-weight:950;letter-spacing:-.09em;line-height:.85;text-align:center;text-shadow:0 8px 30px #000;color:#fff}.post-art .art-label span{display:block;color:#F9A8D4;font-size:.38em;letter-spacing:.25em;margin-top:14px}
+.post-art.concert{background:radial-gradient(ellipse at 50% 48%,#9c315f,#341c3b 40%,#111711 78%)}.post-art.concert:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(110deg,transparent 0 35px,rgba(16,185,129,.13) 36px 39px,transparent 40px 70px)}.post-art.concert .orb{width:170px;height:170px;background:radial-gradient(circle,#ffd8ee,#f472b6 34%,transparent 70%);filter:blur(3px)}
+.post-top{position:absolute;z-index:3;top:40px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center}.post-bottom{position:absolute;z-index:3;bottom:92px;left:18px;right:78px}.post-actions{position:absolute;z-index:4;right:14px;bottom:112px;display:flex;align-items:center;flex-direction:column;gap:19px}.action-button{border:0;background:transparent;color:white;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;text-shadow:0 2px 8px #000}.action-button .bubble{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(12px);font-size:20px}.action-button.liked .bubble{color:#F472B6;background:rgba(244,114,182,.22)}.follow-pill{border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:5px 9px;font-size:10px;background:rgba(0,0,0,.2)}
+.particle{position:absolute;z-index:8;pointer-events:none;font-size:20px;animation:particle .9s ease-out forwards}.post-hint{position:absolute;inset:0;z-index:7;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .2s;font-size:66px;text-shadow:0 0 32px rgba(244,114,182,.7)}.post-hint.show{opacity:1}
+.section-head{position:absolute;top:29px;left:0;right:0;z-index:5;padding:14px 20px 18px;background:linear-gradient(#0D0D0C 70%,transparent)}.chat-list{position:absolute;inset:0;overflow-y:auto;padding:94px 16px 90px}.chat-row{display:flex;align-items:center;gap:13px;padding:15px 3px;border-bottom:1px solid rgba(255,255,255,.07);width:100%;text-align:left;background:transparent;border-top:0;border-left:0;border-right:0;color:white}.avatar{width:51px;height:51px;border-radius:19px;display:grid;place-items:center;font-size:21px;background:linear-gradient(145deg,#254737,#18231b);border:1px solid rgba(255,255,255,.1);flex-shrink:0}.online-dot{width:9px;height:9px;background:#10B981;border:2px solid #0D0D0C;border-radius:50%;position:absolute;right:0;bottom:0;animation:pulse 1.8s infinite}.room-overlay{position:absolute;inset:0;z-index:35;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);display:none;align-items:flex-end}.room-overlay.open{display:flex}.room-sheet{height:84%;width:100%;border-radius:27px 27px 0 0;background:rgba(20,23,21,.97);border:1px solid rgba(255,255,255,.1);padding:18px 16px 16px;display:flex;flex-direction:column;animation:fade-up .25s ease}.messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:18px 0}.message{max-width:84%;padding:10px 13px;border-radius:16px;background:#252a25;font-size:12px;line-height:1.5;align-self:flex-start}.message.mine{background:#0b6f4d;align-self:flex-end;border-bottom-right-radius:5px}.send-row{display:flex;gap:8px}.send-row input{min-width:0;flex:1;background:#262a26;border:1px solid #3b413a;border-radius:13px;padding:12px;color:#fff;font-size:12px}.send-row button{width:44px;border-radius:13px;background:#10B981;color:#07110c;font-weight:900;border:0}
+.profile-scroll{position:absolute;inset:0;overflow-y:auto;padding:46px 0 90px;scrollbar-width:none}.profile-top{padding:12px 18px 18px}.profile-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}.grid-tile{aspect-ratio:1;border:0;padding:0;position:relative;overflow:hidden;background:#1c271f}.grid-tile img{width:100%;height:100%;object-fit:cover}.tile-art{width:100%;height:100%;display:grid;place-items:center;font-size:30px;background:linear-gradient(135deg,#203b2d,#55354b)}.tile-art:nth-child(3n){background:linear-gradient(135deg,#42283c,#263a31)}
+.metric{padding:11px 0;text-align:center}.metric strong{font-size:17px;display:block}.metric span{font-size:10px;color:#a0a59e}.grow-btn{border:0;border-radius:13px;background:#10B981;color:#08130d;font-size:12px;font-weight:800;padding:12px 14px;transition:transform .2s,background .2s}.grow-btn:active{transform:scale(.98)}.grow-btn.grown{background:#f472b6;color:#190d14}
+.platform-card{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border-radius:22px;overflow:hidden}.platform-art{height:154px;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 40% 30%,#2e6b4d,#16231b 54%,#111310)}.platform-art.pink{background:radial-gradient(ellipse at 65% 25%,#814a73,#29202a 52%,#111310)}.platform-art:before{content:"";position:absolute;width:118px;height:118px;border-radius:50%;border:1px solid rgba(255,255,255,.22);box-shadow:0 0 0 18px rgba(255,255,255,.035),0 0 0 38px rgba(255,255,255,.025)}.platform-art .product-symbol{font-size:48px;z-index:1;filter:drop-shadow(0 8px 18px rgba(0,0,0,.4))}.product-link{display:inline-flex;align-items:center;gap:7px;color:#d6fbe9;font-size:11px;font-weight:750;text-decoration:none}.product-link:hover{color:#F472B6}.check-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;color:#d3d6d0}.check-row input{accent-color:#10B981;width:15px;height:15px;margin-top:1px;flex-shrink:0}.check-row:has(input:checked) span{text-decoration:line-through;color:#777f75}.dashboard{transition:max-height .3s ease}.dashboard.collapsed .dashboard-body{display:none}.dashboard-toggle{border:0;background:transparent;color:#fff}.mobile-only-title{display:none}
+@media(max-width:900px){.app-shell{grid-template-columns:minmax(0,1fr) 410px;gap:24px;padding:22px}.phone{height:calc(100dvh - 44px)}}
+@media(max-width:700px){html,body{height:100%;overflow:hidden}.app-shell{display:block;padding:0;height:100dvh;min-height:0}.desktop-panel,.phone-wrap .device-caption{display:none!important}.phone-wrap{position:static;display:block;height:100dvh}.phone{width:100%;max-width:none;height:100dvh;min-height:0;border:0;border-radius:0;padding:0;box-shadow:none}.phone-inner{height:100%;border-radius:0}.phone-status{height:34px;padding-top:5px}.feed-post{height:100%;min-height:0;max-height:none}.post-top{top:45px}.post-bottom{bottom:100px}.post-actions{bottom:120px}.bottom-nav{height:76px;padding-bottom:max(12px,env(safe-area-inset-bottom))}.section-head{top:34px}.chat-list{padding-top:105px}.profile-scroll{padding-top:52px}.room-sheet{height:88%}.mobile-only-title{display:block}}
+@media(min-width:701px){.phone-status{padding-top:0}.phone-wrap:before{content:"";position:absolute;width:86px;height:22px;background:#0D0D0C;border-radius:0 0 14px 14px;top:9px;z-index:30;left:50%;transform:translateX(-50%);pointer-events:none}.feed-post{height:calc(100% - 76px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style>
-<meta name="description" content="BLOOM is a welcoming K-pop fan community to connect, discover, share, and shop.">
-<link rel="stylesheet" href="bloom-enhancements.css">
-<link rel="stylesheet" href="bloom-social-unification.css">
-
-<style id="bloom-night-cyan-redesign">
-:root{color-scheme:light;--ink:#28213b;--muted:#746d83;--paper:#fcfaff;--lilac:#e4d8ff;--purple:#8061dc;--pink:#ffc5dc;--line:#eee7f7;--mint:#d7f7ee;--yellow:#fff0bd;--radius:24px}
-html{background:#fcfaff;scroll-padding-top:90px}
-body{background:radial-gradient(ellipse at 80% -10%,#e8fbff 0%,#fcfaff 48%,#fff8fc 100%);color:#28213b}
-.topline{background:#28213b;color:#fff}
-.topline b{color:#8deaf3}
-header{background:rgba(252,250,255,.9);border-bottom:1px solid #eee7f7}
-.navlinks{color:#6d647e}.navlinks a:hover,.shop-link{color:#6b51c9}
-.brand-flower,.brand-wordmark,.logo{color:#28213b}
-.brand-period{color:#8061dc!important}
-.nav-settings,.icon-btn,.white,.filter,.small-action,.modal-close{background:#fff;color:#39304e;border-color:#eee7f7}
-.primary{background:#28213b;color:#fff}
-.lavender{background:#e4d8ff;color:#392c62;border:1px solid #d8c8ff}
-.hero{padding-top:44px}
-.eyebrow{background:#fff;border-color:#e8def8;color:#7556cf}
-.eyebrow i{background:#ff9fc7;box-shadow:0 0 12px #ff9fc766}
-.hero h1 span{color:#8061dc}
-.hero p,.section-head p,.product-info p,.editor-card p,.newsletter p,.roadmap-step p{color:#746d83}
-.hero-art{background:linear-gradient(145deg,#e8e0ff 0%,#d9f7fb 48%,#ffe2ef 100%);border:1px solid #eee2fa;box-shadow:0 22px 60px #7050a31a}
-.hero-art:before{background:#ffffff85}
-.art-note,.floating{background:#ffffffd9;color:#39304e;border:1px solid #fff;box-shadow:0 14px 35px #6b51a51a}
-.float-right{background:#e3fbff;color:#28566a}
-.album.one{background:linear-gradient(145deg,#8e74e9,#c8b7ff);border:1px solid #ffffff99}
-.album.two{background:linear-gradient(145deg,#ffb6d1,#fff0bd);color:#453451;border:1px solid #ffffffb0}
-.section{border-top:1px solid #f0eaf8}
-.kicker{color:#7556cf}
-.filters .filter.active,.filters .filter:hover{background:#8061dc;color:#fff;border-color:#8061dc}
-#filter-search{background:#fff!important;color:#28213b!important;border-color:#eee7f7!important}
-.products{gap:18px}
-.product-card{background:#fff;border:1px solid #eee7f7;border-radius:23px;padding:10px;box-shadow:0 8px 28px #7050a30a;transition:transform .2s,border-color .2s,box-shadow .2s}
-.product-card:hover{transform:translateY(-4px);border-color:#d8c8ff;box-shadow:0 18px 38px #7050a31a}
-.product-visual{border-radius:17px}
-.product-visual:before{background:#ffffff20}
-.product-emoji{filter:drop-shadow(0 12px 15px #46305b20)!important}
-.tag,.heart{background:#ffffffed;color:#55446f;border:1px solid #eee7f7}
-.product-info h3{color:#28213b}
-.price{color:#39304e}.disclosure,.footer-note{color:#827a91}
-.community-banner{background:linear-gradient(125deg,#eee7ff,#fff0f6 58%,#e3fbff);border:1px solid #eee2fa;box-shadow:0 22px 60px #7050a314}
-.community-banner p,.room p{color:#746d83}
-.room{background:#ffffffb8;border-color:#e8def6}
-.room:hover{background:#eafcff;border-color:#bceef4}
-.room small{color:#7452d6}
-.tool-card,.feed-card,.roadmap-step{background:#fff;border-color:#eee7f7;color:#28213b}
-.tool-card p,.feed-content p{color:#746d83}
-.tool-card .tool-emoji{background:#dff8f3!important}
-.feed-card{transition:transform .2s,border-color .2s;scroll-snap-align:start;box-shadow:0 8px 26px #7050a30a}
-.feed-card:hover{transform:translateY(-3px);border-color:#d8c8ff}
-.feed-art{background:linear-gradient(135deg,#e8e0ff,#d9f7fb)!important}
-.small-action:hover{background:#f2edff;border-color:#d8c8ff}
-.editor-card{background:linear-gradient(140deg,#eee7ff,#fff0f6)!important;border:1px solid #eee2fa}
-.editor-card h3{color:#28213b}
-.editor-card .deco{opacity:.72}
-.newsletter-box{background:linear-gradient(120deg,#f0eaff,#fff0f6 65%,#e6fbff);border:1px solid #eee2fa}
-.signup{background:#fff;border:1px solid #e8def6;box-shadow:0 8px 28px #7050a30a}
-.signup input{color:#28213b}.signup input::placeholder{color:#948aa5}
-.fineprint{color:#827a91!important}
-footer{border-color:#eee7f7}
-.footer-links{color:#746d83}
-.complaint-banner{background:linear-gradient(120deg,#fff0f6,#f0eaff);border-color:#eee2fa}
-.complaint-banner p{color:#746d83}
-.roadmap-step .num{background:#e4faff;color:#327b91}
-.modal-backdrop{background:#28213b70}
-.modal{background:#fff;border:1px solid #eee2fa;color:#28213b}
-.modal p,.modal li{color:#746d83}
-.modal input,.modal textarea,.modal select{background:#fff!important;color:#28213b!important;border-color:#e8def6!important}
-.policy-links a{color:#7556cf}
-.toast{background:#fff;border:1px solid #d8c8ff;color:#39304e;box-shadow:0 12px 35px #7050a322}
-.bloom-launch-note{background:#f6f0ff;border-color:#e9defb;color:#5e4b80}
-.bloom-launch-note strong{color:#7855c9}
-:focus-visible{outline:2px solid #67cddc!important;outline-offset:3px}
-@media(max-width:640px){.hero{padding-top:32px}.hero-art{min-height:410px}.community-banner{padding:25px 20px}.product-visual{height:190px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-</style>
-
-
-<style id="bloom-v2-refresh">
-:root{--ink:#211b36;--muted:#716a83;--paper:#fcfaff;--lilac:#d9c8ff;--purple:#7654d8;--pink:#ffb9d0;--line:#e9e2f4;--mint:#d6f5e9;--yellow:#ffe7a8;--radius:26px}
-body{background:radial-gradient(ellipse at 8% 8%,#f2ebff 0,transparent 34%),radial-gradient(ellipse at 92% 18%,#fff0f6 0,transparent 30%),var(--paper)}
-.bloom-v2-note{gap:8px 12px;padding:12px 18px;background:linear-gradient(100deg,#28203d,#48326f);border-bottom:1px solid #d9c8ff;color:#f7f1ff;font-size:12px}
-.bloom-v2-note strong{color:#ffbdd6;letter-spacing:.08em;font-size:13px}
-.bloom-v2-status{padding:4px 9px;border:1px solid #ffffff38;border-radius:999px;color:#e5dafa;font-size:10px}
-.topline{background:#181326;letter-spacing:.12em}
-header{background:rgba(252,250,255,.9);border-bottom-color:#e6ddf2}
-.logo.bloom-flower-logo{width:44px;height:44px;padding:4px;border-radius:15px;background:white;box-shadow:0 7px 24px #7654d81c;border:1px solid #eee6f7}
-.hero{padding-top:54px}
-.hero h1{max-width:670px;font-size:clamp(46px,6.3vw,82px);line-height:.96;letter-spacing:-.078em}
-.hero h1 span{background:linear-gradient(100deg,#7853d6,#d45c9c);background-clip:text;-webkit-background-clip:text;color:transparent}
-.hero-art{box-shadow:0 26px 80px #6c4bb31c;border:1px solid #ffffffa8}
-.pill{box-shadow:0 4px 14px #34244a0a}
-.primary{background:linear-gradient(110deg,#28203d,#49336c)}
-.section-head h2,.community-banner h2{letter-spacing:-.055em}
-.product-card,.feed-card,.tool-card,.room{border:1px solid #ece5f5;box-shadow:0 12px 36px #4a326c0a}
-.product-card:hover,.feed-card:hover,.tool-card:hover,.room:hover{box-shadow:0 18px 44px #4a326c16}
-@media(max-width:640px){.hero{padding-top:34px}.bloom-v2-status{width:100%;max-width:max-content}}
-</style>
-
+<link rel="stylesheet" href="bloom-prototype-live.css">
 </head>
 <body>
-
-<div class="bloom-launch-note bloom-v2-note" role="note"><strong>✿ BLOOM 2.0</strong><span>Your K-pop universe · Fan feed, music & marketplace preview</span><span class="bloom-v2-status">Some community actions are previews until backend setup is complete.</span></div>
-<style>
-.bloom-launch-note{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 16px;background:#f6f0ff;border-bottom:1px solid #e9defb;color:#5e4b80;font-size:12px;text-align:center}
-.bloom-launch-note strong{color:#7855c9}
-</style>
-
-<div class="topline">YOUR WORLD, IN BLOOM <b>✦</b> VIDEOS, IDEAS, FRIENDS & FINDS</div>
-<header><div class="wrap nav">
-<a class="logo bloom-flower-logo" href="#home" aria-label="BLOOM home"><svg viewBox="0 0 100 100" role="img" aria-label="BLOOM flower logo" xmlns="http://www.w3.org/2000/svg"><g fill="#8b7cff" stroke="#30284b" stroke-width="3"><ellipse cx="50" cy="25" rx="15" ry="22"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(60 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(120 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(180 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(240 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(300 50 50)"/></g><circle cx="50" cy="50" r="13" fill="#73e4df" stroke="#30284b" stroke-width="3"/></svg></a>
-<nav class="navlinks" id="navlinks"><a href="#explore" data-i18n="nav_explore">Explore</a><a href="#activity" data-i18n="nav_feed">Feed</a><a href="#community" data-i18n="nav_rooms">Communities</a><a href="#discover" data-i18n="nav_shop">Shop</a><a href="#safety" data-i18n="nav_safety">Safety</a><a href="#feedback" data-i18n="nav_feedback">Feedback</a><a href="#guides" data-i18n="nav_guides">Ideas</a></nav>
-<div class="nav-actions"><button class="nav-settings" onclick="openModal('settings-modal')" aria-label="Language and currency settings">🌐 <span id="nav-locale">EN · MYR</span></button><button class="icon-btn" aria-label="Search interests" onclick="document.querySelector('#explore').scrollIntoView({behavior:'smooth'});document.querySelector('#bloom-interest-search').focus()">⌕</button><button class="icon-btn" aria-label="Open profile settings" onclick="openModal('profile-modal')">⚙</button><a class="pill primary join-nav" href="#community">Find your people ↗</a><button class="icon-btn menu-toggle" aria-label="Toggle menu" onclick="document.querySelector('#navlinks').classList.toggle('open')">☰</button></div>
-</div></header>
-<main id="home">
-<section class="hero"><div class="wrap hero-grid"><div>
-<div class="eyebrow"><i></i> all your interests. one blooming world.</div>
-<h1>Your whole world,<br>in <span>full bloom.</span></h1>
-<p>Share what you love, find people who get it, message your circle, join communities, and discover creator finds — all in one evolving space. BLOOM gives every side of you room to grow.</p>
-<div class="hero-buttons"><a class="pill primary" href="#explore">Explore the BLOOM world <span>↗</span></a><a class="pill white" href="#community">Find your community ♡</a></div>
-<div class="social-proof"><div class="avatars"><span>🐰</span><span>🐻</span><span>🐱</span><span>🐣</span></div><span><strong style="color:var(--ink)">Your people are here.</strong> Come say hi ✨</span></div>
-</div>
-<div class="hero-art" aria-label="Playful illustration representing the many interests in BLOOM"><div class="art-note">CURRENT MOOD <span>♡ making room for more</span></div><span class="spark s1">✦</span><span class="spark s2">✧</span><span class="spark s3">♡</span>
-<div class="album-stack"><div class="album one"><div class="tiny">BLOOM • YOUR WORLD</div><div class="orb"></div><div class="bigtype">CREATE<br>CONNECT<br>GROW</div><div class="tiny">EXPLORE WHAT YOU LOVE</div></div><div class="album two"><div class="tiny">MORE THAN ONE SIDE</div><div class="bigtype">YOUR<br>WHOLE<br>WORLD ✦</div><div class="star">♡</div></div></div>
-<div class="floating float-left"><b>♡ 24/7</b>good energy</div><div class="floating float-right"><b>✧ 100% you</b>your own space</div>
-</div></div></section>
-
-<section class="section bloom-explore" id="explore"><div class="wrap">
-<div class="section-head"><div><div class="kicker">Find your next little world</div><h2>Every interest has a place here.</h2></div><p>Art, gaming, recipes, everyday life, the outdoors, music, fandom and whatever comes next — all belong in BLOOM.</p></div>
-
-<div class="bloom-my-mix" id="bloom-my-mix" aria-labelledby="bloom-my-mix-title">
-  <div class="bloom-my-mix-head"><div><div class="kicker">A BLOOM signature</div><h3 id="bloom-my-mix-title">Make your own mix.</h3><p>Choose the interests you want to see more of. Your world can change whenever you do.</p></div><span class="bloom-mix-flower" aria-hidden="true">✿</span></div>
-  <div class="bloom-preference-options" role="group" aria-label="Choose your interests">
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="creative" aria-pressed="false">🎨 Art & design</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="gaming" aria-pressed="false">🎮 Gaming</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="lifestyle" aria-pressed="false">🌱 Everyday life</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="food" aria-pressed="false">🍜 Food & drink</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="outdoors" aria-pressed="false">🥾 Outdoors</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="music" aria-pressed="false">🎧 Music</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="fandom" aria-pressed="false">✿ K-pop</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="books" aria-pressed="false">📚 Books</button>
-    <button class="bloom-preference-chip" type="button" data-bloom-pref="tech" aria-pressed="false">💡 Tech & making</button>
+<!-- Opening sequence -->
+<div id="splash" class="splash" aria-label="Welcome to BLOOM">
+  <div class="flower" aria-hidden="true">
+    <span class="petal" style="--r:0deg"></span><span class="petal" style="--r:45deg;animation-delay:.08s"></span>
+    <span class="petal" style="--r:90deg;animation-delay:.16s"></span><span class="petal" style="--r:135deg;animation-delay:.24s"></span>
+    <span class="petal" style="--r:180deg;animation-delay:.32s"></span><span class="petal" style="--r:225deg;animation-delay:.4s"></span>
+    <span class="petal" style="--r:270deg;animation-delay:.48s"></span><span class="petal" style="--r:315deg;animation-delay:.56s"></span><span class="core"></span>
   </div>
-  <div class="bloom-my-mix-foot"><p id="bloom-mix-status" role="status" aria-live="polite">Choose a few interests, then apply your mix. You can still switch back to everything.</p><div class="bloom-mix-buttons"><button class="pill white" id="bloom-clear-mix" type="button">Show everything</button><button class="pill primary" id="bloom-apply-mix" type="button">Apply my mix ✿</button></div></div>
-  <p class="bloom-mix-disclaimer">Guests keep their mix in this browser. When signed in, save interests to your BLOOM profile; they may be visible on public profiles.</p>
+  <h1 class="splash-word mt-7 text-2xl font-semibold tracking-[.18em]">Welcome to <span class="text-emerald-400">BLOOM</span></h1>
+  <p class="splash-sub mt-3 text-xs tracking-[.24em] uppercase text-zinc-500">your world, in full colour</p>
 </div>
-<label class="bloom-interest-search"><span aria-hidden="true">⌕</span><input id="bloom-interest-search" type="search" placeholder="Search interests and communities…" aria-label="Search interests and communities"></label>
-<div class="bloom-interest-grid" id="bloom-interest-grid">
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="creative" data-bloom-search="art design drawing illustration creators crafts"><span class="bloom-interest-icon">🎨</span><strong>Art & design</strong><small>Share what you're making and find your creative people.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="gaming" data-bloom-search="gaming games esports players"><span class="bloom-interest-icon">🎮</span><strong>Gaming</strong><small>Meet teammates, trade tips and celebrate the wins.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="lifestyle" data-bloom-search="lifestyle routines mindful wellbeing daily"><span class="bloom-interest-icon">🌱</span><strong>Everyday living</strong><small>Collect tiny joys, routines and personal moments.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="food" data-bloom-search="food cooking recipes cafe baking"><span class="bloom-interest-icon">🍜</span><strong>Food & drink</strong><small>Swap recipes, cafe finds and kitchen experiments.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="outdoors" data-bloom-search="outdoors nature travel hiking fitness adventure"><span class="bloom-interest-icon">🥾</span><strong>Outdoors & wellbeing</strong><small>Find inspiration for fresh air and new adventures.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="music" data-bloom-search="music fandom kpop concerts dance pop culture"><span class="bloom-interest-icon">🎧</span><strong>Music & fandom</strong><small>Share obsessions, fan edits and comeback moments.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="books" data-bloom-search="books reading writing learning journaling"><span class="bloom-interest-icon">📚</span><strong>Books & learning</strong><small>Exchange recommendations and things worth learning.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="tech" data-bloom-search="technology coding product design making"><span class="bloom-interest-icon">💡</span><strong>Tech & making</strong><small>Build ideas, share projects and learn together.</small></a>
-<a class="bloom-interest-card" href="#activity" data-bloom-interest-target="fandom" data-bloom-search="kpop music fandom pop culture concerts"><span class="bloom-interest-icon">✿</span><strong>Fandom Garden</strong><small>Keep the original BLOOM fandom roots — and make room for more.</small></a>
-</div>
-<div class="bloom-unified-note"><span aria-hidden="true">✿</span><p><strong>One account. Many sides of you.</strong><br>Keep your posts, conversations, communities and discoveries connected in one place.</p><a href="#activity">Explore the feed ↗</a></div>
-</div></section>
-<section class="section" id="discover"><div class="wrap">
-<div class="section-head"><div><div class="kicker">BLOOM marketplace · creator picks & community finds</div><h2>Find something you’ll love.</h2></div><p>Discover finds from creators, communities and fandom corners — for everyday life, your next project, or your next concert.</p></div>
- <div id="bloom-marketplace-app" class="bloom-marketplace-preview" role="region" aria-label="BLOOM community marketplace"><div class="bloom-market-preview-head"><span aria-hidden="true">🌸</span><div><h3>Discover and shop inside BLOOM</h3><p>Explore community listings, creator recommendations and interest-based finds without leaving BLOOM.</p></div></div><p id="bloom-marketplace-preview-status" role="status">Loading the shared marketplace… If this message stays here, refresh the page and try again.</p></div>
-<div class="filters" role="group" aria-label="Filter products"><button class="filter active" data-filter="all">All finds</button><button class="filter" data-filter="creator">Creator picks</button><button class="filter" data-filter="home">Home & living</button><button class="filter" data-filter="style">Style</button><button class="filter" data-filter="digital">Digital</button><button class="filter" data-filter="gaming">Gaming</button><button class="filter" data-filter="fandom">Fandom</button><button class="filter" data-filter="albums">Collectibles</button><button class="filter" data-filter="accessories">Accessories</button><button class="filter" data-filter="concert">Concert</button><input id="filter-search" aria-label="Search products" placeholder="Search finds…" style="margin-left:auto;min-width:130px;max-width:190px;border:1px solid var(--line);border-radius:999px;padding:9px 13px;font-size:12px;outline-color:#b8a2f2"></div>
-<div class="products" id="product-grid">
-<article class="product-card" data-category="albums" data-name="album display shelf collectibles"><div class="product-visual v-lilac"><span class="tag">Fan shelf fave</span><button class="heart" aria-label="Save album shelf" onclick="saveItem(this)">♡</button><span class="product-emoji">💿</span></div><div class="product-info"><div class="product-type">Albums & collectibles</div><h3>The Album Display Edit</h3><p>Give your favorite eras the shelf space they deserve.</p><div class="product-bottom"><span class="price">Check current price</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-<article class="product-card" data-category="style" data-name="kpop streetwear hoodie fan style"><div class="product-visual v-pink"><span class="tag">Style pick</span><button class="heart" aria-label="Save hoodie" onclick="saveItem(this)">♡</button><span class="product-emoji">🧥</span></div><div class="product-info"><div class="product-type">Fan style</div><h3>Off-Duty Idol Layers</h3><p>Cozy oversized layers for your airport-fashion era.</p><div class="product-bottom"><span class="price">Check current price</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-<article class="product-card" data-category="accessories" data-name="photocard binder sleeves trading cards"><div class="product-visual v-mint"><span class="tag">Organize cute</span><button class="heart" aria-label="Save photocard binder" onclick="saveItem(this)">♡</button><span class="product-emoji">📒</span></div><div class="product-info"><div class="product-type">Accessories</div><h3>Photocard Keeper Kit</h3><p>A happy home for your pulls, trades, and lucky biases.</p><div class="product-bottom"><span class="price">Check current price</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-<article class="product-card" data-category="concert" data-name="concert bag lightstick essentials"><div class="product-visual v-yellow"><span class="tag">Concert ready</span><button class="heart" aria-label="Save concert bag" onclick="saveItem(this)">♡</button><span class="product-emoji">🎒</span></div><div class="product-info"><div class="product-type">Concert essentials</div><h3>The Concert-Day Bag</h3><p>Room for your lightstick, freebies, and happy tears.</p><div class="product-bottom"><span class="price">Check current price</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-<article class="product-card" data-category="concert" data-name="official bts lightstick bts light stick weverse"><div class="product-visual v-lilac"><span class="tag">Official merch</span><button class="heart" aria-label="Save official BTS light stick" onclick="saveItem(this)">♡</button><span class="product-emoji">💜</span></div><div class="product-info"><div class="product-type">Official artist merchandise</div><h3>BTS Official Light Stick Ver.4</h3><p>Official Weverse Shop listing. Check regional shipping, availability, and the final checkout price.</p><div class="product-bottom"><span class="price">Check official price</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
 
-<article class="product-card" data-category="home" data-name="mini ceramic planter home living creator"><div class="product-visual v-mint"><span class="tag">Tiny green joy</span><button class="heart" aria-label="Save mini ceramic planter" onclick="saveItem(this)">♡</button><span class="product-emoji">🪴</span></div><div class="product-info"><div class="product-type">Home & living</div><h3>Mini Ceramic Planter</h3><p>A little green corner for your desk, shelf, or windowsill.</p><div class="product-bottom"><span class="price">Sample listing</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-<article class="product-card" data-category="digital" data-name="journaling prompt kit digital creator"><div class="product-visual v-lilac"><span class="tag">Creator pick</span><button class="heart" aria-label="Save journaling prompt kit" onclick="saveItem(this)">♡</button><span class="product-emoji">📔</span></div><div class="product-info"><div class="product-type">Digital & creative</div><h3>Journaling Prompt Kit</h3><p>Thought starters for reflection, ideas and everyday creativity.</p><div class="product-bottom"><span class="price">Sample listing</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-<article class="product-card" data-category="creator" data-name="artist sticker pack creator made stationery"><div class="product-visual v-yellow"><span class="tag">Made by creators</span><button class="heart" aria-label="Save artist sticker pack" onclick="saveItem(this)">♡</button><span class="product-emoji">🌼</span></div><div class="product-info"><div class="product-type">Creator-made goods</div><h3>Artist Sticker Pack</h3><p>Small-batch designs from independent makers and illustrators.</p><div class="product-bottom"><span class="price">Sample listing</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-<article class="product-card" data-category="gaming" data-name="gaming desk mat games setup"><div class="product-visual v-pink"><span class="tag">Setup upgrade</span><button class="heart" aria-label="Save gaming desk mat" onclick="saveItem(this)">♡</button><span class="product-emoji">🎮</span></div><div class="product-info"><div class="product-type">Gaming & setup</div><h3>Gaming Desk Mat</h3><p>A sample pick for a setup that feels a little more like you.</p><div class="product-bottom"><span class="price">Sample listing</span><a class="shop-link" href="#bloom-marketplace-listings">Find on BLOOM ↗</a></div></div></article>
-</div><p class="disclosure" id="affiliate-note">Community listings stay inside BLOOM. Purchase requests are sent to sellers in BLOOM; payments are not processed here yet. Check listings carefully and keep personal information private.</p>
-</div></section>
-<section class="community" id="community"><div class="wrap"><div class="community-banner"><div><div class="kicker">A world for every side of you</div><h2>Same interests.<br>New besties.</h2><p>Find your people, swap ideas, share the things you love and build little communities around every side of your life. Keep it kind, keep it curious.</p><a class="pill lavender" href="#newsletter">Join the BLOOM circle ↗</a></div>
-<div class="room-grid">
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#e1d3ff">💬</div><div><h3>Stanner Lounge</h3><p>Meet multi-stans, trade recs, and find your fandom besties.</p><small>CHAT WITH FANS ↗</small></div></a>
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#ffd5e4">🎤</div><div><h3>Comeback Central</h3><p>Teasers, theories, release-day excitement, all in one place.</p><small>HYPE TOGETHER ↗</small></div></a>
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#d4f5e8">🌟</div><div><h3>Idol Updates</h3><p>Share official posts, live notices, and verified fan updates.</p><small>STAY IN THE LOOP ↗</small></div></a>
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#ffe8ad">🎟️</div><div><h3>Concert Buddies</h3><p>Find fan projects, event tips, and concert-day inspiration.</p><small>MAKE A PLAN ↗</small></div></a>
+<main class="app-shell">
+  <!-- Desktop community platform -->
+  <section class="desktop-panel">
+    <header class="flex items-center justify-between gap-5 mb-12">
+      <div class="flex items-center gap-3">
+        <div class="brand-mark">✿</div>
+        <div><div class="text-xl font-black tracking-[.18em]">BLOOM</div><div class="eyebrow mt-1">the interest garden</div></div>
+      </div>
+      <div class="glass rounded-full px-4 py-2 text-xs text-zinc-300"><span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>Community growing</div>
+    </header>
 
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#d4f5e8">🎨</div><div><h3>Creative Corner</h3><p>Share art, projects in progress, feedback and happy accidents.</p><small>MAKE SOMETHING ↗</small></div></a>
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#e1d3ff">🎮</div><div><h3>Player Two Lounge</h3><p>Meet teammates, swap tips, and celebrate gaming wins.</p><small>PLAY TOGETHER ↗</small></div></a>
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#ffd5e4">🍜</div><div><h3>Kitchen Table</h3><p>Recipes, cafe finds, comfort food and kitchen experiments.</p><small>SHARE A BITE ↗</small></div></a>
-<a class="room" href="#bloom-live-community" onclick="scrollToBloomChat()"><div class="room-icon" style="background:#ffe8ad">🥾</div><div><h3>Outside, Often</h3><p>Trail notes, nature finds, wellbeing and weekend plans.</p><small>GET OUT THERE ↗</small></div></a>
-</div></div>
-<div class="community-tools">
-  <article class="tool-card"><div class="tool-emoji" style="background:#e1d3ff">💌</div><h3>Messages & group chats</h3><p>Start a group for your bias, plan a streaming party, or keep up with your fandom besties.</p><button class="pill primary" onclick="scrollToBloomChat()">Start chatting ↗</button></article>
-  <article class="tool-card"><div class="tool-emoji" style="background:#ffd5e4">👤</div><h3>Your BLOOM profile</h3><p>Show the mix of things you love, update your profile details and manage account preferences.</p><button class="pill lavender" onclick="openModal('profile-modal')">Edit my profile ⚙</button></article>
-  <article class="tool-card"><div class="tool-emoji" style="background:#d4f5e8">📸</div><h3>Posts, photos & short videos</h3><p>Share projects, everyday moments, photo stories, creative work and videos from your world.</p><button class="pill white" onclick="openModal('post-modal')">Share an update +</button></article>
-</div>
-</div></section>
-<section class="section" id="activity"><div class="wrap">
-<div class="section-head"><div><div class="kicker">Your FYP · For You</div><h2>Your world, your feed.</h2></div><button class="pill primary" onclick="openModal('post-modal')">＋ Create a post</button></div>
-<div class="bloom-interest-chips" role="group" aria-label="Filter feed by interest">
-<button class="bloom-interest-chip" type="button" data-bloom-interest-filter="all" aria-pressed="true">For you</button><button class="bloom-interest-chip" type="button" data-bloom-interest-filter="creative" aria-pressed="false">🎨 Art</button><button class="bloom-interest-chip" type="button" data-bloom-interest-filter="gaming" aria-pressed="false">🎮 Gaming</button><button class="bloom-interest-chip" type="button" data-bloom-interest-filter="lifestyle" aria-pressed="false">🌱 Lifestyle</button><button class="bloom-interest-chip" type="button" data-bloom-interest-filter="food" aria-pressed="false">🍜 Food</button><button class="bloom-interest-chip" type="button" data-bloom-interest-filter="outdoors" aria-pressed="false">🥾 Outdoors</button><button class="bloom-interest-chip" type="button" data-bloom-interest-filter="music" aria-pressed="false">🎧 Music</button><button class="bloom-interest-chip" type="button" data-bloom-interest-filter="fandom" aria-pressed="false">✿ K-pop</button>
-</div>
-<div class="feed-grid">
-<article class="feed-card" data-bloom-interest="music"><div class="feed-art" style="background:linear-gradient(135deg,#e6dcff,#c9b8ff)">🎬</div><div class="feed-content"><div class="meta">Dance cover · Sample post</div><h3>Practice room moments ✨</h3><p>Share a dance cover, rehearsal clip, or a link to your latest fan edit.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Liked! Sign in to save your likes when the community backend is connected.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-<article class="feed-card" data-bloom-interest="fandom"><div class="feed-art" style="background:linear-gradient(135deg,#ffe0eb,#ffb9d0)">🎀</div><div class="feed-content"><div class="meta">Fan project · Sample post</div><h3>Our comeback countdown board</h3><p>Post group activities, streaming party plans, fan art, and project updates.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Liked! Sign in to save your likes when the community backend is connected.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-<article class="feed-card" data-bloom-interest="lifestyle"><div class="feed-art" style="background:linear-gradient(135deg,#dff9ed,#a7e6d0)">📹</div><div class="feed-content"><div class="meta">Concert diary · Sample post</div><h3>Little moments, big memories</h3><p>Share concert recaps, outfit inspiration, unboxings, and favorite fan moments.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Liked! Sign in to save your likes when the community backend is connected.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-
-<article class="feed-card" data-bloom-interest="creative"><div class="feed-art" style="background:linear-gradient(135deg,#e4d8ff,#ffb9d0)">🎨</div><div class="feed-content"><div class="meta">Art & design · Sample post</div><h3>A desk, a sketchbook, and a small idea</h3><p>Share works in progress, ask for feedback, or show the tiny creative win that made your day.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-<article class="feed-card" data-bloom-interest="gaming"><div class="feed-art" style="background:linear-gradient(135deg,#242b5a,#9384e2)">🎮</div><div class="feed-content"><div class="meta">Gaming · Sample post</div><h3>Player two, this one's for you</h3><p>Find teammates, share your favourite games, and celebrate the wins that deserve a little confetti.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-<article class="feed-card" data-bloom-interest="food"><div class="feed-art" style="background:linear-gradient(135deg,#884b38,#f3c782)">🍜</div><div class="feed-content"><div class="meta">Food & drink · Sample post</div><h3>The recipe you keep coming back to</h3><p>Swap quick meals, cafe finds, baking experiments and the dishes that bring people together.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-<article class="feed-card" data-bloom-interest="outdoors"><div class="feed-art" style="background:linear-gradient(135deg,#224a47,#a3d2a7)">🥾</div><div class="feed-content"><div class="meta">Outdoors & wellbeing · Sample post</div><h3>Outside, even for twenty minutes</h3><p>Post your local walks, nature finds, travel notes and gentle reminders to make room for yourself.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-
-<article class="feed-card" data-bloom-interest="books"><div class="feed-art" style="background:linear-gradient(135deg,#f8e2c4,#c9b8ff)">📚</div><div class="feed-content"><div class="meta">Books & learning · Sample post</div><h3>The book you wish you could read again for the first time</h3><p>Share reading lists, learning notes, writing prompts and recommendations that stay with you.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-<article class="feed-card" data-bloom-interest="tech"><div class="feed-art" style="background:linear-gradient(135deg,#c5ddf5,#d9c8ff)">💡</div><div class="feed-content"><div class="meta">Tech & making · Sample post</div><h3>A small idea turned into a weekend project</h3><p>Show what you're building, ask for feedback, share useful tools and learn together.</p><div class="feed-actions"><button class="small-action" onclick="showToast('Likes on preview posts are saved in this browser only.')">♡ Like</button><button class="small-action" onclick="scrollToBloomChat()">💬 Discuss</button></div></div></article>
-</div>
-<p class="disclosure">These are sample feed cards. Shared posts, group messages, media uploads and cross-device activity depend on the connected backend and its security configuration.</p>
-</div></section>
-
-<section class="section" id="feedback"><div class="wrap">
-<div class="section-head"><div><div class="kicker">Your voice matters</div><h2>The BLOOM suggestion booth.</h2></div><p>Something feel off? Have an idea, spotted a bug, or want to suggest a feature? Send a note to the founder’s feedback inbox.</p></div>
-<div class="complaint-banner"><div><div class="kicker">Complaint booth · Founder feedback</div><h3>Help make this space better ♡</h3><p>Share a concern, report a problem, or tell the CEO what BLOOM is missing. Please don’t include passwords, verification codes, or unnecessary private information.</p></div><button class="pill primary" onclick="openModal('feedback-modal')">Leave feedback ↗</button></div>
-<div id="safety" style="margin-top:34px"><div class="section-head"><div><div class="kicker">From idea to launch</div><h2>Important steps before opening the doors.</h2></div><p>The backend starter is in the code; owner-side setup, review, and real-world testing are still required.</p></div>
-<div class="roadmap">
-<div class="roadmap-step"><div class="num">01</div><h3>Identity & account security</h3><p>Configure Supabase Auth, email verification, password recovery, secure server-side account deletion, and trusted moderator roles. Never store raw passwords.</p></div>
-<div class="roadmap-step"><div class="num">02</div><h3>Real chat & groups</h3><p>The shared group/chat starter uses Realtime and membership policies. Test with two accounts; private invites, block/mute, and notifications remain to be built.</p></div>
-<div class="roadmap-step"><div class="num">03</div><h3>Posts & moderation</h3><p>Shared posts, reporting, and a moderator queue are included in the starter. Media uploads are disabled until storage policies and abuse controls are reviewed.</p></div>
-<div class="roadmap-step"><div class="num">04</div><h3>Privacy & launch checks</h3><p>Customize and review the draft policies, confirm age requirements, test mobile/accessibility, configure backups and monitoring, and verify every RLS rule before launch.</p></div>
-</div></div>
-</div></section>
-<section class="section" id="guides"><div class="wrap"><div class="section-head"><div><div class="kicker">Ideas worth sharing</div><h2>Make room for what you love.</h2></div><p>Explore useful ideas, creative inspiration, everyday rituals and special-interest guides from across the BLOOM community.</p></div>
-<div class="editorial"><article class="editor-card edit-a"><div><div class="kicker">The creative corner</div><h3>Build a space that inspires you.</h3><p>Desk setups, journals, art supplies and little details worth saving.</p></div><a class="pill white" href="#discover">Explore creator finds ↗</a><span class="deco">📸</span></article><article class="editor-card edit-b"><div><div class="kicker">The weekend checklist</div><h3>Pack a little curiosity.</h3><p>Everyday essentials for local adventures, meetups and new experiences.</p></div><a class="pill white" href="#discover">Browse everyday finds ↗</a><span class="deco">🎀</span></article></div>
-</div></section>
-
-<section class="newsletter" id="newsletter"><div class="wrap"><div class="newsletter-box"><div><div class="kicker">A little love from your world</div><h2>Good ideas.<br>Great people.</h2><p>Get creative prompts, community highlights, useful discoveries and the occasional good find — curated with care, never spam.</p></div><div><form id="signup-form" novalidate><div class="signup"><input id="email" name="email" type="email" disabled placeholder="Your email address" aria-label="Your email address" autocomplete="email" inputmode="email" aria-describedby="newsletter-status newsletter-fineprint" required><button class="pill primary" type="submit" disabled>Coming soon ♡</button></div><label class="newsletter-consent" for="newsletter-consent"><input id="newsletter-consent" name="consent" type="checkbox" required disabled> I agree to receive BLOOM email updates. I can unsubscribe anytime.</label><div class="newsletter-honeypot" aria-hidden="true"><label for="newsletter-website">Leave this field empty</label><input id="newsletter-website" name="website" type="text" tabindex="-1" autocomplete="off"></div><p id="newsletter-status" class="newsletter-status" data-state="error" role="status" aria-live="polite" aria-atomic="true">Newsletter signup is paused while email delivery is configured. No code or redirect appears on this page; once enabled, you will receive a confirmation link by email.</p><p id="newsletter-fineprint" class="fineprint">Your email will not be saved or subscribed while signups are paused. Once email delivery is configured, your address will join the active list only after you confirm. We do not sell your email.</p></form></div></div></div></section>
-</main>
-<footer><div class="wrap footer-row"><a class="logo bloom-flower-logo" href="#home" aria-label="BLOOM home"><svg viewBox="0 0 100 100" role="img" aria-label="BLOOM flower logo" xmlns="http://www.w3.org/2000/svg"><g fill="#8b7cff" stroke="#30284b" stroke-width="3"><ellipse cx="50" cy="25" rx="15" ry="22"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(60 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(120 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(180 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(240 50 50)"/><ellipse cx="50" cy="25" rx="15" ry="22" transform="rotate(300 50 50)"/></g><circle cx="50" cy="50" r="13" fill="#73e4df" stroke="#30284b" stroke-width="3"/></svg></a><div class="footer-note">Made with ♡ for the fans, by the fans. <span id="year"></span></div><div class="footer-links"><a href="#community">Community</a><a href="#safety">Safety center</a><a href="#discover">Shop finds</a><a href="#affiliate-note">Affiliate disclosure</a><a href="#privacy" onclick="openModal('privacy-modal');return false">Privacy</a><a href="#guidelines" onclick="openModal('guidelines-modal');return false">Guidelines</a></div></div></footer>
-
-<div class="modal-backdrop" id="chat-modal" role="dialog" aria-modal="true" aria-labelledby="chat-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="chat-title">Make a little fan space 💬</h2><button class="modal-close" aria-label="Close" onclick="closeModal('chat-modal')">×</button></div>
-<p>Create a group idea and invite your fandom friends. This preview demonstrates the flow; live group chat needs a real-time messaging service and member accounts.</p>
-<form id="chat-form"><label for="group-name">Group name</label><input id="group-name" required maxlength="60" placeholder="e.g. Comeback countdown crew"><div class="form-row"><div><label for="group-topic">Group topic</label><select id="group-topic"><option>Comeback & theories</option><option>Concert buddies</option><option>Photocard trading</option><option>Dance covers & edits</option><option>General fan chat</option></select></div><div><label for="group-privacy">Who can join?</label><select id="group-privacy"><option>Invite-only</option><option>Open group</option></select></div></div><button class="pill primary" type="submit" style="margin-top:16px">Create group idea ↗</button></form><p class="notice">Safety tip: never share passwords, verification codes, home addresses, or private contact details in a group. Report harassment and respect boundaries.</p></div></div>
-<div class="modal-backdrop" id="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="profile-title">Your fan profile ⚙</h2><button class="modal-close" aria-label="Close" onclick="closeModal('profile-modal')">×</button></div>
-<p>Preview your profile settings. For safety, this demo does not save personal information or change account credentials.</p>
-<form id="profile-form"><label for="profile-username">Username / display name</label><input id="profile-username" maxlength="30" placeholder="Your fan name"><label for="profile-bio">A little about your fandom</label><textarea id="profile-bio" rows="3" maxlength="240" placeholder="Biases, favorite genres, fan projects…"></textarea><div class="form-row"><div><label for="profile-email">Email address</label><input id="profile-email" type="email" placeholder="you@example.com"></div><div><label for="profile-phone">Phone number (optional)</label><input id="profile-phone" type="tel" placeholder="Only if needed"></div></div><label for="profile-password">Password</label><input id="profile-password" type="password" autocomplete="new-password" placeholder="Password changes require secure account setup" disabled><p class="notice">Password changes, email verification, phone verification, account deletion, and profile persistence must be handled by a secure authentication backend. Never collect or store passwords in this demo page.</p><button class="pill lavender" type="submit">Preview profile changes</button></form></div></div>
-<div class="modal-backdrop" id="post-modal" role="dialog" aria-modal="true" aria-labelledby="post-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="post-title">Share with your fan circle 📸</h2><button class="modal-close" aria-label="Close" onclick="closeModal('post-modal')">×</button></div>
-<p>Share a fan update, activity, video link, artwork, or group moment. Keep it respectful and only post media you have permission to share.</p>
-<form id="post-form"><label for="post-kind">Post type</label><select id="post-kind"><option>Group activity</option><option>Video or dance cover link</option><option>Fan art / edit</option><option>Concert memory</option><option>Question for the fandom</option></select><label for="post-caption">Your update</label><textarea id="post-caption" rows="4" maxlength="1000" required placeholder="What's your group up to?"></textarea><label for="post-link">Media link (optional)</label><input id="post-link" type="url" placeholder="https://…"><button class="pill primary" type="submit" style="margin-top:15px">Preview post ↗</button></form><p class="notice">Sign in to publish to the shared BLOOM FYP. Add a title and fandom, choose a photo or use your camera, apply a filter, and publish only media you have permission to share.</p></div></div>
-
-<div class="modal-backdrop" id="safety-modal" role="dialog" aria-modal="true" aria-labelledby="safety-modal-title" onclick="backdropClose(event,this)">
-  <div class="modal safety-modal">
-    <div class="modal-head"><h2 id="safety-modal-title">BLOOM Safety Center 🛡️</h2><button class="modal-close" type="button" aria-label="Close Safety Center" onclick="closeModal('safety-modal')">×</button></div>
-    <p class="safety-modal-intro">Your comfort matters here. Keep your account secure, protect your personal information, and help us keep the fandom kind.</p>
-    <div class="safety-modal-grid">
-      <article class="safety-modal-card"><span aria-hidden="true">🔐</span><h3>Protect your account</h3><p>Use a unique password, verify the email address you control, and never share passwords, sign-in links, or verification codes—even with someone claiming to be staff.</p></article>
-      <article class="safety-modal-card"><span aria-hidden="true">💗</span><h3>Keep personal details private</h3><p>Avoid posting your home address, school, phone number, live location, travel plans, or private conversations. Ask permission before sharing another person's content.</p></article>
-      <article class="safety-modal-card"><span aria-hidden="true">🚩</span><h3>Report and get support</h3><p>If a post or interaction feels unsafe, stop engaging, save only what you need to explain the concern, and tell a trusted adult when appropriate. This preview report form does not send a real report yet.</p></article>
-      <article class="safety-modal-card"><span aria-hidden="true">🤝</span><h3>Respect the community</h3><p>No harassment, threats, impersonation, doxxing, scams, or pressure to share private information. Moderation tools must be configured and staffed before a public launch.</p></article>
+    <div class="mb-12">
+      <p class="eyebrow mb-4">A little corner of the internet, made to feel like yours</p>
+      <h1 class="text-5xl xl:text-6xl font-black leading-[.98] tracking-[-.065em] max-w-3xl">Your whole world.<br><span class="text-emerald-400">In full bloom.</span></h1>
+      <p class="text-zinc-400 mt-5 leading-7 max-w-xl text-sm">A premium social garden to share what you make, meet your people, and celebrate every interest that makes you feel like you.</p>
+      <div class="flex flex-wrap gap-3 mt-7"><a href="#finds" class="grow-btn no-underline">Explore the garden ↗</a><button class="glass rounded-xl px-4 py-3 text-xs font-semibold" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Founder space ↓</button></div>
     </div>
-    <p class="safety-modal-note"><strong>Important:</strong> BLOOM's report form is currently a preview and is not monitored. If someone is in immediate danger, contact local emergency services or a trusted adult; don't rely on this website to get urgent help.</p>
-    <div class="safety-modal-actions"><button class="pill primary" type="button" onclick="openSafetyReport()">Open safety report form ↗</button><button class="pill lavender" type="button" onclick="goToSafetyChecklist()">Read launch checklist</button><button class="pill white" type="button" onclick="closeModal('safety-modal')">Close</button></div>
-  </div>
-</div>
 
-<div class="modal-backdrop" id="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="feedback-title">Complaint & suggestion booth 💌</h2><button class="modal-close" aria-label="Close" onclick="closeModal('feedback-modal')">×</button></div>
-<p>Hi from the founder’s desk! Tell us what happened or what you’d love to see improved. Be as clear as you feel comfortable being.</p>
-<form id="feedback-form"><label for="feedback-type">What is this about?</label><select id="feedback-type"><option>Suggestion / new feature</option><option>Bug or something not working</option><option>Safety concern or complaint</option><option>Harassment or community report</option><option>Accessibility issue</option><option>Affiliate / product concern</option><option>Other feedback</option></select>
-<label for="feedback-subject">Short subject</label><input id="feedback-subject" required maxlength="100" placeholder="What should the CEO know?">
-<label for="feedback-message">Tell us more</label><textarea id="feedback-message" rows="5" required maxlength="3000" placeholder="Describe the issue or idea. Please don't include passwords or private information."></textarea>
-<label for="feedback-contact">Contact email (optional)</label><input id="feedback-contact" type="email" placeholder="Only if you'd like a reply">
-<p class="notice">Prototype only: this form currently does not send or store feedback. Before launch, connect it to a private support inbox or ticketing system, restrict access to authorized staff, publish a retention policy, and show a confirmation only after successful submission. For immediate danger, contact local emergency services rather than relying on this form.</p>
-<button class="pill primary" type="submit" style="margin-top:14px">Preview my feedback ↗</button></form></div></div>
-<div class="modal-backdrop" id="privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacy-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="privacy-title">Privacy notice 🔒</h2><button class="modal-close" aria-label="Close" onclick="closeModal('privacy-modal')">×</button></div>
-<p><strong>Draft for review — not legal advice.</strong> Update this notice to match your actual business, services, jurisdiction, vendors, and data practices before launch.</p>
-<ul><li><strong>Information:</strong> Explain what account details, profile content, posts, messages, and newsletter signup data you collect, and why.</li><li><strong>Use:</strong> Describe how information supports accounts, community features, security, moderation, and requested email updates.</li><li><strong>Sharing:</strong> Identify service providers and any sharing that occurs. Do not sell or disclose personal information beyond what your real practices and applicable law permit.</li><li><strong>Controls:</strong> Explain how members can update or delete profiles, manage email preferences, request account deletion, and contact the site operator.</li><li><strong>Security & retention:</strong> Describe safeguards and how long information is retained, without promising absolute security.</li><li><strong>Minors:</strong> State age requirements and protections clearly. If teens can use the service, design age-appropriate privacy and moderation protections and comply with applicable law.</li><li><strong>Cookies & affiliates:</strong> Disclose analytics, cookies, and affiliate tracking where used.</li><li><strong>Contact & updates:</strong> Add the responsible operator’s contact details, effective date, and a way to learn about material changes.</li></ul>
-<p>Before launch, get the final policy reviewed for applicable privacy laws, including Malaysian requirements if relevant.</p></div></div>
-<div class="modal-backdrop" id="guidelines-modal" role="dialog" aria-modal="true" aria-labelledby="guidelines-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="guidelines-title">Community guidelines ♡</h2><button class="modal-close" aria-label="Close" onclick="closeModal('guidelines-modal')">×</button></div>
-<p>BLOOM is a fan-first space. Keep it welcoming, creative, and safe.</p><ul><li><strong>Be kind:</strong> No bullying, hate, threats, harassment, dogpiling, or fan-war baiting.</li><li><strong>Respect privacy:</strong> Never post someone’s private details, location, private messages, or images without permission. No doxxing or tracking idols’ private lives.</li><li><strong>Respect boundaries:</strong> Support idols as people. Use official public sources and respect personal space.</li><li><strong>Post responsibly:</strong> Label spoilers, credit fan creators, respect copyright, and share media only when you have permission.</li><li><strong>Keep groups safe:</strong> No scams, impersonation, sexual exploitation, dangerous challenges, or requests for passwords and verification codes.</li><li><strong>Trade fairly:</strong> Be honest about merch and trades. Do not misrepresent products or use affiliate links deceptively.</li><li><strong>Report concerns:</strong> Use reporting tools when available and contact moderators for urgent community issues. Do not retaliate against reporters.</li><li><strong>Moderation:</strong> Explain how content may be removed and accounts warned, suspended, or banned for violations, with an appeal route where practical.</li></ul><p>These are starter guidelines. Add a working report/block system, moderation process, and clear age policy before opening community features.</p></div></div>
+    <section class="mb-12" id="album-edit">
+      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Curate your corner</p><h2 class="text-2xl font-bold tracking-tight">The Album Display Edit</h2></div><span class="text-xs text-zinc-500">01 / your shelf</span></div>
+      <div class="grid grid-cols-2 gap-4">
+        <article class="platform-card">
+          <div class="platform-art"><span class="product-symbol">💿</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">shelf styling</span></div>
+          <div class="p-4"><p class="text-sm font-bold">The Album Display Edit</p><p class="text-xs text-zinc-500 mt-1">Make your favourite era a little shrine.</p><div class="flex items-center justify-between mt-4"><span class="text-sm font-semibold">From $12</span><a class="product-link" href="https://www.pinterest.com/search/pins/?q=kpop%20album%20display" target="_blank" rel="noopener noreferrer">Shop the find <span>↗</span></a></div></div>
+        </article>
+        <article class="platform-card">
+          <div class="platform-art pink"><span class="product-symbol">🧥</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">off-duty energy</span></div>
+          <div class="p-4"><p class="text-sm font-bold">Off-Duty Idol Layers</p><p class="text-xs text-zinc-500 mt-1">Comfy layers, airport-fit inspiration.</p><div class="flex items-center justify-between mt-4"><span class="text-sm font-semibold">From $28</span><a class="product-link" href="https://www.pinterest.com/search/pins/?q=kpop%20airport%20fashion" target="_blank" rel="noopener noreferrer">Shop the find <span>↗</span></a></div></div>
+        </article>
+      </div>
+    </section>
 
+    <section class="mb-12" id="finds">
+      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Little Things, Big Joy</p><h2 class="text-2xl font-bold tracking-tight">Curated Finds</h2></div><span class="text-xs text-zinc-500">For every interest</span></div>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="glass rounded-2xl p-3"><div class="text-2xl mb-3">🪴</div><p class="text-xs font-bold">Shelf Garden</p><p class="text-[10px] text-zinc-500 mt-1">Display inspo</p></div>
+        <div class="glass rounded-2xl p-3"><div class="text-2xl mb-3">📸</div><p class="text-xs font-bold">PC Protectors</p><p class="text-[10px] text-zinc-500 mt-1">Tiny treasures</p></div>
+        <div class="glass rounded-2xl p-3"><div class="text-2xl mb-3">🎧</div><p class="text-xs font-bold">Comeback Kit</p><p class="text-[10px] text-zinc-500 mt-1">Ready to stream</p></div>
+      </div>
+    </section>
 
-<div class="modal-backdrop" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" onclick="backdropClose(event,this)"><div class="modal"><div class="modal-head"><h2 id="settings-title">Language & currency 🌐</h2><button class="modal-close" aria-label="Close" onclick="closeModal('settings-modal')">×</button></div>
-<p>Choose how BLOOM displays navigation and example product prices. Your choices are saved in this browser on this device.</p>
-<div class="settings-grid"><div><label for="language-setting">Language</label><select id="language-setting"><option value="en">English</option><option value="ms">Bahasa Melayu</option><option value="zh">中文（简体）</option><option value="ko">한국어</option></select></div>
-<div><label for="currency-setting">Display currency</label><select id="currency-setting"><option value="MYR">MYR · Malaysian Ringgit (RM)</option><option value="USD">USD · US Dollar ($)</option><option value="SGD">SGD · Singapore Dollar (S$)</option><option value="IDR">IDR · Indonesian Rupiah (Rp)</option><option value="JPY">JPY · Japanese Yen (¥)</option><option value="KRW">KRW · South Korean Won (₩)</option></select></div></div>
-<div class="settings-help">Currency amounts are approximate display previews converted from sample USD prices using illustrative rates. They are not live exchange rates, checkout prices, or vendor quotes. Confirm the final price and currency with the seller.</div>
-<button class="pill primary" style="margin-top:16px" onclick="savePreferences()">Save preferences ♡</button></div></div>
+    <section id="bloom-desktop-market" class="mb-12">
+      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Made by the community</p><h2 class="text-2xl font-bold tracking-tight">The Garden Market</h2></div><button class="bloom-inline-action" id="bloomDesktopSellButton" type="button">＋ Sell</button></div>
+      <p class="text-xs text-zinc-500 mb-4 leading-5">Small finds, creator-made things, and fan treasures. Checkout is not enabled yet.</p>
+      <div id="bloom-desktop-market-grid" class="bloom-desktop-market-grid"><div class="bloom-empty-state">Live listings appear here when connected.</div></div>
+    </section>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <section class="mb-12">
+      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Find your people</p><h2 class="text-2xl font-bold tracking-tight">Stanner Circles</h2></div><span class="text-xs text-zinc-500">3 circles open</span></div>
+      <div class="space-y-3">
+        <button class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left" onclick="openRoom('Stanner Lounge')"><div class="avatar">💬</div><div class="flex-1"><div class="text-sm font-bold">Stanner Lounge</div><div class="text-xs text-zinc-500 mt-1">The general chat for every thought.</div></div><span class="text-emerald-400">↗</span></button>
+        <button class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left" onclick="openRoom('Comeback Central')"><div class="avatar">🎤</div><div class="flex-1"><div class="text-sm font-bold">Comeback Central</div><div class="text-xs text-zinc-500 mt-1">Theories, teasers, countdown energy.</div></div><span class="text-emerald-400">↗</span></button>
+        <button class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left" onclick="openRoom('Idol Updates')"><div class="avatar">🌟</div><div class="flex-1"><div class="text-sm font-bold">Idol Updates</div><div class="text-xs text-zinc-500 mt-1">Little updates, big feelings.</div></div><span class="text-emerald-400">↗</span></button>
+      </div>
+    </section>
+
+    <section id="dashboard" class="platform-card dashboard mb-10">
+      <div class="p-5 flex items-center justify-between gap-4">
+        <div><p class="eyebrow mb-2">Founder-only view · mock data</p><h2 class="text-xl font-bold">CEO Dashboard</h2><p class="text-xs text-zinc-500 mt-1">A small snapshot of the growing garden.</p></div>
+        <button class="dashboard-toggle glass rounded-xl w-10 h-10" id="dashboardToggle" aria-expanded="true" aria-label="Collapse dashboard">⌃</button>
+      </div>
+      <div class="dashboard-body px-5 pb-5">
+        <div class="grid grid-cols-3 gap-2 mb-6">
+          <div class="glass rounded-xl p-3"><strong class="text-lg">1,284</strong><p class="text-[10px] text-zinc-500 mt-1">Community members</p></div>
+          <div class="glass rounded-xl p-3"><strong class="text-lg">68%</strong><p class="text-[10px] text-zinc-500 mt-1">Weekly engagement</p></div>
+          <div class="glass rounded-xl p-3"><strong class="text-lg" id="checkCount">0/8</strong><p class="text-[10px] text-zinc-500 mt-1">Launch checklist</p></div>
+        </div>
+        <div class="flex items-center justify-between mb-2"><h3 class="text-sm font-bold">Technical launch checklist</h3><span id="checkPercent" class="text-[10px] text-emerald-300">0 of 8 completed</span></div>
+        <div class="h-1.5 rounded-full bg-white/10 overflow-hidden mb-3"><div id="checkBar" class="h-full bg-emerald-400 rounded-full transition-all" style="width:0%"></div></div>
+        <div id="checklist">
+          <label class="check-row"><input type="checkbox"><span>Responsive layouts tested</span></label>
+          <label class="check-row"><input type="checkbox"><span>Navigation and tab switching</span></label>
+          <label class="check-row"><input type="checkbox"><span>Feed likes and double-tap</span></label>
+          <label class="check-row"><input type="checkbox"><span>Chat previews and sending</span></label>
+          <label class="check-row"><input type="checkbox"><span>Profile follow interaction</span></label>
+          <label class="check-row"><input type="checkbox"><span>Keyboard focus states</span></label>
+          <label class="check-row"><input type="checkbox"><span>Reduced-motion preference</span></label>
+          <label class="check-row"><input type="checkbox"><span>Final content and link review</span></label>
+        </div>
+      </div>
+    </section>
+    <footer class="flex items-center justify-between text-[10px] text-zinc-600 border-t border-white/10 pt-5"><span>© 2026 BLOOM COMMUNITY</span><span>Grow at your own pace ✿</span></footer>
+  </section>
+
+  <!-- Live responsive mobile application -->
+  <section class="phone-wrap" aria-label="BLOOM mobile application prototype">
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="phone-status"><span>9:41</span><span>●●●　◖　▰</span></div>
+        <div class="mobile-content">
+          <!-- THE WILD FEED -->
+          <section class="tab-panel active" id="tab-feed" aria-label="The Wild Feed">
+            <div class="bloom-feed-tools">
+              <div class="bloom-feed-brand"><span class="bloom-mini-flower" aria-hidden="true">✿</span><span><strong>BLOOM</strong><small>Your world, growing</small></span></div>
+              <div class="bloom-feed-buttons">
+                <button id="bloomStoryButton" class="bloom-tool-button" type="button" aria-label="Add a story">＋ Story</button>
+                <button id="bloomCreateButton" class="bloom-tool-button bloom-tool-primary" type="button" aria-label="Create a post">＋</button>
+                <button id="bloomNotificationsButton" class="bloom-tool-button" type="button" aria-label="Notifications">♧</button>
+                <button id="bloomAccountButton" class="bloom-tool-button" type="button" aria-label="Account">☻</button>
+              </div>
+            </div>
+            <div class="bloom-feed-interest-filter" id="bloom-feed-interest-filter" aria-label="Filter your feed">
+              <button type="button" data-feed-interest="mix" class="is-active">For you</button>
+              <button type="button" data-feed-interest="all">All</button>
+              <button type="button" data-feed-interest="creative">Art</button>
+              <button type="button" data-feed-interest="gaming">Gaming</button>
+              <button type="button" data-feed-interest="lifestyle">Life</button>
+              <button type="button" data-feed-interest="food">Food</button>
+              <button type="button" data-feed-interest="outdoors">Outdoors</button>
+              <button type="button" data-feed-interest="music">Music</button>
+              <button type="button" data-feed-interest="fandom">K-pop</button>
+              <button type="button" data-feed-interest="books">Books</button>
+              <button type="button" data-feed-interest="tech">Tech</button>
+            </div>
+            <div id="bloom-story-rail" class="bloom-story-rail" aria-label="Stories"></div>
+            <div class="feed" id="feed">
+              <article class="feed-post" data-post="0" data-interest="music" data-likes="2481">
+                <div class="post-art"><div class="orb"></div><div class="stage"></div><div class="art-label">AFTER<br>GLOW<span>dance cover diary</span></div></div>
+                <div class="post-top"><div class="flex items-center gap-2"><div class="avatar !w-9 !h-9 !rounded-full text-base">🌱</div><div><div class="text-xs font-bold">miso.moves</div><div class="text-[10px] text-white/70">Original sound · Bloom mix</div></div></div><span class="glass rounded-full px-3 py-1.5 text-[10px] font-bold">Following</span></div>
+                <div class="post-actions">
+                  <button class="action-button like-action" aria-label="Give sunlight"><span class="bubble">☀</span><span class="like-count">2.4k</span></button>
+                  <button class="action-button comment-action" aria-label="View comments"><span class="bubble">♡</span><span>128</span></button>
+                  <button class="action-button share-action" aria-label="Share post"><span class="bubble">↗</span><span>Share</span></button>
+                </div>
+                <div class="post-bottom"><div class="text-sm font-bold mb-2">#DanceCover #AfterGlow 🌿</div><p class="text-xs leading-5 text-white/85">practised this chorus all week and it finally clicked ✨ who's learning this one?</p><div class="text-[10px] text-white/55 mt-3">♫ AFTER GLOW — BLOOM STUDIO</div></div><div class="post-hint">✿</div>
+              </article>
+              <article class="feed-post" data-post="1" data-interest="fandom" data-likes="6820">
+                <div class="post-art concert"><div class="orb"></div><div class="stage"></div><div class="art-label">FIRST<br>ROW<span>concert diary · 04</span></div></div>
+                <div class="post-top"><div class="flex items-center gap-2"><div class="avatar !w-9 !h-9 !rounded-full text-base">🎟️</div><div><div class="text-xs font-bold">junies.archive</div><div class="text-[10px] text-white/70">Kuala Lumpur · 2 days ago</div></div></div><span class="glass rounded-full px-3 py-1.5 text-[10px] font-bold">Follow</span></div>
+                <div class="post-actions"><button class="action-button like-action" aria-label="Give sunlight"><span class="bubble">☀</span><span class="like-count">6.8k</span></button><button class="action-button comment-action" aria-label="View comments"><span class="bubble">♡</span><span>392</span></button><button class="action-button share-action" aria-label="Share post"><span class="bubble">↗</span><span>Share</span></button></div>
+                <div class="post-bottom"><div class="text-sm font-bold mb-2">still not over this night 🥹</div><p class="text-xs leading-5 text-white/85">the lights, the fanchants, the people next to me who felt like friends already.</p><div class="text-[10px] text-white/55 mt-3">♫ crowd singing together</div></div><div class="post-hint">✿</div>
+              </article>
+              <article class="feed-post" data-post="2" data-interest="lifestyle" data-likes="957">
+                <div class="post-art" style="background:radial-gradient(ellipse at 45% 35%,#5d8159,#1e2e24 48%,#151617)"><div class="orb" style="background:radial-gradient(circle at 35% 30%,#d8efb8,#8ebd7a 34%,#254535 72%)"></div><div class="art-label">MY<br>BIAS<span>photocard ritual</span></div></div>
+                <div class="post-top"><div class="flex items-center gap-2"><div class="avatar !w-9 !h-9 !rounded-full text-base">🪴</div><div><div class="text-xs font-bold">tinyalbumclub</div><div class="text-[10px] text-white/70">desk setup · 8h ago</div></div></div><span class="glass rounded-full px-3 py-1.5 text-[10px] font-bold">Follow</span></div>
+                <div class="post-actions"><button class="action-button like-action" aria-label="Give sunlight"><span class="bubble">☀</span><span class="like-count">957</span></button><button class="action-button comment-action" aria-label="View comments"><span class="bubble">♡</span><span>46</span></button><button class="action-button share-action" aria-label="Share post"><span class="bubble">↗</span><span>Share</span></button></div>
+                <div class="post-bottom"><div class="text-sm font-bold mb-2">a tiny altar for my favourite human</div><p class="text-xs leading-5 text-white/85">new sleeves + little plant = perfect shelf day 🌱 show me your setups!</p><div class="text-[10px] text-white/55 mt-3">✿ GARDEN NOTE #203</div></div><div class="post-hint">✿</div>
+              </article>
+            </div>
+          </section>
+
+          <!-- THE GREENHOUSE -->
+          <section class="tab-panel" id="tab-chat" aria-label="The Greenhouse">
+            <div class="section-head"><div class="flex items-center justify-between"><div><p class="eyebrow mb-1">Your people, nearby</p><h2 class="text-2xl font-black tracking-tight">The Greenhouse</h2></div><button class="glass w-10 h-10 rounded-full text-lg" id="bloomCreateGroupButton" aria-label="Create a community">＋</button></div><div class="glass rounded-2xl px-4 py-3 mt-4 flex items-center gap-3 text-xs text-zinc-400"><span>⌕</span><span>Search your circles</span><span class="ml-auto text-[10px] text-zinc-600">DEMO</span></div></div>
+            <div class="chat-list">
+              <div class="eyebrow mb-2 mt-1">Your circles · 3 active</div>
+              <div id="bloom-live-status" class="bloom-inline-status" role="status" aria-live="polite">Preview mode · community demo rooms are shown below.</div>
+              <div id="bloom-live-groups" class="bloom-live-groups"></div>
+              <div class="bloom-notification-link"><button type="button" id="bloomChatNotificationsButton">✧ View notifications</button></div>
+              <button class="chat-row" onclick="openRoom('Stanner Lounge')"><div class="relative"><div class="avatar">💬</div><span class="online-dot"></span></div><div class="flex-1 min-w-0"><div class="flex justify-between gap-2"><span class="text-sm font-bold">Stanner Lounge</span><span class="text-[10px] text-zinc-500">now</span></div><p class="text-xs text-zinc-400 mt-1 truncate">mira: who else is replaying the teaser?</p><div class="flex gap-2 mt-2"><span class="text-[9px] rounded-full bg-emerald-400/10 text-emerald-300 px-2 py-1">general</span><span class="text-[9px] text-zinc-600">18 online</span></div></div></button>
+              <button class="chat-row" onclick="openRoom('Comeback Central')"><div class="relative"><div class="avatar" style="background:linear-gradient(145deg,#593d58,#282032)">🎤</div><span class="online-dot"></span></div><div class="flex-1 min-w-0"><div class="flex justify-between gap-2"><span class="text-sm font-bold">Comeback Central</span><span class="text-[10px] text-zinc-500">2m</span></div><p class="text-xs text-zinc-400 mt-1 truncate">hana: theory thread is getting wild 👀</p><div class="flex gap-2 mt-2"><span class="text-[9px] rounded-full bg-pink-400/10 text-pink-200 px-2 py-1">comeback</span><span class="text-[9px] text-zinc-600">42 online</span></div></div></button>
+              <button class="chat-row" onclick="openRoom('Idol Updates')"><div class="relative"><div class="avatar" style="background:linear-gradient(145deg,#5b5130,#292b1b)">🌟</div><span class="online-dot"></span></div><div class="flex-1 min-w-0"><div class="flex justify-between gap-2"><span class="text-sm font-bold">Idol Updates</span><span class="text-[10px] text-zinc-500">12m</span></div><p class="text-xs text-zinc-400 mt-1 truncate">new schedule drop — check the pinned note</p><div class="flex gap-2 mt-2"><span class="text-[9px] rounded-full bg-amber-400/10 text-amber-100 px-2 py-1">updates</span><span class="text-[9px] text-zinc-600">9 online</span></div></div></button>
+              <div class="glass rounded-2xl p-4 mt-6"><p class="text-sm font-bold">A little reminder 🌱</p><p class="text-xs text-zinc-400 leading-5 mt-2">Keep it kind, credit fan creators, and let everyone enjoy their own way of being a fan.</p></div>
+            </div>
+          </section>
+
+          <!-- THE GARDEN GRID -->
+          <section class="tab-panel" id="tab-profile" aria-label="The Garden Grid">
+            <div class="profile-scroll">
+              <div class="profile-top">
+                <div class="flex items-center justify-between mb-5"><div><p class="eyebrow">Your little corner</p><h2 class="text-2xl font-black mt-1">the.gardeners</h2></div><button class="text-xl text-zinc-300" id="bloomProfileSettingsButton" onclick="openBloomAccount()" aria-label="Account and profile settings">☷</button></div>
+                <div class="flex items-center gap-4">
+                  <div class="relative w-[78px] h-[78px] rounded-[28px] bg-gradient-to-br from-emerald-400 to-pink-400 p-[2px]"><div class="w-full h-full rounded-[26px] bg-[#151915] grid place-items-center text-3xl">🌿</div></div>
+                  <div class="grid grid-cols-3 gap-2 flex-1">
+                    <div class="metric"><strong>36</strong><span>Plants</span></div><div class="metric"><strong id="profileSunlight">12.8k</strong><span>Sunlight</span></div><div class="metric"><strong id="followerCount">864</strong><span>Gardeners</span></div>
+                  </div>
+                </div>
+                <p class="text-xs font-bold mt-4">soft heart, loud fanchants ✿</p><p class="text-xs text-zinc-400 mt-1 leading-5">collecting albums & little moments.<br>multi-stan garden · KL 🌱</p>
+                <div class="flex gap-2 mt-4"><button id="growBtn" class="grow-btn flex-1" onclick="toggleGrow()">＋ Grow Together</button><button class="glass rounded-xl px-4 text-xs font-bold" onclick="showToast('Profile link copied in this demo ✿')">Share ↗</button></div>
+              </div>
+              <div class="border-y border-white/10 px-4 py-3 flex items-center justify-between"><span class="text-[10px] tracking-[.18em] uppercase font-bold">Your plants</span><span class="text-xs text-zinc-500">▦ Grid view</span></div>
+              <div class="profile-grid">
+                <button class="grid-tile" onclick="showToast('Plant opened: album shelf ✿')"><div class="tile-art">💿</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: concert check-in ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#7a3157,#24283a)">🎟️</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: photocard setup ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#263d2c,#6b8c63)">📸</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: listening party ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#323c59,#4b2843)">🎧</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: fan art ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#6b4a60,#232b24)">🎨</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: lightstick day ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#476d5b,#33283d)">✨</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: bias corner ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#5d6142,#242b27)">🪴</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: album haul ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#7c4d6d,#2a3429)">🎁</div></button>
+                <button class="grid-tile" onclick="showToast('Plant opened: fandom friends ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#355e5c,#33263b)">🫶</div></button>
+              </div>
+              <section class="bloom-profile-additions">
+                <div class="bloom-profile-section-head"><div><p class="eyebrow">Choose your world</p><h3>My Mix</h3></div><button id="bloomEditInterestsButton" type="button" class="bloom-inline-action">Edit</button></div>
+                <div id="bloom-profile-interest-chips" class="bloom-profile-interest-chips"><span class="bloom-inline-status">Your saved interests will bloom here.</span></div>
+                <div class="bloom-profile-section-head bloom-market-head"><div><p class="eyebrow">Community finds</p><h3>The Garden Market</h3></div><button id="bloomSellButton" type="button" class="bloom-inline-action">＋ Sell</button></div>
+                <p class="bloom-market-note">Discover community listings. Requests are not payments — checkout is a future step.</p>
+                <div id="bloom-market-grid" class="bloom-market-grid"><div class="bloom-empty-state">Connect to BLOOM to browse listings.</div></div>
+                <div id="bloom-market-inbox" class="bloom-market-inbox"></div>
+              </section>
+            </div>
+          </section>
+
+          <!-- Room preview sheet -->
+          <div class="room-overlay" id="roomOverlay" role="dialog" aria-modal="true" aria-labelledby="roomTitle">
+            <div class="room-sheet">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3"><div class="avatar" id="roomAvatar">💬</div><div><h3 id="roomTitle" class="font-bold text-sm">Stanner Lounge</h3><p class="text-[10px] text-emerald-300 mt-1"><span class="inline-block w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1"></span><span id="roomOnline">18</span> gardeners online</p></div></div>
+                <button class="glass rounded-full w-9 h-9" onclick="closeRoom()" aria-label="Close chat">✕</button>
+              </div>
+              <div class="glass rounded-xl p-3 mt-4 text-[10px] text-zinc-400">✿ Be kind. Keep spoilers tagged. Let the garden grow.</div>
+              <div class="messages" id="messages" aria-live="polite"></div>
+              <form class="send-row" id="messageForm"><input id="messageInput" autocomplete="off" placeholder="Send a little note…" aria-label="Message"><button type="submit" aria-label="Send message">↑</button></form>
+            </div>
+          </div>
+          <div id="toast" class="absolute z-50 bottom-[88px] left-1/2 -translate-x-1/2 glass rounded-full px-4 py-3 text-xs font-semibold whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200">Lovely ✿</div>
+          <nav class="bottom-nav" aria-label="Main navigation">
+            <button class="nav-tab active" data-tab="feed"><span class="nav-icon">✿</span><span>Wild Feed</span></button>
+            <button class="nav-tab" data-tab="chat"><span class="nav-icon">☘</span><span>Greenhouse</span></button>
+            <button class="nav-tab" data-tab="profile"><span class="nav-icon">▦</span><span>Garden Grid</span></button>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="device-caption absolute -bottom-8 text-[10px] tracking-[.2em] uppercase text-zinc-600">Live mobile prototype · interactive demo</div>
+  </section>
+</main>
+
 <script>
+(() => {
+  const splash = document.getElementById('splash');
+  window.setTimeout(() => splash.classList.add('hide'), 2500);
 
-const localeText={
- en:{nav_discover:'Discover',nav_rooms:'Fan rooms',nav_feed:'Fan feed',nav_safety:'Safety',nav_feedback:'Feedback',nav_guides:'Fan guides'},
- ms:{nav_discover:'Teroka',nav_rooms:'Ruang peminat',nav_feed:'Suapan peminat',nav_safety:'Keselamatan',nav_feedback:'Maklum balas',nav_guides:'Panduan peminat'},
- zh:{nav_discover:'探索',nav_rooms:'粉丝空间',nav_feed:'粉丝动态',nav_safety:'安全中心',nav_feedback:'反馈',nav_guides:'粉丝指南'},
- ko:{nav_discover:'둘러보기',nav_rooms:'팬 공간',nav_feed:'팬 피드',nav_safety:'안전 센터',nav_feedback:'의견 보내기',nav_guides:'팬 가이드'}
-};
-const displayRates={USD:1,MYR:4.5,SGD:1.35,IDR:15800,JPY:150,KRW:1350};
-const currencyLocale={USD:'en-US',MYR:'ms-MY',SGD:'en-SG',IDR:'id-ID',JPY:'ja-JP',KRW:'ko-KR'};
-function applyPreferences(language,currency){
- const lang=localeText[language]?language:'en'; const curr=displayRates[currency]?currency:'MYR';
- document.documentElement.lang=lang==='zh'?'zh-CN':lang;
- document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(localeText[lang][key])el.textContent=localeText[lang][key]});
- document.querySelector('#nav-locale').textContent=lang.toUpperCase()+' · '+curr;
- document.querySelector('#language-setting').value=lang;document.querySelector('#currency-setting').value=curr;
- document.querySelectorAll('.price').forEach(el=>{
-   const match=el.dataset.baseUsd||((el.textContent.match(/[0-9]+(?:\.[0-9]+)?/)||[])[0]);
-   if(!match)return;const base=Number(match);el.dataset.baseUsd=String(base);
-   const amount=base*displayRates[curr];
-   const formatted=new Intl.NumberFormat(currencyLocale[curr],{style:'currency',currency:curr,maximumFractionDigits:curr==='IDR'||curr==='JPY'||curr==='KRW'?0:2}).format(amount);
-   el.textContent='From '+formatted;
- });
-}
-function savePreferences(){
- const language=document.querySelector('#language-setting').value,currency=document.querySelector('#currency-setting').value;
- try{localStorage.setItem('bloom-language',language);localStorage.setItem('bloom-currency',currency)}catch(e){}
- applyPreferences(language,currency);closeModal('settings-modal');showToast('Preferences updated for this browser ♡');
-}
-(function initPreferences(){
- let language='en',currency='MYR';
- try{language=localStorage.getItem('bloom-language')||language;currency=localStorage.getItem('bloom-currency')||currency}catch(e){}
- applyPreferences(language,currency);
-})();
-function updateLaunchProgress(){
- const boxes=[...document.querySelectorAll('#launch-checks input[type="checkbox"]')],done=boxes.filter(x=>x.checked).length;
- document.querySelector('#launch-progress').style.width=(done/boxes.length*100)+'%';
- document.querySelector('#launch-progress-label').textContent=done+' of '+boxes.length+' completed';
-}
-document.querySelectorAll('#launch-checks input').forEach(box=>box.addEventListener('change',updateLaunchProgress));
+  // Navigation between the three mobile spaces.
+  const tabs = [...document.querySelectorAll('.nav-tab')];
+  const panels = [...document.querySelectorAll('.tab-panel')];
+  tabs.forEach(tab => tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.toggle('active', t === tab));
+    panels.forEach(p => p.classList.toggle('active', p.id === `tab-${tab.dataset.tab}`));
+  }));
 
-const filters=[...document.querySelectorAll('.filter')], cards=[...document.querySelectorAll('.product-card')], search=document.querySelector('#filter-search');let active='all',toastTimer;
-function applyFilters(){const q=search.value.trim().toLowerCase();cards.forEach(card=>{const matchesCategory=active==='all'||card.dataset.category===active;const matchesText=(card.dataset.name+' '+card.innerText).toLowerCase().includes(q);card.style.display=matchesCategory&&matchesText?'':'none'})}
-filters.forEach(btn=>btn.addEventListener('click',()=>{filters.forEach(b=>b.classList.toggle('active',b===btn));active=btn.dataset.filter;applyFilters()}));search.addEventListener('input',applyFilters);
-function showToast(message){const t=document.querySelector('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800)}
-function saveItem(btn){btn.textContent=btn.textContent==='♡'?'♥':'♡';btn.style.color=btn.textContent==='♥'?'#d84d86':'';showToast(btn.textContent==='♥'?'Saved to your fan wishlist ♡':'Removed from your wishlist')}
-
-function toggleLike(btn) {
-  const id = btn.dataset.likeId;
-  const key = "bloom-liked-" + id;
-
-  let liked = false;
-
-  try {
-    liked = localStorage.getItem(key) === "true";
-    liked = !liked;
-    localStorage.setItem(key, String(liked));
-  } catch (error) {
-    showToast("Likes could not be saved in this browser.");
-    return;
+  // Founder checklist: interactive progress and completion state.
+  const checks = [...document.querySelectorAll('#checklist input[type="checkbox"]')];
+  function updateChecklist() {
+    const done = checks.filter(c => c.checked).length;
+    document.getElementById('checkCount').textContent = `${done}/8`;
+    document.getElementById('checkPercent').textContent = `${done} of 8 completed`;
+    document.getElementById('checkBar').style.width = `${done / checks.length * 100}%`;
   }
-
-  btn.textContent = liked ? "♥ Liked" : "♡ Like";
-  btn.style.color = liked ? "#d84d86" : "";
-  btn.setAttribute("aria-pressed", String(liked));
-
-  showToast(liked ? "You liked this post! ♡" : "Like removed.");
-}
-
-function restoreLikes() {
-  document.querySelectorAll("[data-like-id]").forEach(btn => {
-    try {
-      const liked =
-        localStorage.getItem("bloom-liked-" + btn.dataset.likeId)
-        === "true";
-
-      btn.textContent = liked ? "♥ Liked" : "♡ Like";
-      btn.style.color = liked ? "#d84d86" : "";
-      btn.setAttribute("aria-pressed", String(liked));
-    } catch (error) {
-      // Keep the buttons usable if browser storage is unavailable.
-    }
+  checks.forEach(c => c.addEventListener('change', updateChecklist));
+  const dashboard = document.getElementById('dashboard');
+  document.getElementById('dashboardToggle').addEventListener('click', e => {
+    dashboard.classList.toggle('collapsed');
+    const expanded = !dashboard.classList.contains('collapsed');
+    e.currentTarget.textContent = expanded ? '⌃' : '⌄';
+    e.currentTarget.setAttribute('aria-expanded', String(expanded));
   });
-}
 
-restoreLikes();
-  
-function roomToast(e,room){e.preventDefault();showToast(room+' — connect a real community/chat platform to launch this room.')}
-// Newsletter submission is handled by bloom-backend.js so the form only confirms a signup after storage succeeds.
+  // Feed actions and double-tap flower burst.
+  const lastTap = new WeakMap();
+  function burst(post, x, y) {
+    const bounds = post.getBoundingClientRect();
+    const hint = post.querySelector('.post-hint');
+    hint.style.left = `${Math.max(0, Math.min(bounds.width - 70, x - bounds.left - 35))}px`;
+    hint.style.top = `${Math.max(0, Math.min(bounds.height - 70, y - bounds.top - 35))}px`;
+    hint.classList.add('show');
+    window.setTimeout(() => hint.classList.remove('show'), 500);
+    for (let i = 0; i < 12; i++) {
+      const p = document.createElement('span');
+      p.className = 'particle';
+      p.textContent = ['✿','✦','❀','♥'][i % 4];
+      p.style.left = `${x - bounds.left}px`; p.style.top = `${y - bounds.top}px`;
+      const angle = Math.PI * 2 * i / 12, distance = 55 + Math.random() * 65;
+      p.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+      p.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
+      p.style.color = i % 2 ? '#F472B6' : '#10B981';
+      post.appendChild(p); window.setTimeout(() => p.remove(), 950);
+    }
+    const like = post.querySelector('.like-action');
+    if (!like.classList.contains('liked')) toggleLike(like);
+  }
+  function toggleLike(button) {
+    button.classList.toggle('liked');
+    const post = button.closest('.feed-post');
+    const raw = Number(post.dataset.likes || 0) + (button.classList.contains('liked') ? 1 : -1);
+    post.dataset.likes = raw;
+    button.querySelector('.like-count').textContent = raw >= 1000 ? `${(raw/1000).toFixed(1).replace('.0','')}k` : String(raw);
+    showToast(button.classList.contains('liked') ? 'A little sunlight sent ☀' : 'Sunlight taken back');
+  }
+  document.querySelectorAll('.feed-post').forEach(post => {
+    post.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      const now = Date.now(), prev = lastTap.get(post) || 0;
+      if (now - prev < 330) burst(post, e.clientX, e.clientY);
+      lastTap.set(post, now);
+    });
+    post.querySelector('.like-action').addEventListener('click', e => { e.stopPropagation(); toggleLike(e.currentTarget); });
+    post.querySelector('.comment-action').addEventListener('click', e => { e.stopPropagation(); openRoom('Stanner Lounge'); });
+    post.querySelector('.share-action').addEventListener('click', e => {
+      e.stopPropagation();
+      if (navigator.share) navigator.share({title:'BLOOM community', text:'Found this little corner of the fandom garden ✿'}).catch(()=>{});
+      else showToast('Share this little moment ✿');
+    });
+  });
 
-function openModal(id){const modal=document.getElementById(id);if(modal){modal.classList.add('open');document.body.style.overflow='hidden';const focusable=modal.querySelector('input:not([disabled]),textarea,select,button');if(focusable)focusable.focus()}}
-function openSafetyReport(){closeModal('safety-modal');const type=document.querySelector('#feedback-type');if(type)type.value='Safety concern or complaint';const subject=document.querySelector('#feedback-subject');if(subject)subject.value='Safety concern';openModal('feedback-modal')}
-function goToSafetyChecklist(){closeModal('safety-modal');const target=document.getElementById('safety');if(target){target.setAttribute('tabindex','-1');target.scrollIntoView({behavior:'smooth',block:'start'});target.focus({preventScroll:true})}}
-document.querySelectorAll('a[href="#safety"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openModal('safety-modal')}));
-function closeModal(id){const modal=document.getElementById(id);if(modal)modal.classList.remove('open');if(!document.querySelector('.modal-backdrop.open'))document.body.style.overflow=''}
-function backdropClose(event,el){if(event.target===el)closeModal(el.id)}
-document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id))}});
-document.querySelector('#chat-form').addEventListener('submit',event=>{event.preventDefault();const name=document.querySelector('#group-name').value.trim();const topic=document.querySelector('#group-topic').value;const privacy=document.querySelector('#group-privacy').value;closeModal('chat-modal');showToast('Group idea created: '+name+' · '+topic+' · '+privacy+'. Connect chat backend to launch.');event.target.reset()});
-document.querySelector('#profile-form').addEventListener('submit',event=>{event.preventDefault();const name=document.querySelector('#profile-username').value.trim()||'your fan profile';closeModal('profile-modal');showToast('Profile preview updated for '+name+'. Changes are not saved in this demo.');});
+  // Chat preview rooms with working local demo messaging.
+  const roomOverlay = document.getElementById('roomOverlay');
+  const roomData = {
+    'Stanner Lounge': {emoji:'💬',online:18, messages:[['mira','who else is replaying the teaser?'],['you','it has been on loop all afternoon 🌱'],['sol','the tiny detail at 0:14!!']]},
+    'Comeback Central': {emoji:'🎤',online:42, messages:[['hana','theory thread is getting wild 👀'],['jules','I am not ready for the concept photos'],['you','manifesting a beautiful bridge ✨']]},
+    'Idol Updates': {emoji:'🌟',online:9, messages:[['ari','new schedule drop — check the pinned note'],['min','thank you for keeping everything in one place!'],['you','gardeners are the best 🌿']]}
+  };
+  let currentRoom = 'Stanner Lounge';
+  function renderMessages(name) {
+    const list = document.getElementById('messages'); list.innerHTML = '';
+    (roomData[name] || roomData['Stanner Lounge']).messages.forEach(([author, body]) => {
+      const el = document.createElement('div'); el.className = `message${author === 'you' ? ' mine' : ''}`;
+      if (author !== 'you') { const who = document.createElement('div'); who.className = 'text-[9px] text-emerald-300 mb-1'; who.textContent = author; el.appendChild(who); }
+      const content = document.createElement('div'); content.textContent = body; el.appendChild(content); list.appendChild(el);
+    });
+    list.scrollTop = list.scrollHeight;
+  }
+  window.openRoom = function(name) {
+    currentRoom = roomData[name] ? name : 'Stanner Lounge';
+    document.getElementById('roomTitle').textContent = currentRoom;
+    document.getElementById('roomAvatar').textContent = roomData[currentRoom].emoji;
+    document.getElementById('roomOnline').textContent = roomData[currentRoom].online;
+    renderMessages(currentRoom); roomOverlay.classList.add('open');
+    setTimeout(() => document.getElementById('messageInput').focus({preventScroll:true}), 180);
+  };
+  window.closeRoom = () => roomOverlay.classList.remove('open');
+  roomOverlay.addEventListener('click', e => { if (e.target === roomOverlay) closeRoom(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRoom(); });
+  document.getElementById('messageForm').addEventListener('submit', e => {
+    e.preventDefault(); const input = document.getElementById('messageInput'), value = input.value.trim();
+    if (!value) return;
+    roomData[currentRoom].messages.push(['you', value]); renderMessages(currentRoom); input.value = '';
+  });
 
-document.querySelector('#feedback-form').addEventListener('submit',event=>{event.preventDefault();const type=document.querySelector('#feedback-type').value;const subject=document.querySelector('#feedback-subject').value.trim();closeModal('feedback-modal');showToast('Feedback preview ready: '+type+'. Not sent yet—connect a private inbox to receive it.');event.target.reset()});
-document.querySelector('#post-form').addEventListener('submit',event=>{event.preventDefault();const kind=document.querySelector('#post-kind').value;const caption=document.querySelector('#post-caption').value.trim();closeModal('post-modal');showToast(kind+' preview ready. Connect accounts and a safe publishing backend to post.');event.target.reset()});
+  // Profile follow interaction.
+  let grown = false;
+  window.toggleGrow = function() {
+    grown = !grown;
+    document.getElementById('growBtn').classList.toggle('grown', grown);
+    document.getElementById('growBtn').textContent = grown ? '✓ Growing Together' : '＋ Grow Together';
+    document.getElementById('followerCount').textContent = grown ? '865' : '864';
+    showToast(grown ? 'You’re growing together 🌱' : 'You unfollowed this garden');
+  };
 
-document.querySelector('#year').textContent='© '+new Date().getFullYear();
-document.querySelectorAll('.navlinks a').forEach(a=>a.addEventListener('click',()=>document.querySelector('#navlinks').classList.remove('open')));
+  let toastTimer;
+  window.showToast = function(message) {
+    const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.remove('opacity-0');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.add('opacity-0'), 1800);
+  };
+})();
 </script>
-<script src="bloom-config.js" defer></script>
-<script src="bloom-enhancements.js" defer></script>
-<script src="bloom-backend.js" defer></script>
-<script src="bloom-launch-upgrades.js" defer></script>
-<script src="bloom-social-unification.js" defer></script>
-
-<nav class="bloom-mobile-dock" aria-label="BLOOM mobile navigation">
-<a href="#home"><span class="dock-icon" aria-hidden="true">⌂</span><span>Home</span></a><a href="#explore"><span class="dock-icon" aria-hidden="true">⌕</span><span>Explore</span></a><button type="button" class="dock-create" data-dock-action="create" aria-label="Create a post"><span class="dock-icon" aria-hidden="true">＋</span><span>Create</span></button><button type="button" data-dock-action="chat" aria-label="Open group chat"><span class="dock-icon" aria-hidden="true">▤</span><span>Chat</span></button><a href="#discover"><span class="dock-icon" aria-hidden="true">♧</span><span>Shop</span></a><button type="button" data-dock-action="profile" aria-label="Open profile"><span class="dock-icon" aria-hidden="true">◎</span><span>Profile</span></button>
-</nav>
-</body></html>
+<script src="bloom-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="bloom-prototype-app.js"></script>
+</body>
+</html>

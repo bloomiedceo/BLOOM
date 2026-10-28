@@ -33,6 +33,7 @@ jobs:
           node --check bloom-backend.js
           node --check bloom-launch-upgrades.js
           node --check bloom-social-unification.js
+          node --check bloom-prototype-app.js
 
       - name: Run BLOOM regression and security invariants
         run: node scripts/check-bloom.mjs
