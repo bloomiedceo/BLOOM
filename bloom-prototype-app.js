@@ -56,6 +56,13 @@
     return 'other';
   }
 
+  function applyInitialInterestFilter() {
+    const requested = new URLSearchParams(location.search).get('interest');
+    if (!requested) return;
+    const key = ['all','mix'].includes(requested) ? requested : normalizeInterest(requested);
+    activeInterestFilter(key);
+  }
+
   function toast(message) {
     if (typeof window.showToast === 'function') window.showToast(message);
     else console.info('[BLOOM]', message);
@@ -1160,6 +1167,7 @@
     addGroupPreviewData();
     wireControls();
     buildProfileInterests(readLocalInterests());
+    applyInitialInterestFilter();
     if (!cfg.url || !cfg.anonKey || !window.supabase?.createClient) {
       setLiveStatus('Preview mode · sample posts and rooms work locally. Connect Supabase to enable shared accounts, media, chat, and listings.');
       return;
@@ -1175,10 +1183,11 @@
       currentUser=session?.user||null;
       Promise.resolve().then(async()=>{
         await syncSession();
+        applyInitialInterestFilter();
         if(event==='SIGNED_IN')toast('Welcome to your BLOOM garden ✿');
       });
     });
-    syncSession().catch((error)=>setLiveStatus('BLOOM connected with a setup issue: '+(error.message||'please refresh and try again.')));
+    syncSession().then(applyInitialInterestFilter).catch((error)=>setLiveStatus('BLOOM connected with a setup issue: '+(error.message||'please refresh and try again.')));
     $('#bloomStoryButton')?.setAttribute('title','Share a photo or short video for 24 hours');
     $('#bloomCreateButton')?.setAttribute('title','Create a shared post');
     $('#bloomNotificationsButton')?.setAttribute('title','View likes, comments, and community notifications');
