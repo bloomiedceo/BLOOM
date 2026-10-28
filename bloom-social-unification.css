@@ -1,0 +1,48 @@
+/* BLOOM Phase 1 all-interest experience: additive styles. */
+.bloom-interest-search{display:flex;align-items:center;gap:10px;margin:0 0 18px;padding:10px 14px;border:1px solid var(--line);border-radius:16px;background:#fff;max-width:520px}
+.bloom-interest-search span{font-size:18px;color:var(--purple)}
+.bloom-interest-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font-size:13px}
+.bloom-interest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.bloom-interest-card{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:19px;border:1px solid var(--line);border-radius:21px;background:linear-gradient(145deg,#fff,#faf6ff);color:var(--ink);text-decoration:none;transition:transform .18s,border-color .18s,box-shadow .18s}
+.bloom-interest-card:hover,.bloom-interest-card:focus-visible{transform:translateY(-3px);border-color:#c7b6f4;box-shadow:0 12px 28px #49336610}
+.bloom-interest-card[hidden]{display:none!important}
+.bloom-interest-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:15px;background:#eee6ff;font-size:22px}
+.bloom-interest-card:nth-child(3n+2) .bloom-interest-icon{background:#ffe5ed}
+.bloom-interest-card:nth-child(3n) .bloom-interest-icon{background:#def7ec}
+.bloom-interest-card strong{font-size:14px;letter-spacing:-.025em}
+.bloom-interest-card small{font-size:11px;color:var(--muted);line-height:1.5}
+.bloom-unified-note{display:flex;align-items:center;gap:13px;padding:16px 18px;margin-top:16px;border:1px solid #e7def6;border-radius:18px;background:linear-gradient(100deg,#f4edff,#fff0f5 58%,#e9fbf2)}
+.bloom-unified-note>span{flex:0 0 auto;font-size:26px}
+.bloom-unified-note p{flex:1;margin:0;font-size:12px;color:#655a73;line-height:1.6}
+.bloom-unified-note strong{color:var(--ink)}
+.bloom-unified-note a{flex:0 0 auto;font-size:11px;font-weight:900;color:var(--purple);white-space:nowrap}
+.bloom-interest-chips{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:2px 0 12px;margin:0 0 8px;scrollbar-width:thin}
+.bloom-interest-chip{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;background:#fff;padding:9px 13px;color:#756c83;font-size:11px;font-weight:850}
+.bloom-interest-chip[aria-pressed=true],.bloom-interest-chip:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.bloom-mobile-dock{display:none}
+#explore,#activity,#community,#discover{scroll-margin-top:92px}
+@media(max-width:900px){.bloom-interest-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bloom-interest-card{padding:16px}}
+@media(max-width:760px){
+ body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+ .bloom-interest-grid{gap:9px}
+ .bloom-interest-card{padding:14px;border-radius:17px;gap:7px}
+ .bloom-interest-icon{width:39px;height:39px;border-radius:13px}
+ .bloom-interest-card strong{font-size:12px}
+ .bloom-interest-card small{font-size:10px}
+ .bloom-unified-note{align-items:flex-start;flex-wrap:wrap;padding:14px}
+ .bloom-unified-note p{min-width:calc(100% - 48px)}
+ .bloom-unified-note a{margin-left:39px}
+ .bloom-mobile-dock{position:fixed;z-index:60;left:0;right:0;bottom:0;display:flex;align-items:stretch;justify-content:space-around;gap:2px;padding:8px 5px calc(8px + env(safe-area-inset-bottom));border-top:1px solid #e8e0f2;background:rgba(251,249,255,.94);backdrop-filter:blur(18px);box-shadow:0 -8px 25px #3020470b}
+ .bloom-mobile-dock a,.bloom-mobile-dock button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:5px 2px;border:0;background:transparent;color:#756c83;text-decoration:none;font-size:9px;font-weight:850;white-space:nowrap}
+ .bloom-mobile-dock .dock-icon{font-size:19px;line-height:1.1}
+ .bloom-mobile-dock .dock-create{flex:0 0 48px;align-self:center;width:44px;height:42px;border-radius:15px;background:var(--ink);color:#fff;font-size:10px}
+ .bloom-mobile-dock .dock-create .dock-icon{font-size:20px}
+ .bloom-mobile-dock a:focus-visible,.bloom-mobile-dock button:focus-visible{outline:2px solid var(--purple);outline-offset:-2px;border-radius:10px}
+ .bloom-interest-search{max-width:none}
+ .hero{padding-top:26px}
+ .hero h1{font-size:clamp(40px,11vw,61px)}
+ .hero-art{min-height:390px}
+ .community-banner{padding:24px}
+}
+@media(min-width:761px){.bloom-mobile-dock{display:none!important}}
+@media(prefers-reduced-motion:reduce){.bloom-interest-card,.bloom-interest-card:hover{transition:none;transform:none}html{scroll-behavior:auto}}
