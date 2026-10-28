@@ -73,9 +73,10 @@ tailwind.config = {
       <div class="glass rounded-full px-4 py-2 text-xs text-zinc-300"><span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>Community growing</div>
     </header>
 
-    <nav class="bloom-global-categories" aria-label="Explore BLOOM platforms">
-      <a href="your-mix.html">✿ Your Mix</a><a href="stanner-circles.html">Circles</a><a href="album-display.html">Album Display</a><a href="curated-finds.html">Curated Finds</a><a href="feedback-booth.html">Feedback Booth</a>
+    <nav class="bloom-global-categories" aria-label="Browse by interest">
+      <a href="your-mix.html">✿ Your Mix</a><a href="index.html?interest=creative">🎨 Art & Design</a><a href="index.html?interest=gaming">🎮 Gaming</a><a href="index.html?interest=lifestyle">🌱 Life</a><a href="index.html?interest=food">🍜 Food</a><a href="index.html?interest=outdoors">🥾 Outdoors</a><a href="index.html?interest=music">🎧 Music</a><a href="index.html?interest=fandom">✿ K-pop & Fandom</a><a href="index.html?interest=books">📚 Books</a><a href="index.html?interest=tech">💡 Tech</a>
     </nav>
+    <nav class="bloom-space-navigation" aria-label="BLOOM spaces"><a href="stanner-circles.html">Circles ↗</a><a href="album-display.html">Album Display ↗</a><a href="curated-finds.html">Curated Finds ↗</a><a href="feedback-booth.html">Feedback Booth ↗</a></nav>
     <div class="mb-12">
       <p class="eyebrow mb-4 of the internet, made to feel like yours</p>
       <h1 class="text-5xl xl:text-6xl font-black leading-[.98] tracking-[-.065em] max-w-3xl">Your whole world.<br><span class="text-emerald-400">In full bloom.</span></h1>
@@ -189,7 +190,7 @@ tailwind.config = {
 
           <!-- THE GREENHOUSE -->
           <section class="tab-panel" id="tab-chat" aria-label="The Greenhouse">
-            <div class="section-head"><div class="flex items-center justify-between"><div><p class="eyebrow mb-1">Your people, nearby</p><h2 class="text-2xl font-black tracking-tight">The Greenhouse</h2></div><button class="glass w-10 h-10 rounded-full text-lg" id="bloomCreateGroupButton" aria-label="Create a community">＋</button></div><div class="glass rounded-2xl px-4 py-3 mt-4 flex items-center gap-3 text-xs text-zinc-400"><span>⌕</span><span>Search your circles</span><span class="ml-auto text-[10px] text-zinc-600">DEMO</span></div></div>
+            <div class="section-head"><div class="flex items-center justify-between"><div><p class="eyebrow mb-1">Your people, nearby</p><h2 class="text-2xl font-black tracking-tight">The Greenhouse</h2></div><button class="glass w-10 h-10 rounded-full text-lg" id="bloomCreateGroupButton" aria-label="Create a community">＋</button></div><a href="stanner-circles.html" class="glass rounded-2xl px-4 py-3 mt-4 flex items-center gap-3 text-xs text-zinc-400 no-underline" aria-label="Search and explore all circles"><span>⌕</span><span>Search and explore every circle</span><span class="ml-auto text-[10px] text-emerald-300">OPEN ↗</span></a></div>
             <div class="chat-list">
               <div class="eyebrow mb-2 mt-1">Your circles · 3 active</div>
               <div id="bloom-live-status" class="bloom-inline-status" role="status" aria-live="polite">Preview mode · community demo rooms are shown below.</div>
@@ -229,8 +230,9 @@ tailwind.config = {
                 <button class="grid-tile" onclick="showToast('Plant opened: fandom friends ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#355e5c,#33263b)">🫶</div></button>
               </div>
               <section class="bloom-profile-additions">
-                <div class="bloom-profile-section-head"><div><p class="eyebrow">Choose your world</p><h3>My Mix</h3></div><button id="bloomEditInterestsButton" type="button" class="bloom-inline-action">Edit</button></div>
+                <div class="bloom-profile-section-head"><div><p class="eyebrow">Choose your world</p><h3>My Mix</h3></div><div class="flex items-center gap-3"><a class="bloom-inline-action" href="your-mix.html">Open Mix ↗</a><button id="bloomEditInterestsButton" type="button" class="bloom-inline-action">Edit</button></div></div>
                 <div id="bloom-profile-interest-chips" class="bloom-profile-interest-chips"><span class="bloom-inline-status">Your saved interests will bloom here.</span></div>
+                <div class="flex flex-wrap gap-3 px-4 py-3"><a class="bloom-inline-action" href="album-display.html">💿 Album Display ↗</a><a class="bloom-inline-action" href="curated-finds.html">🔎 Curated Finds ↗</a><a class="bloom-inline-action" href="feedback-booth.html">💌 Feedback Booth ↗</a></div>
                 <div class="bloom-profile-section-head bloom-market-head"><div><p class="eyebrow">Community finds</p><h3>The Garden Market</h3></div><button id="bloomSellButton" type="button" class="bloom-inline-action">＋ Sell</button></div>
                 <p class="bloom-market-note">Discover community listings. Requests are not payments — checkout is a future step.</p>
                 <div id="bloom-market-grid" class="bloom-market-grid"><div class="bloom-empty-state">Connect to BLOOM to browse listings.</div></div>
