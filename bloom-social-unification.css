@@ -46,3 +46,20 @@
 }
 @media(min-width:761px){.bloom-mobile-dock{display:none!important}}
 @media(prefers-reduced-motion:reduce){.bloom-interest-card,.bloom-interest-card:hover{transition:none;transform:none}html{scroll-behavior:auto}}
+
+/* BLOOM My Mix: a personal, adjustable feed preference control. */
+.bloom-my-mix{margin:0 0 20px;padding:20px;border:1px solid #e7def6;border-radius:23px;background:linear-gradient(115deg,#f6f0ff 0%,#fff8fb 54%,#ecfbf4 100%)}
+.bloom-my-mix-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.bloom-my-mix-head h3{font-size:20px;letter-spacing:-.05em;margin:6px 0}
+.bloom-my-mix-head p{font-size:12px;color:#655a73;line-height:1.65;margin:0;max-width:520px}
+.bloom-mix-flower{font-size:42px;color:var(--purple);opacity:.8;line-height:1}
+.bloom-preference-options{display:flex;flex-wrap:wrap;gap:8px;margin:17px 0 13px}
+.bloom-preference-chip{border:1px solid #dfd5ee;border-radius:999px;background:#fff;color:#655a73;padding:9px 12px;font-size:11px;font-weight:800;transition:background .15s,border-color .15s,color .15s}
+.bloom-preference-chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 4px 12px #241b3515}
+.bloom-preference-chip:focus-visible,.bloom-mix-buttons button:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+.bloom-my-mix-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.bloom-my-mix-foot p{margin:0;flex:1;min-width:180px;color:#655a73;font-size:11px;line-height:1.6}
+.bloom-mix-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.bloom-mix-buttons .pill{padding:10px 13px;font-size:11px}
+.bloom-mix-disclaimer{margin:12px 0 0;color:#8b7c99;font-size:10px;line-height:1.5}
+@media(max-width:640px){.bloom-my-mix{padding:16px;border-radius:19px}.bloom-my-mix-head h3{font-size:18px}.bloom-mix-flower{font-size:31px}.bloom-preference-options{gap:7px}.bloom-preference-chip{padding:9px 10px;font-size:10px}.bloom-my-mix-foot{align-items:stretch}.bloom-my-mix-foot p{min-width:100%}.bloom-mix-buttons{width:100%}.bloom-mix-buttons .pill{flex:1}}
