@@ -50,10 +50,17 @@
     if (raw.includes('tech') || raw.includes('code') || raw.includes('make')) return 'tech';
     if (raw.includes('outdoor') || raw.includes('travel') || raw.includes('nature') || raw.includes('hike')) return 'outdoors';
     if (raw.includes('art') || raw.includes('design') || raw.includes('draw') || raw.includes('craft')) return 'creative';
-    if (raw.includes('k-pop') || raw.includes('kpop') || raw.includes('fandom') || raw.includes('fan')) return 'fandom';
+    if (raw.includes('k-pop') || raw.includes('kpop') || raw.includes('fandom') || raw.includes('fan') || raw.includes('album') || raw.includes('photocard') || raw.includes('curated finds')) return 'fandom';
     if (raw.includes('music') || raw.includes('dance') || raw.includes('song')) return 'music';
     if (raw.includes('life') || raw.includes('home') || raw.includes('wellbeing')) return 'lifestyle';
     return 'other';
+  }
+
+  function applyInitialInterestFilter() {
+    const requested = new URLSearchParams(location.search).get('interest');
+    if (!requested) return;
+    const key = ['all','mix'].includes(requested) ? requested : normalizeInterest(requested);
+    activeInterestFilter(key);
   }
 
   function toast(message) {
@@ -756,7 +763,7 @@
   async function loadGroups() {
     const list = $('#bloom-live-groups');
     if (!list || !client) return;
-    const {data,error} = await client.from('groups').select('id,name,owner_id,is_public,created_at')
+    const {data,error} = await client.from('groups').select('id,name,owner_id,is_public,interest,created_at')
       .eq('is_public',true).order('created_at',{ascending:false}).limit(30);
     if (error) {
       list.replaceChildren();
@@ -780,7 +787,7 @@
       const avatar = el('span','avatar','✿');
       const details = el('span');
       details.append(el('strong','',group.name));
-      details.append(el('small','', 'Live community · '+(memberships.has(group.id)?'member':'open to join')));
+      details.append(el('small','', (categoryNames[group.interest] || 'Community')+' · '+(memberships.has(group.id)?'member':'open to join')));
       const join = el('span','bloom-group-join',memberships.has(group.id)?'Open ↗':'Join ↗');
       item.append(avatar,details,join);
       list.append(item);
@@ -794,16 +801,21 @@
     const nameLabel = el('label','','Community name');
     const name = el('input'); name.name='name'; name.minLength=2; name.maxLength=70; name.required=true; name.placeholder='Creative Corner, Player Two Lounge…';
     nameLabel.append(name);
-    const help = el('p','bloom-small-muted','New circles are public for now. Private community controls can be a later upgrade.');
+    const interestLabel = el('label','','Circle category');
+    const interest = el('select'); interest.name='interest';
+    categories.forEach((item)=>{const option=el('option','',item.emoji+' '+item.label);option.value=item.key;interest.append(option);});
+    const other=el('option','','✿ Other interest');other.value='other';interest.append(other);
+    interestLabel.append(interest);
+    const help = el('p','bloom-small-muted','New circles are public for now. Choose the interest that brings your people together.');
     const submit = el('button','bloom-form-primary','Create community'); submit.type='submit';
-    form.append(nameLabel,help,submit);
+    form.append(nameLabel,interestLabel,help,submit);
     form.addEventListener('submit',async (event) => {
       event.preventDefault();
       if (!signedIn()) return;
       const groupName = name.value.trim();
       if (groupName.length < 2) { setSheetStatus('Use at least two characters for the community name.'); return; }
       submit.disabled=true; submit.textContent='Planting…';
-      const {data,error} = await client.from('groups').insert({name:groupName,owner_id:currentUser.id,is_public:true}).select('id,name,owner_id,is_public,created_at').single();
+      const {data,error} = await client.from('groups').insert({name:groupName,owner_id:currentUser.id,is_public:true,interest:interest.value}).select('id,name,owner_id,is_public,interest,created_at').single();
       if (error) { setSheetStatus('Community could not be created: '+error.message); submit.disabled=false; submit.textContent='Create community'; return; }
       closeSheet(); await loadGroups(); await joinAndOpenGroup(data);
     });
@@ -1155,6 +1167,7 @@
     addGroupPreviewData();
     wireControls();
     buildProfileInterests(readLocalInterests());
+    applyInitialInterestFilter();
     if (!cfg.url || !cfg.anonKey || !window.supabase?.createClient) {
       setLiveStatus('Preview mode · sample posts and rooms work locally. Connect Supabase to enable shared accounts, media, chat, and listings.');
       return;
@@ -1170,10 +1183,11 @@
       currentUser=session?.user||null;
       Promise.resolve().then(async()=>{
         await syncSession();
+        applyInitialInterestFilter();
         if(event==='SIGNED_IN')toast('Welcome to your BLOOM garden ✿');
       });
     });
-    syncSession().catch((error)=>setLiveStatus('BLOOM connected with a setup issue: '+(error.message||'please refresh and try again.')));
+    syncSession().then(applyInitialInterestFilter).catch((error)=>setLiveStatus('BLOOM connected with a setup issue: '+(error.message||'please refresh and try again.')));
     $('#bloomStoryButton')?.setAttribute('title','Share a photo or short video for 24 hours');
     $('#bloomCreateButton')?.setAttribute('title','Create a shared post');
     $('#bloomNotificationsButton')?.setAttribute('title','View likes, comments, and community notifications');

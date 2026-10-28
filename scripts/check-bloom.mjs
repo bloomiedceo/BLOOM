@@ -16,6 +16,16 @@ const newsletterProviderSchema = read('../supabase/newsletter-provider.sql');
 const newsletterFunction = read('../supabase/functions/newsletter-subscribe/index.ts');
 const deleteAccount = read('../supabase/functions/delete-account/index.ts');
 const spotify = read('../bloom-enhancements.js');
+const platformJs = read('../bloom-platforms.js');
+const platformCss = read('../bloom-platforms.css');
+const circlesPage = read('../stanner-circles.html');
+const albumsPage = read('../album-display.html');
+const curatedPage = read('../curated-finds.html');
+const mixPage = read('../your-mix.html');
+const feedbackPage = read('../feedback-booth.html');
+const ceoPage = read('../ceo-dashboard.html');
+const circleInterestsSchema = read('../supabase/circle-interests.sql');
+const feedbackBoothSchema = read('../supabase/feedback-booth.sql');
 
 assert.match(html, /class="app-shell"/, 'The uploaded premium prototype layout must remain the main page');
 assert.match(html, /class="splash"/, 'The prototype flower-opening sequence must be preserved');
@@ -87,4 +97,33 @@ assert.doesNotMatch(config, /service_role\s*:/i, 'Never place a service-role key
 assert.match(spotify, /open\.spotify\.com\/embed\//, 'Spotify support should remain in the repository');
 assert.doesNotMatch(spotify, /bloom-local-audio|accept="audio\/\*"/, 'BLOOM must not offer a local audio upload path');
 
-console.log('BLOOM premium prototype regression and security checks passed.');
+
+assert.doesNotMatch(html, /id="dashboard"|dashboardToggle/, 'CEO dashboard controls must not be embedded in the public app');
+assert.match(html, /href="stanner-circles\.html"/, 'Stanner Circles must have a dedicated platform CTA');
+assert.match(html, /href="album-display\.html"/, 'Album Display must have a dedicated platform CTA');
+assert.match(html, /href="curated-finds\.html\?compose=1"/, 'Curated Finds must offer a create-post CTA');
+assert.match(html, /href="your-mix\.html"/, 'Your Mix must have a dedicated, working destination');
+assert.match(html, /href="feedback-booth\.html"/, 'The public app must link to Feedback Booth');
+assert.match(html, /data-feed-interest="mix"[^>]*>Your Mix/, 'The feed filter should label the personalized view Your Mix');
+assert.match(app, /\$\$\('#bloom-feed-interest-filter \[data-feed-interest\]'\)/, 'My Mix filters must use querySelectorAll, not forEach on one element');
+assert.match(app, /interest:interest\.value/, 'New groups must persist their selected interest');
+assert.match(platformJs, /function applyCircleFilter/, 'Circle category selection must re-render the selected filter');
+assert.match(platformJs, /function applyFindFilter/, 'Curated Finds category selection must re-render the selected filter');
+assert.match(platformJs, /feedback_submissions/, 'Feedback Booth must submit and the founder dashboard must read feedback');
+assert.match(platformJs, /app_metadata&&currentUser\.app_metadata\.role/, 'CEO dashboard must check trusted app metadata for access');
+assert.doesNotMatch(platformJs, /arguments\.callee/, 'Platform scripts must not use arguments.callee in strict mode');
+assert.match(circleInterestsSchema, /add column if not exists interest/i, 'Circle interest migration must be additive and repeatable');
+assert.match(feedbackBoothSchema, /alter table public\.feedback_submissions enable row level security/i, 'Feedback table must use RLS');
+assert.match(feedbackBoothSchema, /feedback anonymous submit/i, 'Feedback Booth must accept carefully scoped anonymous submissions');
+assert.match(feedbackBoothSchema, /feedback founder update/i, 'Feedback moderation must be limited to founder/moderator role claims');
+assert.match(platformCss, /prefers-reduced-motion/, 'Platform pages must respect reduced-motion preferences');
+for (const [label,page] of [['Stanner Circles',circlesPage],['Album Display',albumsPage],['Curated Finds',curatedPage],['Your Mix',mixPage],['Feedback Booth',feedbackPage],['CEO dashboard',ceoPage]]) {
+  assert.match(page, /bloom-platforms\.css/, label+' must use the shared BLOOM platform styles');
+  assert.match(page, /bloom-platforms\.js/, label+' must use the shared BLOOM platform logic');
+}
+assert.match(curatedPage, /id="bpCreateFind"/, 'Curated Finds must expose its create-post action');
+assert.match(mixPage, /id="bpMixPreview"/, 'Your Mix must display a sample-preview surface before personalization');
+assert.match(feedbackPage, /id="bpFeedbackForm"/, 'Feedback Booth must expose its submission form');
+assert.match(ceoPage, /id="bpCeoInbox"/, 'CEO dashboard must place the feedback inbox on its separate route');
+
+console.log('BLOOM premium prototype and platform regression/security checks passed.');

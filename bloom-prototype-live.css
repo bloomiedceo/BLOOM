@@ -86,3 +86,17 @@
 @media(max-width:390px){.bloom-feed-tools{left:10px;right:10px;gap:5px}.bloom-feed-brand small{display:none}.bloom-feed-buttons{gap:4px}.bloom-tool-button{padding:0 7px;font-size:9px}.bloom-feed-interest-filter{left:10px;right:10px}.bloom-story-rail{left:10px;right:10px}.bloom-live-form .bloom-checkgrid{grid-template-columns:1fr}}
 @media(min-width:701px){.bloom-feature-sheet{max-height:86%;border-radius:27px 27px 0 0}.bloom-profile-additions{padding-left:18px;padding-right:18px}}
 @media(prefers-reduced-motion:reduce){.bloom-feature-overlay.open{animation:none}}
+
+/* BLOOM premium platform navigation — original ink / emerald / orchid language. */
+.bloom-global-categories{display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none;margin:-28px 0 30px;padding:8px 0 12px;border-bottom:1px solid rgba(255,255,255,.07)}
+.bloom-global-categories::-webkit-scrollbar{display:none}
+.bloom-global-categories a{white-space:nowrap;text-decoration:none;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.025);border-radius:999px;padding:9px 12px;font-size:11px;color:#d7dbd4;transition:background .18s,border-color .18s}
+.bloom-global-categories a:hover{border-color:rgba(16,185,129,.55);background:rgba(16,185,129,.08);color:#f7fff9}
+.bloom-hub-card{text-decoration:none;transition:transform .2s,border-color .2s}
+.bloom-hub-card:hover{transform:translateY(-2px);border-color:rgba(16,185,129,.36)}
+@media(max-width:700px){.bloom-global-categories{display:none}}
+
+.bloom-space-navigation{display:flex;flex-wrap:wrap;gap:15px;align-items:center;margin:-19px 0 28px;padding:0 0 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.bloom-space-navigation a{font-size:10px;text-decoration:none;color:#9ea69b;white-space:nowrap}
+.bloom-space-navigation a:hover{color:#d1fae5}
+@media(max-width:700px){.bloom-space-navigation{display:none}}
