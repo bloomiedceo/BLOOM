@@ -55,7 +55,7 @@ BLOOM MUSIC uses Spotify's official embedded player. Open Spotify, choose **Shar
 GitHub Pages is static hosting. It cannot run the database, authenticate users on its own, or deliver shared messages. The Supabase integration depends on the matching project being reachable and its schema, RLS policies, Auth redirects, and email delivery being configured correctly. A configured frontend URL/key alone does not prove every production feature is ready.
 
 1. Confirm that the Supabase project is active and reachable, and that the project URL in `bloom-config.js` is the project you intend to use. If the project is paused/inactive, restore it in the Supabase Dashboard before integration tests. A configured URL and public key do not prove the backend is online.
-2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then run `supabase/feed-engagement.sql` to enable shared likes and comments. Re-run neither by copying partial snippets; use the complete files in order.
+2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then `supabase/profile-interests.sql` (an idempotent upgrade for existing profiles), then `supabase/feed-engagement.sql` to enable shared likes and comments. Run complete files in order; do not copy partial snippets.
 3. In **Authentication → URL Configuration**, set the Site URL to your published GitHub Pages URL and add that exact URL to the allowed redirect URLs.
 4. In **Authentication → Providers / Email**, enable email sign-up and email confirmation. For production Auth mail, configure **Authentication → SMTP Settings** with your verified Resend sender: host `smtp.resend.com`, port `465`, username `resend`, and your Resend API key as the password. Set the sender email to an address on your verified domain. Set a suitable minimum password length (at least 10 characters) and enable leaked-password protection in the Auth password/security settings. The SMTP credentials and leaked-password toggle must be set in the Dashboard before launch.
 5. Run `supabase/newsletter-provider.sql` after the core schema. The public website calls the `newsletter-subscribe` Edge Function; it does not write email addresses directly from the browser. The function uses Resend for double opt-in and unsubscribe. Set the server-side secrets `RESEND_API_KEY`, `BLOOM_FROM_EMAIL` (a sender on a verified domain), and `BLOOM_SITE_URL`. Never place these values in `bloom-config.js` or GitHub.
@@ -67,7 +67,7 @@ GitHub Pages is static hosting. It cannot run the database, authenticate users o
 ### What the starter backend includes
 
 - Supabase email/password sign-up, sign-in, email verification flow, password-reset email, and password update after recovery.
-- Profile display name and private-profile setting.
+- Profile display name, private-profile setting, and saved interest preferences for BLOOM Mix. Interests may be visible on public profiles; private profiles restrict profile-row visibility.
 - Shared posts with public/private profile visibility, reporting, and a moderator queue for hiding posts/resolving reports. Shared post likes/comments require `supabase/feed-engagement.sql`.
 - Public group discovery, group creation/membership, and Realtime group messages.
 - A server-side account deletion Edge Function.
