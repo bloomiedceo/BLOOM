@@ -65,6 +65,13 @@
         else status.textContent = 'No interests selected yet. BLOOM will show the full range of topics.';
       }
     }
+    document.addEventListener('bloom:interest-preferences-updated', () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem('bloom-interest-preferences-v1') || '[]');
+        pending = new Set(Array.isArray(saved) ? saved.filter((key) => buttons.some((button) => button.dataset.bloomPref === key)) : []);
+      } catch (_) { pending.clear(); }
+      paint();
+    });
     buttons.forEach((button) => button.addEventListener('click', () => {
       const key = button.dataset.bloomPref;
       if (pending.has(key)) pending.delete(key); else pending.add(key);
