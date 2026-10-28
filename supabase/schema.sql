@@ -10,8 +10,35 @@ create table if not exists public.profiles (
   display_name text not null default 'New fan' check (char_length(display_name) between 1 and 50),
   bio text not null default '' check (char_length(bio) <= 240),
   is_private boolean not null default false,
-  created_at timestamptz not null default now()
+  interests text[] not null default '{}'::text[],
+  created_at timestamptz not null default now(),
+  constraint profiles_interests_valid_check check (
+    cardinality(interests) <= 9
+    and array_position(interests, null::text) is null
+    and interests <@ array['creative','gaming','lifestyle','food','outdoors','music','fandom','books','tech']::text[]
+  )
 );
+
+-- Keep older BLOOM installations up to date when the core schema is re-run.
+alter table public.profiles
+  add column if not exists interests text[] not null default '{}'::text[];
+
+do $profile_interests$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.profiles'::regclass
+      and conname = 'profiles_interests_valid_check'
+  ) then
+    alter table public.profiles
+      add constraint profiles_interests_valid_check check (
+        cardinality(interests) <= 9
+        and array_position(interests, null::text) is null
+        and interests <@ array['creative','gaming','lifestyle','food','outdoors','music','fandom','books','tech']::text[]
+      );
+  end if;
+end;
+$profile_interests$;
 
 create or replace function public.bloom_create_profile()
 returns trigger

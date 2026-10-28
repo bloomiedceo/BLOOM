@@ -21,6 +21,7 @@ jobs:
           node --check bloom-enhancements.js
           node --check bloom-backend.js
           node --check bloom-launch-upgrades.js
+          node --check bloom-social-unification.js
           node --check scripts/check-bloom.mjs
           node scripts/check-bloom.mjs
       - name: Check expected feature wiring
@@ -29,6 +30,8 @@ jobs:
           grep -q 'bloom-enhancements.js' index.html
           grep -q 'bloom-backend.js' index.html
           grep -q 'bloom-launch-upgrades.js' index.html
+          grep -q 'bloom-social-unification.js' index.html
+          grep -q 'bloom-social-unification.css' index.html
           grep -q 'feed-engagement.sql' README.md
           grep -q 'bloom_post_engagement' supabase/feed-engagement.sql
           grep -q 'open.spotify.com/embed' bloom-enhancements.js

@@ -179,8 +179,8 @@
           <h3>🌷 Community posts</h3>
           <form id="bloom-live-post-form" class="bloom-modal-form">
             <label for="bloom-live-title">Post title</label><input id="bloom-live-title" maxlength="100" required placeholder="What do you want to share?">
-            <label for="bloom-live-body">Your update</label><textarea id="bloom-live-body" maxlength="2000" rows="3" required placeholder="Keep it kind and fandom-friendly."></textarea>
-            <label for="bloom-live-fandom">Fandom</label><input id="bloom-live-fandom" maxlength="60" placeholder="e.g. Multi-stan">
+            <label for="bloom-live-body">Your update</label><textarea id="bloom-live-body" maxlength="2000" rows="3" required placeholder="Keep it kind and community-friendly."></textarea>
+            <label for="bloom-live-fandom">Interest or topic</label><input id="bloom-live-fandom" maxlength="60" placeholder="e.g. art, gaming, travel, music or K-pop">
             <label for="bloom-live-link">Link (optional)</label><input id="bloom-live-link" type="url" placeholder="https://…">
             <button class="pill primary" type="submit">Publish post</button>
           </form>
@@ -189,11 +189,11 @@
         </section>
         <section class="bloom-live-card">
           <h3>💬 Groups & live chat</h3>
-          <form id="bloom-live-group-form" class="bloom-inline-form"><input id="bloom-live-group-name" maxlength="70" required placeholder="Name a fan group"><button class="pill lavender" type="submit">Create</button></form>
+          <form id="bloom-live-group-form" class="bloom-inline-form"><input id="bloom-live-group-name" maxlength="70" required placeholder="Name a community"><button class="pill lavender" type="submit">Create</button></form>
           <div id="bloom-live-groups" class="bloom-live-groups"></div>
           <div class="bloom-live-chat">
             <h4 id="bloom-live-chat-title">Choose a group</h4>
-            <p id="bloom-live-chat-note" class="bloom-enhance-note">Sign in and join a public group to chat.</p>
+            <p id="bloom-live-chat-note" class="bloom-enhance-note">Sign in and join a public community to chat.</p>
             <div id="bloom-live-messages" class="bloom-live-messages" aria-live="polite"></div>
             <form id="bloom-live-message-form" class="bloom-inline-form"><input id="bloom-live-message" maxlength="1000" required placeholder="Write a respectful message…" disabled><button class="pill primary" type="submit" disabled>Send</button></form>
           </div>
@@ -493,7 +493,7 @@
           <button class="pill primary" type="submit">Continue</button>
         </form>
         <form id="bloom-password-update-form" class="bloom-modal-form" hidden><label for="bloom-new-password">New password</label><input id="bloom-new-password" type="password" minlength="10" autocomplete="new-password" required placeholder="At least 10 characters"><button class="pill primary" type="submit">Update password</button></form>
-        <div id="bloom-account-panel" hidden><p id="bloom-account-label"></p><form id="bloom-profile-form" class="bloom-modal-form"><label for="bloom-profile-display">Display name</label><input id="bloom-profile-display" maxlength="50" required><label><input id="bloom-profile-private" type="checkbox" style="width:auto;margin-right:8px">Make my profile private</label><button class="pill lavender" type="submit">Save privacy settings</button></form><button id="bloom-delete-account" class="pill white" type="button">Delete my account</button><button id="bloom-sign-out" class="pill white" type="button">Sign out</button></div>
+        <div id="bloom-account-panel" hidden><p id="bloom-account-label"></p><form id="bloom-profile-form" class="bloom-modal-form"><label for="bloom-profile-display">Display name</label><input id="bloom-profile-display" maxlength="50" required><label><input id="bloom-profile-private" type="checkbox" style="width:auto;margin-right:8px">Make my profile private</label><fieldset class="bloom-profile-interest-fieldset"><legend>My interests</legend><p class="bloom-profile-interest-help">Choose interests for your BLOOM Mix. These may be visible when your profile is public; a private profile limits profile visibility.</p><div class="bloom-profile-interest-options" role="group" aria-label="Profile interests"><label><input type="checkbox" name="bloom-profile-interest" value="creative">Art &amp; design</label><label><input type="checkbox" name="bloom-profile-interest" value="gaming">Gaming</label><label><input type="checkbox" name="bloom-profile-interest" value="lifestyle">Everyday life</label><label><input type="checkbox" name="bloom-profile-interest" value="food">Food &amp; drink</label><label><input type="checkbox" name="bloom-profile-interest" value="outdoors">Outdoors &amp; wellbeing</label><label><input type="checkbox" name="bloom-profile-interest" value="music">Music</label><label><input type="checkbox" name="bloom-profile-interest" value="fandom">K-pop</label><label><input type="checkbox" name="bloom-profile-interest" value="books">Books &amp; learning</label><label><input type="checkbox" name="bloom-profile-interest" value="tech">Tech &amp; making</label></div></fieldset><button class="pill lavender" type="submit">Save profile &amp; interests</button></form><button id="bloom-delete-account" class="pill white" type="button">Delete my account</button><button id="bloom-sign-out" class="pill white" type="button">Sign out</button></div>
         <p id="bloom-auth-message" class="bloom-auth-message" role="status" aria-live="polite"></p>
       </div>`;
     document.body.append(modal);
@@ -570,8 +570,19 @@
     $('#bloom-profile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser) return;
-      const { error } = await client.from('profiles').update({ display_name: $('#bloom-profile-display').value.trim(), is_private: $('#bloom-profile-private').checked }).eq('id', currentUser.id);
-      setAuthMessage(error ? error.message : 'Profile and privacy settings saved.');
+      const interests = $('input[name="bloom-profile-interest"]:checked').map((input) => input.value);
+      const { error } = await client.from('profiles').update({
+        display_name: $('#bloom-profile-display').value.trim(),
+        is_private: $('#bloom-profile-private').checked,
+        interests
+      }).eq('id', currentUser.id);
+      if (error) { setAuthMessage('Profile could not be saved: ' + error.message); return; }
+      try {
+        localStorage.setItem('bloom-interest-preferences-v1', JSON.stringify(interests));
+        localStorage.setItem('bloom-interest-mix-enabled-v1', String(interests.length > 0));
+      } catch (_) {}
+      document.dispatchEvent(new Event('bloom:interest-preferences-updated'));
+      setAuthMessage('Profile saved. Your interests now personalize My Mix.');
     });
     $('#bloom-delete-account').addEventListener('click', async () => {
       if (!currentUser || !window.confirm('Delete your BLOOM account and associated community data? This cannot be undone.')) return;
@@ -628,7 +639,7 @@
       const modal = document.createElement('div');
       modal.className = 'modal-backdrop'; modal.id = 'bloom-live-comments-modal';
       modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-labelledby', 'bloom-live-comments-title');
-      modal.innerHTML = '<div class="modal"><div class="modal-head"><h2 id="bloom-live-comments-title">Comments 💬</h2><button class="modal-close" id="bloom-live-comments-close" type="button" aria-label="Close comments">×</button></div><p id="bloom-live-comments-status" class="bloom-inline-status" role="status"></p><div id="bloom-live-comments-list" class="bloom-live-posts" aria-live="polite"></div><form id="bloom-live-comment-form" class="bloom-modal-form"><label for="bloom-live-comment-input">Add a comment</label><textarea id="bloom-live-comment-input" rows="3" maxlength="500" required placeholder="Keep it kind and fandom-friendly."></textarea><button class="pill primary" type="submit">Post comment</button></form></div>';
+      modal.innerHTML = '<div class="modal"><div class="modal-head"><h2 id="bloom-live-comments-title">Comments 💬</h2><button class="modal-close" id="bloom-live-comments-close" type="button" aria-label="Close comments">×</button></div><p id="bloom-live-comments-status" class="bloom-inline-status" role="status"></p><div id="bloom-live-comments-list" class="bloom-live-posts" aria-live="polite"></div><form id="bloom-live-comment-form" class="bloom-modal-form"><label for="bloom-live-comment-input">Add a comment</label><textarea id="bloom-live-comment-input" rows="3" maxlength="500" required placeholder="Keep it kind and community-friendly."></textarea><button class="pill primary" type="submit">Post comment</button></form></div>';
       document.body.append(modal);
       $('#bloom-live-comments-close').addEventListener('click', () => closeModal(modal.id));
       modal.addEventListener('click', event => { if (event.target === modal) closeModal(modal.id); });
@@ -841,11 +852,27 @@
 
     async function loadProfile() {
       if (!currentUser) return;
-      const { data, error } = await client.from('profiles').select('username,display_name,is_private').eq('id',currentUser.id).single();
+      const { data, error } = await client.from('profiles').select('username,display_name,is_private,interests').eq('id',currentUser.id).single();
       if (error) { setAuthMessage('Profile could not be loaded: ' + error.message); return; }
       $('#bloom-account-label').textContent = '@' + data.username + ' · ' + currentUser.email;
       $('#bloom-profile-display').value = data.display_name || '';
       $('#bloom-profile-private').checked = !!data.is_private;
+      const validInterests = new Set(['creative','gaming','lifestyle','food','outdoors','music','fandom','books','tech']);
+      const profileInterests = Array.isArray(data.interests) ? data.interests.filter((value) => validInterests.has(value)) : [];
+      let browserInterests = [];
+      try {
+        const saved = JSON.parse(localStorage.getItem('bloom-interest-preferences-v1') || '[]');
+        if (Array.isArray(saved)) browserInterests = saved.filter((value) => validInterests.has(value));
+      } catch (_) {}
+      const selectedInterests = profileInterests.length ? profileInterests : browserInterests;
+      $('input[name="bloom-profile-interest"]').forEach((input) => { input.checked = selectedInterests.includes(input.value); });
+      if (profileInterests.length) {
+        try {
+          localStorage.setItem('bloom-interest-preferences-v1', JSON.stringify(profileInterests));
+          localStorage.setItem('bloom-interest-mix-enabled-v1', 'true');
+        } catch (_) {}
+        document.dispatchEvent(new Event('bloom:interest-preferences-updated'));
+      }
       $('#bloom-auth-form').hidden = true; accountPanel.hidden = false;
       isModerator = currentUser.app_metadata?.role === 'moderator';
       $('#bloom-live-moderation').hidden = !isModerator;

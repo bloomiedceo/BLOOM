@@ -58,7 +58,13 @@
       {name:'K-pop Inspired Oversized Hoodie',category:'style',type:'Fan style',emoji:'🧥',tone:'v-pink',query:'K-pop inspired oversized hoodie',tag:'Style pick'},
       {name:'Photocard Holder Keychain',category:'accessories',type:'Fan accessories',emoji:'🫧',tone:'v-mint',query:'Photocard holder keychain',tag:'Everyday carry'},
       {name:'Album & Photocard Storage Box',category:'albums',type:'Albums & collectibles',emoji:'📦',tone:'v-lilac',query:'Album photocard storage box',tag:'Tidy collection'},
-      {name:'Concert Crossbody Bag',category:'concert',type:'Concert essentials',emoji:'👜',tone:'v-yellow',query:'Concert clear crossbody bag',tag:'Venue-ready'}
+      {name:'Concert Crossbody Bag',category:'concert',type:'Concert essentials',emoji:'👜',tone:'v-yellow',query:'Concert clear crossbody bag',tag:'Venue-ready'},
+      {name:'Mini Ceramic Planter',category:'home',type:'Home & living',emoji:'🪴',tone:'v-mint',query:'mini ceramic planter pot',tag:'Tiny green joy'},
+      {name:'Journaling Prompt Kit',category:'digital',type:'Digital downloads',emoji:'📔',tone:'v-lilac',query:'printable journaling prompts',tag:'Creator pick'},
+      {name:'Independent Artist Sticker Pack',category:'creator',type:'Creator-made goods',emoji:'🌼',tone:'v-yellow',query:'independent artist sticker pack',tag:'Made by creators'},
+      {name:'Gaming Desk Mat',category:'gaming',type:'Gaming & setup',emoji:'🎮',tone:'v-pink',query:'gaming desk mat',tag:'Setup upgrade'},
+      {name:'Everyday Canvas Tote',category:'style',type:'Everyday style',emoji:'👜',tone:'v-mint',query:'everyday canvas tote bag',tag:'Daily favourite'},
+      {name:'Soft Evening Candle',category:'home',type:'Home & living',emoji:'🕯️',tone:'v-yellow',query:'handmade soy candle',tag:'Slow living'}
     ];
     if (grid && !grid.dataset.bloomCatalogueAdded) {
       catalogue.forEach(item => {
