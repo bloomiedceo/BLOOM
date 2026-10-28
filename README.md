@@ -1,11 +1,12 @@
-# BLOOM — K-pop Community
+# BLOOM — Your whole world, in full bloom
 
-BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery website. The original single-page design and founder dashboard are preserved alongside the current feed, community, music, and marketplace interface upgrades.
+BLOOM is an evolving all-in-one social experience for short-form content, posts, messaging, interest-based communities, creator discovery and shopping. The original K-pop fandom experience remains one interest space inside a broader BLOOM world; the existing single-page website, music embeds, marketplace, backend starter and founder dashboard are preserved.
 
 ## Main files
 
 - `index.html` — GitHub Pages entry point and original design.
-- `bloom-enhancements.css` / `bloom-enhancements.js` — responsive feed, media composer, in-app Spotify embed, and interface upgrades.
+- `bloom-enhancements.css` / `bloom-enhancements.js` — responsive feed, media composer, in-app Spotify embed, and existing interface upgrades.
+- `bloom-social-unification.css` / `bloom-social-unification.js` — additive all-interest discovery, mobile navigation, and topic filtering without replacing existing features.
 - `bloom-config.js` — public Supabase Project URL and publishable/anon key placeholders. It must never contain a service-role key.
 - `bloom-backend.js` — optional Supabase Auth, shared posts, public groups, real-time group messages, shared post likes/comments, reporting, and moderator queue UI.
 - `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
@@ -17,6 +18,12 @@ BLOOM is a pastel pink and lavender K-pop community and fan-merch discovery webs
 - `supabase/functions/delete-account/index.ts` — server-side account deletion function; deployed with JWT verification enabled.
 - `supabase/functions/newsletter-subscribe/index.ts` — Resend-backed confirmation/unsubscribe endpoint.
 - `bloom_kpop_community_launch_preview (1).html` and `bloom_ceo_dashboard.html` — original files retained.
+
+## Phase 1 direction
+
+The existing site is being broadened rather than replaced. Explore surfaces multiple interests; the feed includes general sample topics as well as K-pop; communities keep the original fandom rooms and add creative, gaming, food, and outdoors spaces; and the marketplace includes illustrative creator, home, digital, gaming, style, and fandom finds. Sample cards remain distinct from live community records.
+
+Phase 1 is primarily an interface and navigation upgrade. It does not create direct messages, enable payments, or prove that live services are online. Shared account, feed, group-chat, story, notification and marketplace features still depend on a reachable Supabase project, database schema, configured policies and testing.
 
 ## Preview locally
 
@@ -47,7 +54,7 @@ BLOOM MUSIC uses Spotify's official embedded player. Open Spotify, choose **Shar
 
 GitHub Pages is static hosting. It cannot run the database, authenticate users on its own, or deliver shared messages. The Supabase integration depends on the matching project being reachable and its schema, RLS policies, Auth redirects, and email delivery being configured correctly. A configured frontend URL/key alone does not prove every production feature is ready.
 
-1. If you have not already done so, create a Supabase project in an account you control. Confirm that the project URL in `bloom-config.js` is the project you intend to use.
+1. Confirm that the Supabase project is active and reachable, and that the project URL in `bloom-config.js` is the project you intend to use. If the project is paused/inactive, restore it in the Supabase Dashboard before integration tests. A configured URL and public key do not prove the backend is online.
 2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then run `supabase/feed-engagement.sql` to enable shared likes and comments. Re-run neither by copying partial snippets; use the complete files in order.
 3. In **Authentication → URL Configuration**, set the Site URL to your published GitHub Pages URL and add that exact URL to the allowed redirect URLs.
 4. In **Authentication → Providers / Email**, enable email sign-up and email confirmation. For production Auth mail, configure **Authentication → SMTP Settings** with your verified Resend sender: host `smtp.resend.com`, port `465`, username `resend`, and your Resend API key as the password. Set the sender email to an address on your verified domain. Set a suitable minimum password length (at least 10 characters) and enable leaked-password protection in the Auth password/security settings. The SMTP credentials and leaked-password toggle must be set in the Dashboard before launch.
