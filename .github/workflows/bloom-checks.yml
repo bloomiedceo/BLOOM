@@ -23,6 +23,7 @@ jobs:
           node --check bloom-launch-upgrades.js
           node --check bloom-social-unification.js
           node --check bloom-prototype-app.js
+          node --check bloom-platforms.js
           node --check scripts/check-bloom.mjs
           node scripts/check-bloom.mjs
       - name: Check expected feature wiring
@@ -33,6 +34,14 @@ jobs:
           grep -q 'id="tab-feed"' index.html
           grep -q 'id="tab-chat"' index.html
           grep -q 'id="tab-profile"' index.html
+          grep -q 'href="stanner-circles.html"' index.html
+          grep -q 'href="album-display.html"' index.html
+          grep -q 'href="curated-finds.html?compose=1"' index.html
+          grep -q 'href="your-mix.html"' index.html
+          grep -q 'href="feedback-booth.html"' index.html
+          grep -q 'feedback_submissions' supabase/feedback-booth.sql
+          grep -q 'id="bpCreateFind"' curated-finds.html
+          grep -q 'id="bpMixPreview"' your-mix.html
           grep -q 'feed-engagement.sql' README.md
           grep -q 'bloom_post_engagement' supabase/feed-engagement.sql
           grep -q 'open.spotify.com/embed' bloom-enhancements.js
