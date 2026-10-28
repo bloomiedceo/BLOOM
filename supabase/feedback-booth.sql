@@ -13,6 +13,9 @@ create table if not exists public.feedback_submissions (
 create index if not exists bloom_feedback_status_created_idx
   on public.feedback_submissions(status, created_at desc);
 
+create index if not exists bloom_feedback_author_idx
+  on public.feedback_submissions(author_id);
+
 alter table public.feedback_submissions enable row level security;
 revoke all on table public.feedback_submissions from public, anon, authenticated;
 grant insert on table public.feedback_submissions to anon;

@@ -116,6 +116,7 @@ assert.match(circleInterestsSchema, /add column if not exists interest/i, 'Circl
 assert.match(feedbackBoothSchema, /alter table public\.feedback_submissions enable row level security/i, 'Feedback table must use RLS');
 assert.match(feedbackBoothSchema, /feedback anonymous submit/i, 'Feedback Booth must accept carefully scoped anonymous submissions');
 assert.match(feedbackBoothSchema, /feedback founder update/i, 'Feedback moderation must be limited to founder/moderator role claims');
+assert.match(feedbackBoothSchema, /bloom_feedback_author_idx/i, 'Feedback author foreign key should have an index');
 assert.match(platformCss, /prefers-reduced-motion/, 'Platform pages must respect reduced-motion preferences');
 for (const [label,page] of [['Stanner Circles',circlesPage],['Album Display',albumsPage],['Curated Finds',curatedPage],['Your Mix',mixPage],['Feedback Booth',feedbackPage],['CEO dashboard',ceoPage]]) {
   assert.match(page, /bloom-platforms\.css/, label+' must use the shared BLOOM platform styles');
