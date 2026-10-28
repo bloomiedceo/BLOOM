@@ -179,8 +179,8 @@
           <h3>🌷 Community posts</h3>
           <form id="bloom-live-post-form" class="bloom-modal-form">
             <label for="bloom-live-title">Post title</label><input id="bloom-live-title" maxlength="100" required placeholder="What do you want to share?">
-            <label for="bloom-live-body">Your update</label><textarea id="bloom-live-body" maxlength="2000" rows="3" required placeholder="Keep it kind and fandom-friendly."></textarea>
-            <label for="bloom-live-fandom">Fandom</label><input id="bloom-live-fandom" maxlength="60" placeholder="e.g. Multi-stan">
+            <label for="bloom-live-body">Your update</label><textarea id="bloom-live-body" maxlength="2000" rows="3" required placeholder="Keep it kind and community-friendly."></textarea>
+            <label for="bloom-live-fandom">Interest or topic</label><input id="bloom-live-fandom" maxlength="60" placeholder="e.g. art, gaming, travel, music or K-pop">
             <label for="bloom-live-link">Link (optional)</label><input id="bloom-live-link" type="url" placeholder="https://…">
             <button class="pill primary" type="submit">Publish post</button>
           </form>
@@ -189,11 +189,11 @@
         </section>
         <section class="bloom-live-card">
           <h3>💬 Groups & live chat</h3>
-          <form id="bloom-live-group-form" class="bloom-inline-form"><input id="bloom-live-group-name" maxlength="70" required placeholder="Name a fan group"><button class="pill lavender" type="submit">Create</button></form>
+          <form id="bloom-live-group-form" class="bloom-inline-form"><input id="bloom-live-group-name" maxlength="70" required placeholder="Name a community"><button class="pill lavender" type="submit">Create</button></form>
           <div id="bloom-live-groups" class="bloom-live-groups"></div>
           <div class="bloom-live-chat">
             <h4 id="bloom-live-chat-title">Choose a group</h4>
-            <p id="bloom-live-chat-note" class="bloom-enhance-note">Sign in and join a public group to chat.</p>
+            <p id="bloom-live-chat-note" class="bloom-enhance-note">Sign in and join a public community to chat.</p>
             <div id="bloom-live-messages" class="bloom-live-messages" aria-live="polite"></div>
             <form id="bloom-live-message-form" class="bloom-inline-form"><input id="bloom-live-message" maxlength="1000" required placeholder="Write a respectful message…" disabled><button class="pill primary" type="submit" disabled>Send</button></form>
           </div>
@@ -628,7 +628,7 @@
       const modal = document.createElement('div');
       modal.className = 'modal-backdrop'; modal.id = 'bloom-live-comments-modal';
       modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-labelledby', 'bloom-live-comments-title');
-      modal.innerHTML = '<div class="modal"><div class="modal-head"><h2 id="bloom-live-comments-title">Comments 💬</h2><button class="modal-close" id="bloom-live-comments-close" type="button" aria-label="Close comments">×</button></div><p id="bloom-live-comments-status" class="bloom-inline-status" role="status"></p><div id="bloom-live-comments-list" class="bloom-live-posts" aria-live="polite"></div><form id="bloom-live-comment-form" class="bloom-modal-form"><label for="bloom-live-comment-input">Add a comment</label><textarea id="bloom-live-comment-input" rows="3" maxlength="500" required placeholder="Keep it kind and fandom-friendly."></textarea><button class="pill primary" type="submit">Post comment</button></form></div>';
+      modal.innerHTML = '<div class="modal"><div class="modal-head"><h2 id="bloom-live-comments-title">Comments 💬</h2><button class="modal-close" id="bloom-live-comments-close" type="button" aria-label="Close comments">×</button></div><p id="bloom-live-comments-status" class="bloom-inline-status" role="status"></p><div id="bloom-live-comments-list" class="bloom-live-posts" aria-live="polite"></div><form id="bloom-live-comment-form" class="bloom-modal-form"><label for="bloom-live-comment-input">Add a comment</label><textarea id="bloom-live-comment-input" rows="3" maxlength="500" required placeholder="Keep it kind and community-friendly."></textarea><button class="pill primary" type="submit">Post comment</button></form></div>';
       document.body.append(modal);
       $('#bloom-live-comments-close').addEventListener('click', () => closeModal(modal.id));
       modal.addEventListener('click', event => { if (event.target === modal) closeModal(modal.id); });
