@@ -166,6 +166,14 @@ assert.match(html, /data-bloom-interest="gaming"/, 'The feed must include gaming
 assert.match(html, /data-bloom-interest="fandom"/, 'The original K-pop fandom remains a first-class interest');
 assert.match(unification, /function chooseInterest\(key\)/, 'Interest chips must be wired to the main feed filter');
 assert.match(unification, /function initInterestSearch\(\)/, 'Explore must support searching interests');
+assert.match(html, /id="bloom-my-mix"/, 'Explore must include the personal My Mix controls');
+assert.match(html, /data-bloom-pref="creative"/, 'My Mix must offer multi-interest selection');
+assert.match(unification, /function initMyMix\(\)/, 'My Mix preferences must be interactive');
+assert.match(unification, /bloom-interest-preferences-v1/, 'My Mix preferences must persist locally in the prototype');
+assert.match(enhancements, /bloom:interest-preferences-updated/, 'Feed filters must refresh when My Mix preferences change');
+assert.match(enhancements, /bloom-interest-mix-enabled-v1/, 'For You feed must use saved My Mix preferences when enabled');
+assert.match(html, /data-bloom-interest="books"/, 'The feed must include books and learning sample content');
+assert.match(html, /data-bloom-interest="tech"/, 'The feed must include tech and making sample content');
 assert.match(unificationCss, /\.bloom-mobile-dock/, 'Mobile navigation must have responsive styling');
 assert.match(upgrades, /category:'home'/, 'Marketplace must include home and living products');
 assert.match(upgrades, /category:'digital'/, 'Marketplace must include digital creator products');
