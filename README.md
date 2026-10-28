@@ -13,6 +13,8 @@ BLOOM is an all-in-one social garden for posts and short videos, Stories, commun
 - `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
 - `supabase/schema.sql` — core database tables, indexes, triggers, grants, and row-level security (RLS) policies.
 - `supabase/feed-engagement.sql` — additional RLS-protected tables and RPC for shared post likes/comment counts; run after the core schema.
+- `supabase/circle-interests.sql` — additive interest category for public circles.
+- `supabase/feedback-booth.sql` — RLS-protected idea/bug/complaint submissions with founder/moderator-only inbox access.
 - `supabase/newsletter-signups.sql` — legacy signup table migration, now locked down.
 - `supabase/newsletter-provider.sql` — private, RLS-protected subscriber table for double-opt-in email.
 - `supabase/launch-hardening.sql` — restricts direct execution of trigger-only functions, optimizes moderator RLS expressions, and adds foreign-key indexes.
