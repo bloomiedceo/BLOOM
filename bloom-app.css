@@ -256,3 +256,9 @@ body[data-theme=dark] .brand-emblem{background:linear-gradient(145deg,#3b3154,#5
  .interest-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+.sample-flag{position:absolute;bottom:12px;right:12px;border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.72);backdrop-filter:blur(8px);color:#776987;font-size:8px;font-weight:900;letter-spacing:.13em;padding:5px 8px;border-radius:999px}
+.muted-copy{font-size:10px;color:var(--muted);line-height:1.6}
+.post-viewer-overlay{z-index:130}
+.plant-grid button:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+@media(max-width:650px){.plant-actions{gap:1px}.plant-action{padding:6px 5px;font-size:9px}.plant-action .glyph{font-size:16px}}
