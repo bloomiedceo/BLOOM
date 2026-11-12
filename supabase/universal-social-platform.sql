@@ -300,6 +300,23 @@ $;
 revoke all on function public.bloom_is_circle_member(uuid) from public, anon;
 grant execute on function public.bloom_is_circle_member(uuid) to authenticated;
 
+create or replace function public.bloom_is_blocked(target_user_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $
+  select (select auth.uid()) is not null
+    and exists (
+      select 1 from public.blocked_users b
+      where (b.blocker_id = (select auth.uid()) and b.blocked_id = target_user_id)
+         or (b.blocker_id = target_user_id and b.blocked_id = (select auth.uid()))
+    );
+$;
+revoke all on function public.bloom_is_blocked(uuid) from public;
+grant execute on function public.bloom_is_blocked(uuid) to anon, authenticated;
+
 -- DM creation is a validated RPC: callers can only create a DM with themselves and
 -- a discoverable, non-blocked profile. Membership for both people is inserted atomically.
 create or replace function public.bloom_create_dm(target_user_id uuid)
@@ -356,11 +373,7 @@ create policy "profiles read public or own" on public.profiles
 for select to anon, authenticated
 using (
   (is_private = false or id = (select auth.uid()))
-  and not exists (
-    select 1 from public.blocked_users b
-    where (b.blocker_id = (select auth.uid()) and b.blocked_id = id)
-       or (b.blocker_id = id and b.blocked_id = (select auth.uid()))
-  )
+  and not public.bloom_is_blocked(id)
 );
 
 drop policy if exists "posts read public or own" on public.posts;
@@ -373,11 +386,7 @@ using (
     where p.id = posts.user_id
       and (p.is_private = false or p.id = (select auth.uid()))
   )
-  and not exists (
-    select 1 from public.blocked_users b
-    where (b.blocker_id = (select auth.uid()) and b.blocked_id = posts.user_id)
-       or (b.blocker_id = posts.user_id and b.blocked_id = (select auth.uid()))
-  )
+  and not public.bloom_is_blocked(posts.user_id)
 );
 
 drop policy if exists "posts create own" on public.posts;
@@ -406,11 +415,7 @@ using (
     join public.profiles pr on pr.id = p.user_id
     where p.id = post_comments.post_id and p.status = 'published'
       and (pr.is_private = false or pr.id = (select auth.uid()))
-      and not exists (
-        select 1 from public.blocked_users b
-        where (b.blocker_id = (select auth.uid()) and b.blocked_id = p.user_id)
-           or (b.blocker_id = p.user_id and b.blocked_id = (select auth.uid()))
-      )
+      and not public.bloom_is_blocked(p.user_id)
   )
 );
 drop policy if exists "post comments create own" on public.post_comments;
@@ -462,11 +467,7 @@ create policy "messages read members" on public.messages
 for select to authenticated
 using (
   public.bloom_is_circle_member(messages.circle_id)
-  and not exists (
-    select 1 from public.blocked_users b
-    where (b.blocker_id = (select auth.uid()) and b.blocked_id = messages.sender_id)
-       or (b.blocker_id = messages.sender_id and b.blocked_id = (select auth.uid()))
-  )
+  and not public.bloom_is_blocked(messages.sender_id)
 );
 drop policy if exists "messages create as member" on public.messages;
 create policy "messages create as member" on public.messages
@@ -477,10 +478,8 @@ with check (
   and exists (select 1 from public.circle_members cm where cm.circle_id = messages.circle_id and cm.user_id = (select auth.uid()))
   and not exists (
     select 1 from public.circle_members other
-    join public.blocked_users b
-      on (b.blocker_id = (select auth.uid()) and b.blocked_id = other.user_id)
-      or (b.blocker_id = other.user_id and b.blocked_id = (select auth.uid()))
     where other.circle_id = messages.circle_id and other.user_id <> (select auth.uid())
+      and public.bloom_is_blocked(other.user_id)
   )
 );
 drop policy if exists "messages delete own or moderator" on public.messages;
@@ -499,10 +498,8 @@ with check (
   user_id = (select auth.uid())
   and exists (select 1 from public.posts p where p.id = post_id and p.status = 'published')
   and not exists (
-    select 1 from public.blocked_users b
-    join public.posts p on p.id = post_reactions.post_id
-    where (b.blocker_id = (select auth.uid()) and b.blocked_id = p.user_id)
-       or (b.blocker_id = p.user_id and b.blocked_id = (select auth.uid()))
+    select 1 from public.posts p
+    where p.id = post_reactions.post_id and public.bloom_is_blocked(p.user_id)
   )
 );
 drop policy if exists "post reactions delete own" on public.post_reactions;
@@ -530,9 +527,7 @@ create policy "follows create own" on public.follows
 for insert to authenticated with check (
   follower_id = (select auth.uid())
   and exists (select 1 from public.profiles p where p.id = follows.user_id and p.is_private = false)
-  and not exists (select 1 from public.blocked_users b where
-    (b.blocker_id = (select auth.uid()) and b.blocked_id = follows.user_id)
-    or (b.blocker_id = follows.user_id and b.blocked_id = (select auth.uid())))
+  and not public.bloom_is_blocked(follows.user_id)
 );
 drop policy if exists "follows delete own" on public.follows;
 create policy "follows delete own" on public.follows
