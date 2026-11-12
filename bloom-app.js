@@ -776,9 +776,27 @@ async function openCircleChat(circle,isDm=false,dmUsername='Gardener') {
   openModal(circle.name||'Conversation',isDm?'A private conversation between gardeners.':'An Interest Circle for people who share this interest.',body=>{
     const status=document.createElement('div');status.className='inline-status';status.textContent='Loading conversation…';
     const messages=document.createElement('div');messages.className='chat-messages';messages.id='activeChatMessages';
-    const form=document.createElement('form');form.className='chat-compose';const input=document.createElement('input');input.placeholder='Write a message…';input.maxLength=1000;input.required=true;
-    const send=document.createElement('button');send.type='submit';send.textContent='↑';form.append(input,send);
+    const form=document.createElement('form');form.className='chat-compose';
+    const input=document.createElement('input');input.placeholder='Write a message…';input.maxLength=1000;
+    const imageInput=document.createElement('input');imageInput.type='file';imageInput.accept='image/jpeg,image/png,image/webp,image/avif';imageInput.className='file-input';imageInput.setAttribute('aria-label','Attach an image');
+    const attach=button('＋','button button-soft button-small',()=>imageInput.click());attach.setAttribute('aria-label','Attach image');
+    const send=document.createElement('button');send.type='submit';send.textContent='↑';form.append(input,attach,send,imageInput);
     body.append(status,messages,form);
+    imageInput.addEventListener('change',async()=>{
+      const file=imageInput.files?.[0];if(!file)return;
+      if(!file.type.startsWith('image/')||file.size>12*1024*1024){status.textContent='Choose an image under 12 MB.';imageInput.value='';return;}
+      attach.disabled=true;status.textContent='Uploading image…';
+      try{
+        const blob=await applyPhotoFilter(file,'original');const path=currentUser.id+'/chat/'+crypto.randomUUID()+'.webp';
+        const up=await client.storage.from('bloom-media').upload(path,blob,{contentType:'image/webp',upsert:false});
+        if(up.error)throw up.error;
+        const url=client.storage.from('bloom-media').getPublicUrl(path).data.publicUrl;
+        const saved=await client.from('messages').insert({circle_id:circle.id,sender_id:currentUser.id,message_type:'image',content:url,author_id:currentUser.id,body:url,group_id:null});
+        if(saved.error){await client.storage.from('bloom-media').remove([path]);throw saved.error;}
+        imageInput.value='';status.textContent='Image shared.';
+      }catch(error){status.textContent='Image could not be shared. Check your Storage policies.';}
+      attach.disabled=false;
+    });
     loadChatMessages(circle,messages,status);
     chatChannel=client.channel('bloom-chat-'+circle.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'circle_id=eq.'+circle.id},payload=>{
       if(activeChat?.id===circle.id) appendChatMessage(payload.new,messages);
