@@ -1,388 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0D0D0C">
-<title>BLOOM — your world, in full colour</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: { extend: {
-    colors: { ink:'#0D0D0C', moss:'#171A17', leaf:'#10B981', orchid:'#F472B6', muted:'#9A9D96' },
-    fontFamily: { sans:['Inter','ui-sans-serif','system-ui','sans-serif'] },
-    boxShadow: { bloom:'0 0 70px rgba(16,185,129,.14)' }
-  }}
-}
-</script>
-<style>
-:root{color-scheme:dark;--ink:#0D0D0C;--panel:rgba(25,28,25,.78);--line:rgba(255,255,255,.09);--leaf:#10B981;--pink:#F472B6}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--ink);color:#f5f5f1;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{overflow-x:hidden}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #F472B6;outline-offset:3px}
-.glass{background:rgba(20,23,21,.72);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
-.eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#a5aba2;font-weight:700}
-.petal{position:absolute;width:42px;height:72px;border-radius:100% 100% 18% 100%;transform-origin:50% 100%;background:linear-gradient(145deg,#10B981,#F472B6);opacity:.92;animation:petal-bloom 1.7s cubic-bezier(.2,.8,.2,1) both;filter:drop-shadow(0 0 12px rgba(16,185,129,.24))}
-@keyframes petal-bloom{0%{transform:rotate(var(--r)) translateY(0) scale(.05);opacity:0}75%{opacity:1}100%{transform:rotate(var(--r)) translateY(-24px) scale(1);opacity:.92}}
-@keyframes slowspin{to{transform:rotate(360deg)}}@keyframes fade-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.45)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
-@keyframes splash-out{to{opacity:0;visibility:hidden;pointer-events:none}}@keyframes particle{0%{transform:translate(0,0) scale(.3);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.4);opacity:0}}
-.splash{position:fixed;inset:0;z-index:1000;background:#0D0D0C;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s ease,visibility .8s ease}.splash.hide{opacity:0;visibility:hidden;pointer-events:none}
-.flower{width:128px;height:128px;position:relative;display:grid;place-items:center}.flower .petal{width:34px;height:58px;left:47px;top:6px}.flower .core{width:20px;height:20px;border-radius:50%;background:#f5f5f1;box-shadow:0 0 28px rgba(244,114,182,.65);z-index:2}
-.splash-word{opacity:0;animation:fade-up .7s ease 1.1s forwards}.splash-sub{opacity:0;animation:fade-up .7s ease 1.35s forwards}
-.app-shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:42px;max-width:1500px;margin:0 auto;padding:28px 32px;align-items:start}
-.desktop-panel{padding:8px 0 40px;min-width:0}.brand-mark{width:38px;height:38px;border-radius:14px;background:linear-gradient(140deg,#10B981,#F472B6);display:grid;place-items:center;color:#0D0D0C;font-size:22px;font-weight:900}
-.phone-wrap{position:sticky;top:20px;display:flex;justify-content:center}.phone{width:100%;max-width:430px;height:min(890px,calc(100dvh - 40px));min-height:640px;background:#101210;border:1px solid rgba(255,255,255,.18);border-radius:42px;padding:9px;box-shadow:0 28px 90px rgba(0,0,0,.6),0 0 0 7px rgba(255,255,255,.025);position:relative;overflow:hidden}
-.phone-inner{width:100%;height:100%;background:#0D0D0C;border-radius:33px;overflow:hidden;position:relative;isolation:isolate}.phone-status{height:28px;position:absolute;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:10px;font-weight:700;pointer-events:none;background:linear-gradient(#0D0D0C,transparent)}
-.mobile-content{position:absolute;inset:0;overflow:hidden}.tab-panel{position:absolute;inset:0;display:none;overflow:hidden}.tab-panel.active{display:block;animation:fade-up .25s ease}.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:76px;padding:8px 12px max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);z-index:25;border-top:1px solid rgba(255,255,255,.08);background:rgba(16,18,16,.82);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
-.nav-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:#8d938a;font-size:10px;font-weight:650;letter-spacing:.02em;border:0;background:transparent}.nav-tab .nav-icon{font-size:20px;line-height:1}.nav-tab.active{color:#fff}.nav-tab.active .nav-icon{color:#10B981;text-shadow:0 0 18px rgba(16,185,129,.45)}
-.feed{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;padding-bottom:76px}.feed::-webkit-scrollbar{display:none}.feed-post{height:calc(100% - 0px);min-height:560px;max-height:820px;position:relative;scroll-snap-align:start;overflow:hidden;background:#20271f}.feed-post img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.84}.feed-post:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28),transparent 28%,transparent 47%,rgba(0,0,0,.82) 100%);pointer-events:none}
-.post-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.post-art .orb{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e8c7d8,#8c5b8b 35%,#252a3c 70%);filter:blur(.3px);box-shadow:0 0 90px rgba(244,114,182,.25)}.post-art .stage{position:absolute;bottom:15%;width:120%;height:40%;background:linear-gradient(160deg,transparent,#10B981 48%,#172b22 49%);transform:rotate(-14deg);opacity:.8}.post-art .art-label{position:absolute;top:31%;font-size:clamp(44px,9vw,76px);font-weight:950;letter-spacing:-.09em;line-height:.85;text-align:center;text-shadow:0 8px 30px #000;color:#fff}.post-art .art-label span{display:block;color:#F9A8D4;font-size:.38em;letter-spacing:.25em;margin-top:14px}
-.post-art.concert{background:radial-gradient(ellipse at 50% 48%,#9c315f,#341c3b 40%,#111711 78%)}.post-art.concert:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(110deg,transparent 0 35px,rgba(16,185,129,.13) 36px 39px,transparent 40px 70px)}.post-art.concert .orb{width:170px;height:170px;background:radial-gradient(circle,#ffd8ee,#f472b6 34%,transparent 70%);filter:blur(3px)}
-.post-top{position:absolute;z-index:3;top:40px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center}.post-bottom{position:absolute;z-index:3;bottom:92px;left:18px;right:78px}.post-actions{position:absolute;z-index:4;right:14px;bottom:112px;display:flex;align-items:center;flex-direction:column;gap:19px}.action-button{border:0;background:transparent;color:white;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:700;text-shadow:0 2px 8px #000}.action-button .bubble{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(12px);font-size:20px}.action-button.liked .bubble{color:#F472B6;background:rgba(244,114,182,.22)}.follow-pill{border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:5px 9px;font-size:10px;background:rgba(0,0,0,.2)}
-.particle{position:absolute;z-index:8;pointer-events:none;font-size:20px;animation:particle .9s ease-out forwards}.post-hint{position:absolute;inset:0;z-index:7;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .2s;font-size:66px;text-shadow:0 0 32px rgba(244,114,182,.7)}.post-hint.show{opacity:1}
-.section-head{position:absolute;top:29px;left:0;right:0;z-index:5;padding:14px 20px 18px;background:linear-gradient(#0D0D0C 70%,transparent)}.chat-list{position:absolute;inset:0;overflow-y:auto;padding:94px 16px 90px}.chat-row{display:flex;align-items:center;gap:13px;padding:15px 3px;border-bottom:1px solid rgba(255,255,255,.07);width:100%;text-align:left;background:transparent;border-top:0;border-left:0;border-right:0;color:white}.avatar{width:51px;height:51px;border-radius:19px;display:grid;place-items:center;font-size:21px;background:linear-gradient(145deg,#254737,#18231b);border:1px solid rgba(255,255,255,.1);flex-shrink:0}.online-dot{width:9px;height:9px;background:#10B981;border:2px solid #0D0D0C;border-radius:50%;position:absolute;right:0;bottom:0;animation:pulse 1.8s infinite}.room-overlay{position:absolute;inset:0;z-index:35;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);display:none;align-items:flex-end}.room-overlay.open{display:flex}.room-sheet{height:84%;width:100%;border-radius:27px 27px 0 0;background:rgba(20,23,21,.97);border:1px solid rgba(255,255,255,.1);padding:18px 16px 16px;display:flex;flex-direction:column;animation:fade-up .25s ease}.messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:18px 0}.message{max-width:84%;padding:10px 13px;border-radius:16px;background:#252a25;font-size:12px;line-height:1.5;align-self:flex-start}.message.mine{background:#0b6f4d;align-self:flex-end;border-bottom-right-radius:5px}.send-row{display:flex;gap:8px}.send-row input{min-width:0;flex:1;background:#262a26;border:1px solid #3b413a;border-radius:13px;padding:12px;color:#fff;font-size:12px}.send-row button{width:44px;border-radius:13px;background:#10B981;color:#07110c;font-weight:900;border:0}
-.profile-scroll{position:absolute;inset:0;overflow-y:auto;padding:46px 0 90px;scrollbar-width:none}.profile-top{padding:12px 18px 18px}.profile-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}.grid-tile{aspect-ratio:1;border:0;padding:0;position:relative;overflow:hidden;background:#1c271f}.grid-tile img{width:100%;height:100%;object-fit:cover}.tile-art{width:100%;height:100%;display:grid;place-items:center;font-size:30px;background:linear-gradient(135deg,#203b2d,#55354b)}.tile-art:nth-child(3n){background:linear-gradient(135deg,#42283c,#263a31)}
-.metric{padding:11px 0;text-align:center}.metric strong{font-size:17px;display:block}.metric span{font-size:10px;color:#a0a59e}.grow-btn{border:0;border-radius:13px;background:#10B981;color:#08130d;font-size:12px;font-weight:800;padding:12px 14px;transition:transform .2s,background .2s}.grow-btn:active{transform:scale(.98)}.grow-btn.grown{background:#f472b6;color:#190d14}
-.platform-card{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border-radius:22px;overflow:hidden}.platform-art{height:154px;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 40% 30%,#2e6b4d,#16231b 54%,#111310)}.platform-art.pink{background:radial-gradient(ellipse at 65% 25%,#814a73,#29202a 52%,#111310)}.platform-art:before{content:"";position:absolute;width:118px;height:118px;border-radius:50%;border:1px solid rgba(255,255,255,.22);box-shadow:0 0 0 18px rgba(255,255,255,.035),0 0 0 38px rgba(255,255,255,.025)}.platform-art .product-symbol{font-size:48px;z-index:1;filter:drop-shadow(0 8px 18px rgba(0,0,0,.4))}.product-link{display:inline-flex;align-items:center;gap:7px;color:#d6fbe9;font-size:11px;font-weight:750;text-decoration:none}.product-link:hover{color:#F472B6}.check-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;color:#d3d6d0}.check-row input{accent-color:#10B981;width:15px;height:15px;margin-top:1px;flex-shrink:0}.check-row:has(input:checked) span{text-decoration:line-through;color:#777f75}.dashboard{transition:max-height .3s ease}.dashboard.collapsed .dashboard-body{display:none}.dashboard-toggle{border:0;background:transparent;color:#fff}.mobile-only-title{display:none}
-@media(max-width:900px){.app-shell{grid-template-columns:minmax(0,1fr) 410px;gap:24px;padding:22px}.phone{height:calc(100dvh - 44px)}}
-@media(max-width:700px){html,body{height:100%;overflow:hidden}.app-shell{display:block;padding:0;height:100dvh;min-height:0}.desktop-panel,.phone-wrap .device-caption{display:none!important}.phone-wrap{position:static;display:block;height:100dvh}.phone{width:100%;max-width:none;height:100dvh;min-height:0;border:0;border-radius:0;padding:0;box-shadow:none}.phone-inner{height:100%;border-radius:0}.phone-status{height:34px;padding-top:5px}.feed-post{height:100%;min-height:0;max-height:none}.post-top{top:45px}.post-bottom{bottom:100px}.post-actions{bottom:120px}.bottom-nav{height:76px;padding-bottom:max(12px,env(safe-area-inset-bottom))}.section-head{top:34px}.chat-list{padding-top:105px}.profile-scroll{padding-top:52px}.room-sheet{height:88%}.mobile-only-title{display:block}}
-@media(min-width:701px){.phone-status{padding-top:0}.phone-wrap:before{content:"";position:absolute;width:86px;height:22px;background:#0D0D0C;border-radius:0 0 14px 14px;top:9px;z-index:30;left:50%;transform:translateX(-50%);pointer-events:none}.feed-post{height:calc(100% - 76px)}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-</style>
-<link rel="stylesheet" href="bloom-prototype-live.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="description" content="BLOOM — Your world, in full colour. An interest garden for everyone.">
+  <title>BLOOM — Your world, in full colour</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bloom-app.css">
 </head>
 <body>
-<!-- Opening sequence -->
-<div id="splash" class="splash" aria-label="Welcome to BLOOM">
-  <div class="flower" aria-hidden="true">
-    <span class="petal" style="--r:0deg"></span><span class="petal" style="--r:45deg;animation-delay:.08s"></span>
-    <span class="petal" style="--r:90deg;animation-delay:.16s"></span><span class="petal" style="--r:135deg;animation-delay:.24s"></span>
-    <span class="petal" style="--r:180deg;animation-delay:.32s"></span><span class="petal" style="--r:225deg;animation-delay:.4s"></span>
-    <span class="petal" style="--r:270deg;animation-delay:.48s"></span><span class="petal" style="--r:315deg;animation-delay:.56s"></span><span class="core"></span>
+  <div id="splash" class="splash" aria-label="Welcome to BLOOM">
+    <div class="splash-emblem" aria-hidden="true"><span>✿</span><i></i></div>
+    <div class="splash-name">BLOOM</div>
+    <div class="splash-tagline">Your world, in full colour</div>
+    <div class="splash-pulse" aria-hidden="true"></div>
   </div>
-  <h1 class="splash-word mt-7 text-2xl font-semibold tracking-[.18em]">Welcome to <span class="text-emerald-400">BLOOM</span></h1>
-  <p class="splash-sub mt-3 text-xs tracking-[.24em] uppercase text-zinc-500">your world, in full colour</p>
-</div>
 
-<main class="app-shell">
-  <!-- Desktop community platform -->
-  <section class="desktop-panel">
-    <header class="flex items-center justify-between gap-5 mb-12">
-      <div class="flex items-center gap-3">
-        <div class="brand-mark">✿</div>
-        <div><div class="text-xl font-black tracking-[.18em]">BLOOM</div><div class="eyebrow mt-1">the interest garden</div></div>
+  <div id="app" class="app-shell" aria-hidden="true">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="BLOOM home" data-nav="feed">
+        <span class="brand-emblem" aria-hidden="true">✿</span>
+        <span><strong>BLOOM</strong><small>Your world, in full colour</small></span>
+      </a>
+      <div class="topbar-actions">
+        <span class="presence-dot" aria-hidden="true"></span>
+        <span class="community-label">An interest garden for everyone</span>
+        <button id="headerAuthButton" class="button button-soft button-small" type="button">Sign in</button>
       </div>
-      <div class="glass rounded-full px-4 py-2 text-xs text-zinc-300"><span class="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-2"></span>Community growing</div>
     </header>
 
-    <nav class="bloom-global-categories" aria-label="Browse by interest">
-      <a href="your-mix.html">✿ Your Mix</a><a href="index.html?interest=creative">🎨 Art & Design</a><a href="index.html?interest=gaming">🎮 Gaming</a><a href="index.html?interest=lifestyle">🌱 Life</a><a href="index.html?interest=food">🍜 Food</a><a href="index.html?interest=outdoors">🥾 Outdoors</a><a href="index.html?interest=music">🎧 Music</a><a href="index.html?interest=fandom">✿ K-pop & Fandom</a><a href="index.html?interest=books">📚 Books</a><a href="index.html?interest=tech">💡 Tech</a>
-    </nav>
-    <nav class="bloom-space-navigation" aria-label="BLOOM spaces"><a href="stanner-circles.html">Circles ↗</a><a href="album-display.html">Album Display ↗</a><a href="curated-finds.html">Curated Finds ↗</a><a href="feedback-booth.html">Feedback Booth ↗</a></nav>
-    <div class="mb-12">
-      <p class="eyebrow mb-4 of the internet, made to feel like yours</p>
-      <h1 class="text-5xl xl:text-6xl font-black leading-[.98] tracking-[-.065em] max-w-3xl">Your whole world.<br><span class="text-emerald-400">In full bloom.</span></h1>
-      <p class="text-zinc-400 mt-5 leading-7 max-w-xl text-sm">A premium social garden to share what you make, meet your people, and celebrate every interest that makes you feel like you.</p>
-      <div class="flex flex-wrap gap-3 mt-7"><a href="your-mix.html" class="grow-btn no-underline">Explore Your Mix ↗</a><a class="glass rounded-xl px-4 py-3 text-xs font-semibold no-underline" href="curated-finds.html?compose=1">Create an inspiration post ＋</a></div>
-    </div>
-
-    <section class="mb-12" id="album-edit">
-      <div class="flex items-end justify-between gap-4 mb-5"><div><p class="eyebrow mb-2">Curate your corner</p><h2 class="text-2xl font-bold tracking-tight">The Album Display Edit</h2><p class="text-sm text-zinc-500 mt-2">A dedicated shelf-styling and collection-inspiration space.</p></div><a class="bloom-inline-action" href="album-display.html">Enter platform ↗</a></div>
-      <div class="grid grid-cols-2 gap-4">
-        <a class="platform-card bloom-hub-card" href="album-display.html"><div class="platform-art"><span class="product-symbol">💿</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">shelf styling</span></div><div class="p-4"><p class="text-sm font-bold">The Album Display Edit</p><p class="text-xs text-zinc-500 mt-1">Shelf layouts, album collections, and tiny display details.</p><span class="product-link mt-4">Explore album displays ↗</span></div></a>
-        <a class="platform-card bloom-hub-card" href="album-display.html#shelf-inspo"><div class="platform-art pink"><span class="product-symbol">🎀</span><span class="absolute bottom-3 left-4 text-[9px] tracking-[.2em] uppercase text-white/70">collection care</span></div><div class="p-4"><p class="text-sm font-bold">Collection Corners</p><p class="text-xs text-zinc-500 mt-1">Photocard storage, colour themes, and personal shelves.</p><span class="product-link mt-4">See the inspiration ↗</span></div></a>
-      </div>
-    </section>
-
-    <section class="mb-12" id="finds">
-      <div class="flex items-end justify-between gap-4 mb-5"><div><p class="eyebrow mb-2">Little Things, Big Joy</p><h2 class="text-2xl font-bold tracking-tight">Curated Finds</h2><p class="text-sm text-zinc-500 mt-2">Inspiration posted by people with every kind of interest.</p></div><a class="grow-btn no-underline shrink-0" href="curated-finds.html?compose=1">＋ Create post</a></div>
-      <div class="grid grid-cols-3 gap-3">
-        <a class="glass rounded-2xl p-3 bloom-hub-card" href="curated-finds.html?category=creative"><div class="text-2xl mb-3">🎨</div><p class="text-xs font-bold">Art & Design</p><p class="text-[10px] text-zinc-500 mt-1">Creative finds</p></a>
-        <a class="glass rounded-2xl p-3 bloom-hub-card" href="curated-finds.html?category=gaming"><div class="text-2xl mb-3">🎮</div><p class="text-xs font-bold">Gaming</p><p class="text-[10px] text-zinc-500 mt-1">Setups & gear</p></a>
-        <a class="glass rounded-2xl p-3 bloom-hub-card" href="curated-finds.html?category=albums"><div class="text-2xl mb-3">💿</div><p class="text-xs font-bold">Albums & Displays</p><p class="text-[10px] text-zinc-500 mt-1">Collection inspo</p></a>
-      </div>
-      <div class="text-center mt-5"><a class="product-link" href="curated-finds.html">Explore every category ↗</a></div>
-    </section>
-
-    <section id="bloom-desktop-market" class="mb-12">
-      <div class="flex items-end justify-between mb-5"><div><p class="eyebrow mb-2">Made by the community</p><h2 class="text-2xl font-bold tracking-tight">The Garden Market</h2></div><button class="bloom-inline-action" id="bloomDesktopSellButton" type="button">＋ Sell</button></div>
-      <p class="text-xs text-zinc-500 mb-4 leading-5">Small finds, creator-made things, and fan treasures. Checkout is not enabled yet.</p>
-      <div id="bloom-desktop-market-grid" class="bloom-desktop-market-grid"><div class="bloom-empty-state">Live listings appear here when connected.</div></div>
-    </section>
-
-    <section class="mb-12" id="circles-preview">
-      <div class="flex items-end justify-between gap-4 mb-5"><div><p class="eyebrow mb-2">Find your people</p><h2 class="text-2xl font-bold tracking-tight">Stanner Circles</h2><p class="text-sm text-zinc-500 mt-2">One place for every circle, conversation, and shared obsession.</p></div><a class="bloom-inline-action" href="stanner-circles.html">Open platform ↗</a></div>
-      <div class="space-y-3">
-        <a class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left bloom-hub-card" href="stanner-circles.html"><div class="avatar">💬</div><div class="flex-1"><div class="text-sm font-bold">Stanner Lounge</div><div class="text-xs text-zinc-500 mt-1">The general chat for every thought.</div></div><span class="text-emerald-400">↗</span></a>
-        <a class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left bloom-hub-card" href="stanner-circles.html?interest=fandom"><div class="avatar">🎤</div><div class="flex-1"><div class="text-sm font-bold">Comeback Central</div><div class="text-xs text-zinc-500 mt-1">Theories, teasers, countdown energy.</div></div><span class="text-emerald-400">↗</span></a>
-        <a class="glass w-full rounded-2xl p-4 flex items-center gap-4 text-left bloom-hub-card" href="stanner-circles.html?interest=music"><div class="avatar">🌟</div><div class="flex-1"><div class="text-sm font-bold">Listening Parties</div><div class="text-xs text-zinc-500 mt-1">Listen together and meet your people.</div></div><span class="text-emerald-400">↗</span></a>
-      </div>
-    </section>
-
-    <section class="mb-10">
-      <div class="platform-card p-5">
-        <p class="eyebrow mb-2">Keep growing</p><h2 class="text-xl font-bold">Your BLOOM spaces</h2>
-        <div class="grid grid-cols-2 gap-3 mt-4">
-          <a class="glass rounded-xl p-3 bloom-hub-card" href="your-mix.html"><span class="text-lg">✿</span><strong class="block text-sm mt-2">Your Mix</strong><span class="text-xs text-zinc-500">A world tuned to you</span></a>
-          <a class="glass rounded-xl p-3 bloom-hub-card" href="feedback-booth.html"><span class="text-lg">💌</span><strong class="block text-sm mt-2">Feedback Booth</strong><span class="text-xs text-zinc-500">Ideas, bugs, and honest feedback</span></a>
-          <a class="glass rounded-xl p-3 bloom-hub-card" href="stanner-circles.html"><span class="text-lg">🫶</span><strong class="block text-sm mt-2">Circles</strong><span class="text-xs text-zinc-500">Join a conversation</span></a>
-          <a class="glass rounded-xl p-3 bloom-hub-card" href="curated-finds.html"><span class="text-lg">🔎</span><strong class="block text-sm mt-2">Curated Finds</strong><span class="text-xs text-zinc-500">Share and discover inspiration</span></a>
+    <main id="mainContent" class="main-content">
+      <section id="feed-view" class="view active" aria-labelledby="feedTitle">
+        <div class="view-heading">
+          <div><p class="eyebrow">A little inspiration for today</p><h1 id="feedTitle">Wild Feed</h1><p class="view-subtitle">Explore the things people love, make, and share.</p></div>
+          <button id="feedCreateButton" class="button button-primary" type="button"><span>＋</span> Create a Plant</button>
         </div>
-      </div>
-    </section>
-    <footer class="flex items-center justify-between gap-4 flex-wrap text-[10px] text-zinc-600 border-t border-white/10 pt-5"><span>© 2026 BLOOM COMMUNITY · Grow at your own pace ✿</span><span class="flex gap-4"><a class="product-link" href="feedback-booth.html">Feedback Booth</a><a class="product-link" href="curated-finds.html">Curated Finds</a></span></footer>
-  </section>
+        <div id="interestFilters" class="interest-filters" role="group" aria-label="Filter Wild Feed">
+          <button type="button" class="interest-pill active" data-category="mix" aria-pressed="true">✿ Your Mix</button>
+          <button type="button" class="interest-pill" data-category="all" aria-pressed="false">All</button>
+          <button type="button" class="interest-pill" data-category="art" aria-pressed="false">🎨 Art</button>
+          <button type="button" class="interest-pill" data-category="gaming" aria-pressed="false">🎮 Gaming</button>
+          <button type="button" class="interest-pill" data-category="life" aria-pressed="false">🌿 Life</button>
+          <button type="button" class="interest-pill" data-category="food" aria-pressed="false">🍜 Food</button>
+          <button type="button" class="interest-pill" data-category="outdoors" aria-pressed="false">🌱 Outdoors</button>
+          <button type="button" class="interest-pill" data-category="music" aria-pressed="false">🎧 Music</button>
+          <button type="button" class="interest-pill" data-category="books" aria-pressed="false">📚 Books</button>
+          <button type="button" class="interest-pill" data-category="tech" aria-pressed="false">💡 Tech</button>
+        </div>
+        <div id="feedStatus" class="inline-status" role="status" aria-live="polite">Growing your feed…</div>
+        <div id="feedList" class="feed-list" aria-label="Plants"></div>
+      </section>
 
-  <!-- Live responsive mobile application -->
-  <section class="phone-wrap" aria-label="BLOOM mobile application prototype">
-    <div class="phone">
-      <div class="phone-inner">
-        <div class="phone-status"><span>9:41</span><span>●●●　◖　▰</span></div>
-        <div class="mobile-content">
-          <!-- THE WILD FEED -->
-          <section class="tab-panel active" id="tab-feed" aria-label="The Wild Feed">
-            <div class="bloom-feed-tools">
-              <div class="bloom-feed-brand"><span class="bloom-mini-flower" aria-hidden="true">✿</span><span><strong>BLOOM</strong><small>Your world, growing</small></span></div>
-              <div class="bloom-feed-buttons">
-                <button id="bloomStoryButton" class="bloom-tool-button" type="button" aria-label="Add a story">＋ Story</button>
-                <button id="bloomCreateButton" class="bloom-tool-button bloom-tool-primary" type="button" aria-label="Create a post">＋</button>
-                <button id="bloomNotificationsButton" class="bloom-tool-button" type="button" aria-label="Notifications">♧</button>
-                <button id="bloomAccountButton" class="bloom-tool-button" type="button" aria-label="Account">☻</button>
-              </div>
-            </div>
-            <div class="bloom-feed-interest-filter" id="bloom-feed-interest-filter" aria-label="Filter your feed">
-              <button type="button" data-feed-interest="mix" class="is-active" aria-pressed="true">Your Mix</button>
-              <button type="button" data-feed-interest="all">All</button>
-              <button type="button" data-feed-interest="creative">Art</button>
-              <button type="button" data-feed-interest="gaming">Gaming</button>
-              <button type="button" data-feed-interest="lifestyle">Life</button>
-              <button type="button" data-feed-interest="food">Food</button>
-              <button type="button" data-feed-interest="outdoors">Outdoors</button>
-              <button type="button" data-feed-interest="music">Music</button>
-              <button type="button" data-feed-interest="fandom">K-pop</button>
-              <button type="button" data-feed-interest="books">Books</button>
-              <button type="button" data-feed-interest="tech">Tech</button>
-            </div>
-            <div id="bloom-story-rail" class="bloom-story-rail" aria-label="Stories"></div>
-            <div class="feed" id="feed">
-              <article class="feed-post" data-post="0" data-interest="music" data-likes="2481">
-                <div class="post-art"><div class="orb"></div><div class="stage"></div><div class="art-label">AFTER<br>GLOW<span>dance cover diary</span></div></div>
-                <div class="post-top"><div class="flex items-center gap-2"><div class="avatar !w-9 !h-9 !rounded-full text-base">🌱</div><div><div class="text-xs font-bold">miso.moves</div><div class="text-[10px] text-white/70">Original sound · Bloom mix</div></div></div><span class="glass rounded-full px-3 py-1.5 text-[10px] font-bold">Following</span></div>
-                <div class="post-actions">
-                  <button class="action-button like-action" aria-label="Give sunlight"><span class="bubble">☀</span><span class="like-count">2.4k</span></button>
-                  <button class="action-button comment-action" aria-label="View comments"><span class="bubble">♡</span><span>128</span></button>
-                  <button class="action-button share-action" aria-label="Share post"><span class="bubble">↗</span><span>Share</span></button>
-                </div>
-                <div class="post-bottom"><div class="text-sm font-bold mb-2">#DanceCover #AfterGlow 🌿</div><p class="text-xs leading-5 text-white/85">practised this chorus all week and it finally clicked ✨ who's learning this one?</p><div class="text-[10px] text-white/55 mt-3">♫ AFTER GLOW — BLOOM STUDIO</div></div><div class="post-hint">✿</div>
-              </article>
-              <article class="feed-post" data-post="1" data-interest="fandom" data-likes="6820">
-                <div class="post-art concert"><div class="orb"></div><div class="stage"></div><div class="art-label">FIRST<br>ROW<span>concert diary · 04</span></div></div>
-                <div class="post-top"><div class="flex items-center gap-2"><div class="avatar !w-9 !h-9 !rounded-full text-base">🎟️</div><div><div class="text-xs font-bold">junies.archive</div><div class="text-[10px] text-white/70">Kuala Lumpur · 2 days ago</div></div></div><span class="glass rounded-full px-3 py-1.5 text-[10px] font-bold">Follow</span></div>
-                <div class="post-actions"><button class="action-button like-action" aria-label="Give sunlight"><span class="bubble">☀</span><span class="like-count">6.8k</span></button><button class="action-button comment-action" aria-label="View comments"><span class="bubble">♡</span><span>392</span></button><button class="action-button share-action" aria-label="Share post"><span class="bubble">↗</span><span>Share</span></button></div>
-                <div class="post-bottom"><div class="text-sm font-bold mb-2">still not over this night 🥹</div><p class="text-xs leading-5 text-white/85">the lights, the fanchants, the people next to me who felt like friends already.</p><div class="text-[10px] text-white/55 mt-3">♫ crowd singing together</div></div><div class="post-hint">✿</div>
-              </article>
-              <article class="feed-post" data-post="2" data-interest="lifestyle" data-likes="957">
-                <div class="post-art" style="background:radial-gradient(ellipse at 45% 35%,#5d8159,#1e2e24 48%,#151617)"><div class="orb" style="background:radial-gradient(circle at 35% 30%,#d8efb8,#8ebd7a 34%,#254535 72%)"></div><div class="art-label">MY<br>BIAS<span>photocard ritual</span></div></div>
-                <div class="post-top"><div class="flex items-center gap-2"><div class="avatar !w-9 !h-9 !rounded-full text-base">🪴</div><div><div class="text-xs font-bold">tinyalbumclub</div><div class="text-[10px] text-white/70">desk setup · 8h ago</div></div></div><span class="glass rounded-full px-3 py-1.5 text-[10px] font-bold">Follow</span></div>
-                <div class="post-actions"><button class="action-button like-action" aria-label="Give sunlight"><span class="bubble">☀</span><span class="like-count">957</span></button><button class="action-button comment-action" aria-label="View comments"><span class="bubble">♡</span><span>46</span></button><button class="action-button share-action" aria-label="Share post"><span class="bubble">↗</span><span>Share</span></button></div>
-                <div class="post-bottom"><div class="text-sm font-bold mb-2">a tiny altar for my favourite human</div><p class="text-xs leading-5 text-white/85">new sleeves + little plant = perfect shelf day 🌱 show me your setups!</p><div class="text-[10px] text-white/55 mt-3">✿ GARDEN NOTE #203</div></div><div class="post-hint">✿</div>
-              </article>
-            </div>
-          </section>
-
-          <!-- THE GREENHOUSE -->
-          <section class="tab-panel" id="tab-chat" aria-label="The Greenhouse">
-            <div class="section-head"><div class="flex items-center justify-between"><div><p class="eyebrow mb-1">Your people, nearby</p><h2 class="text-2xl font-black tracking-tight">The Greenhouse</h2></div><button class="glass w-10 h-10 rounded-full text-lg" id="bloomCreateGroupButton" aria-label="Create a community">＋</button></div><a href="stanner-circles.html" class="glass rounded-2xl px-4 py-3 mt-4 flex items-center gap-3 text-xs text-zinc-400 no-underline" aria-label="Search and explore all circles"><span>⌕</span><span>Search and explore every circle</span><span class="ml-auto text-[10px] text-emerald-300">OPEN ↗</span></a></div>
-            <div class="chat-list">
-              <div class="eyebrow mb-2 mt-1">Your circles · 3 active</div>
-              <div id="bloom-live-status" class="bloom-inline-status" role="status" aria-live="polite">Preview mode · community demo rooms are shown below.</div>
-              <div id="bloom-live-groups" class="bloom-live-groups"></div>
-              <div class="bloom-notification-link"><button type="button" id="bloomChatNotificationsButton">✧ View notifications</button></div>
-              <button class="chat-row" onclick="openRoom('Stanner Lounge')"><div class="relative"><div class="avatar">💬</div><span class="online-dot"></span></div><div class="flex-1 min-w-0"><div class="flex justify-between gap-2"><span class="text-sm font-bold">Stanner Lounge</span><span class="text-[10px] text-zinc-500">now</span></div><p class="text-xs text-zinc-400 mt-1 truncate">mira: who else is replaying the teaser?</p><div class="flex gap-2 mt-2"><span class="text-[9px] rounded-full bg-emerald-400/10 text-emerald-300 px-2 py-1">general</span><span class="text-[9px] text-zinc-600">18 online</span></div></div></button>
-              <button class="chat-row" onclick="openRoom('Comeback Central')"><div class="relative"><div class="avatar" style="background:linear-gradient(145deg,#593d58,#282032)">🎤</div><span class="online-dot"></span></div><div class="flex-1 min-w-0"><div class="flex justify-between gap-2"><span class="text-sm font-bold">Comeback Central</span><span class="text-[10px] text-zinc-500">2m</span></div><p class="text-xs text-zinc-400 mt-1 truncate">hana: theory thread is getting wild 👀</p><div class="flex gap-2 mt-2"><span class="text-[9px] rounded-full bg-pink-400/10 text-pink-200 px-2 py-1">comeback</span><span class="text-[9px] text-zinc-600">42 online</span></div></div></button>
-              <button class="chat-row" onclick="openRoom('Idol Updates')"><div class="relative"><div class="avatar" style="background:linear-gradient(145deg,#5b5130,#292b1b)">🌟</div><span class="online-dot"></span></div><div class="flex-1 min-w-0"><div class="flex justify-between gap-2"><span class="text-sm font-bold">Idol Updates</span><span class="text-[10px] text-zinc-500">12m</span></div><p class="text-xs text-zinc-400 mt-1 truncate">new schedule drop — check the pinned note</p><div class="flex gap-2 mt-2"><span class="text-[9px] rounded-full bg-amber-400/10 text-amber-100 px-2 py-1">updates</span><span class="text-[9px] text-zinc-600">9 online</span></div></div></button>
-              <div class="glass rounded-2xl p-4 mt-6"><p class="text-sm font-bold">A little reminder 🌱</p><p class="text-xs text-zinc-400 leading-5 mt-2">Keep it kind, credit fan creators, and let everyone enjoy their own way of being a fan.</p></div>
-            </div>
-          </section>
-
-          <!-- THE GARDEN GRID -->
-          <section class="tab-panel" id="tab-profile" aria-label="The Garden Grid">
-            <div class="profile-scroll">
-              <div class="profile-top">
-                <div class="flex items-center justify-between mb-5"><div><p class="eyebrow">Your little corner</p><h2 class="text-2xl font-black mt-1">the.gardeners</h2></div><button class="text-xl text-zinc-300" id="bloomProfileSettingsButton" aria-label="Account and profile settings">☷</button></div>
-                <div class="flex items-center gap-4">
-                  <div class="relative w-[78px] h-[78px] rounded-[28px] bg-gradient-to-br from-emerald-400 to-pink-400 p-[2px]"><div class="w-full h-full rounded-[26px] bg-[#151915] grid place-items-center text-3xl">🌿</div></div>
-                  <div class="grid grid-cols-3 gap-2 flex-1">
-                    <div class="metric"><strong>36</strong><span>Plants</span></div><div class="metric"><strong id="profileSunlight">12.8k</strong><span>Sunlight</span></div><div class="metric"><strong id="followerCount">864</strong><span>Gardeners</span></div>
-                  </div>
-                </div>
-                <p class="text-xs font-bold mt-4">soft heart, loud fanchants ✿</p><p class="text-xs text-zinc-400 mt-1 leading-5">collecting albums & little moments.<br>multi-stan garden · KL 🌱</p>
-                <div class="flex gap-2 mt-4"><button id="growBtn" class="grow-btn flex-1" onclick="toggleGrow()">＋ Grow Together</button><button class="glass rounded-xl px-4 text-xs font-bold" onclick="showToast('Profile link copied in this demo ✿')">Share ↗</button></div>
-              </div>
-              <div class="border-y border-white/10 px-4 py-3 flex items-center justify-between"><span class="text-[10px] tracking-[.18em] uppercase font-bold">Your plants</span><span class="text-xs text-zinc-500">▦ Grid view</span></div>
-              <div class="profile-grid">
-                <button class="grid-tile" onclick="showToast('Plant opened: album shelf ✿')"><div class="tile-art">💿</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: concert check-in ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#7a3157,#24283a)">🎟️</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: photocard setup ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#263d2c,#6b8c63)">📸</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: listening party ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#323c59,#4b2843)">🎧</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: fan art ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#6b4a60,#232b24)">🎨</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: lightstick day ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#476d5b,#33283d)">✨</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: bias corner ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#5d6142,#242b27)">🪴</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: album haul ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#7c4d6d,#2a3429)">🎁</div></button>
-                <button class="grid-tile" onclick="showToast('Plant opened: fandom friends ✿')"><div class="tile-art" style="background:linear-gradient(135deg,#355e5c,#33263b)">🫶</div></button>
-              </div>
-              <section class="bloom-profile-additions">
-                <div class="bloom-profile-section-head"><div><p class="eyebrow">Choose your world</p><h3>My Mix</h3></div><div class="flex items-center gap-3"><a class="bloom-inline-action" href="your-mix.html">Open Mix ↗</a><button id="bloomEditInterestsButton" type="button" class="bloom-inline-action">Edit</button></div></div>
-                <div id="bloom-profile-interest-chips" class="bloom-profile-interest-chips"><span class="bloom-inline-status">Your saved interests will bloom here.</span></div>
-                <div class="flex flex-wrap gap-3 px-4 py-3"><a class="bloom-inline-action" href="album-display.html">💿 Album Display ↗</a><a class="bloom-inline-action" href="curated-finds.html">🔎 Curated Finds ↗</a><a class="bloom-inline-action" href="feedback-booth.html">💌 Feedback Booth ↗</a></div>
-                <div class="bloom-profile-section-head bloom-market-head"><div><p class="eyebrow">Community finds</p><h3>The Garden Market</h3></div><button id="bloomSellButton" type="button" class="bloom-inline-action">＋ Sell</button></div>
-                <p class="bloom-market-note">Discover community listings. Requests are not payments — checkout is a future step.</p>
-                <div id="bloom-market-grid" class="bloom-market-grid"><div class="bloom-empty-state">Connect to BLOOM to browse listings.</div></div>
-                <div id="bloom-market-inbox" class="bloom-market-inbox"></div>
-                <div class="bloom-profile-section-head"><div><p class="eyebrow">Need a listening ear?</p><h3>Feedback Booth</h3></div><a class="bloom-inline-action" href="feedback-booth.html">Share feedback ↗</a></div>
-                <p class="bloom-market-note">Tell us what feels good, what feels confusing, or what BLOOM should grow next.</p>
-              </section>
-            </div>
-          </section>
-
-          <!-- Room preview sheet -->
-          <div class="room-overlay" id="roomOverlay" role="dialog" aria-modal="true" aria-labelledby="roomTitle">
-            <div class="room-sheet">
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3"><div class="avatar" id="roomAvatar">💬</div><div><h3 id="roomTitle" class="font-bold text-sm">Stanner Lounge</h3><p class="text-[10px] text-emerald-300 mt-1"><span class="inline-block w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1"></span><span id="roomOnline">18</span> gardeners online</p></div></div>
-                <button class="glass rounded-full w-9 h-9" onclick="closeRoom()" aria-label="Close chat">✕</button>
-              </div>
-              <div class="glass rounded-xl p-3 mt-4 text-[10px] text-zinc-400">✿ Be kind. Keep spoilers tagged. Let the garden grow.</div>
-              <div class="messages" id="messages" aria-live="polite"></div>
-              <form class="send-row" id="messageForm"><input id="messageInput" autocomplete="off" placeholder="Send a little note…" aria-label="Message"><button type="submit" aria-label="Send message">↑</button></form>
-            </div>
+      <section id="greenhouse-view" class="view" aria-labelledby="greenhouseTitle">
+        <div class="view-heading">
+          <div><p class="eyebrow">Find your people</p><h1 id="greenhouseTitle">The Greenhouse</h1><p class="view-subtitle">Public Interest Circles and private conversations.</p></div>
+          <button id="greenhouseAuthButton" class="button button-primary" type="button">＋ New DM</button>
+        </div>
+        <div class="greenhouse-toolbar">
+          <div class="segmented-control" role="tablist" aria-label="Greenhouse conversations">
+            <button type="button" role="tab" aria-selected="true" class="selected" data-greenhouse-tab="circles">Interest Circles</button>
+            <button type="button" role="tab" aria-selected="false" data-greenhouse-tab="dms">Direct Messages</button>
           </div>
-          <div id="toast" class="absolute z-50 bottom-[88px] left-1/2 -translate-x-1/2 glass rounded-full px-4 py-3 text-xs font-semibold whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200">Lovely ✿</div>
-          <nav class="bottom-nav" aria-label="Main navigation">
-            <button class="nav-tab active" data-tab="feed"><span class="nav-icon">✿</span><span>Wild Feed</span></button>
-            <button class="nav-tab" data-tab="chat"><span class="nav-icon">☘</span><span>Greenhouse</span></button>
-            <button class="nav-tab" data-tab="profile"><span class="nav-icon">▦</span><span>Garden Grid</span></button>
-          </nav>
+          <input id="greenhouseSearch" class="search-input" type="search" placeholder="Search circles or gardeners…" aria-label="Search circles or gardeners">
         </div>
-      </div>
-    </div>
-    <div class="device-caption absolute -bottom-8 text-[10px] tracking-[.2em] uppercase text-zinc-600">Live mobile prototype · interactive demo</div>
-  </section>
-</main>
+        <div id="greenhouseStatus" class="inline-status" role="status" aria-live="polite"></div>
+        <div id="circlesPanel" class="greenhouse-panel">
+          <div class="section-line"><h2>Open circles</h2><span class="soft-count">Find your people ✿</span></div>
+          <div id="circleList" class="circle-grid"></div>
+        </div>
+        <div id="dmsPanel" class="greenhouse-panel" hidden>
+          <div class="section-line"><h2>Your conversations</h2><button id="newDmButton" class="text-button" type="button">＋ Start a DM</button></div>
+          <div id="dmList" class="dm-list"></div>
+        </div>
+      </section>
 
-<script>
-(() => {
-  const splash = document.getElementById('splash');
-  window.setTimeout(() => splash.classList.add('hide'), 2500);
+      <section id="notifications-view" class="view" aria-labelledby="notificationsTitle">
+        <div class="view-heading"><div><p class="eyebrow">Little signals from your garden</p><h1 id="notificationsTitle">Notifications</h1><p class="view-subtitle">Sunlight, comments, and shares from your people.</p></div><button id="markAllReadButton" class="button button-soft" type="button">Mark all read</button></div>
+        <div id="notificationsStatus" class="inline-status" role="status" aria-live="polite"></div>
+        <div id="notificationList" class="notification-list"></div>
+      </section>
 
-  // Navigation between the three mobile spaces.
-  const tabs = [...document.querySelectorAll('.nav-tab')];
-  const panels = [...document.querySelectorAll('.tab-panel')];
-  tabs.forEach(tab => tab.addEventListener('click', () => {
-    tabs.forEach(t => t.classList.toggle('active', t === tab));
-    panels.forEach(p => p.classList.toggle('active', p.id === `tab-${tab.dataset.tab}`));
-  }));
+      <section id="profile-view" class="view" aria-labelledby="profileTitle">
+        <div class="view-heading">
+          <div><p class="eyebrow">Your little corner</p><h1 id="profileTitle">Garden Grid</h1><p class="view-subtitle">A home for the things you’ve planted.</p></div>
+          <button id="settingsButton" class="icon-button" type="button" aria-label="Settings">⚙</button>
+        </div>
+        <div id="profileStatus" class="inline-status" role="status" aria-live="polite">Sign in to grow your garden.</div>
+        <div id="profileCard" class="profile-card">
+          <div class="profile-identity">
+            <div id="profileAvatar" class="profile-avatar">✿</div>
+            <div class="profile-names"><strong id="profileUsername">@yourgarden</strong><p id="profileBio">Your little corner of the internet.</p></div>
+            <button id="editProfileButton" class="button button-soft button-small" type="button">Edit profile</button>
+          </div>
+          <div class="profile-stats">
+            <div><strong id="profilePlants">0</strong><span>Plants</span></div>
+            <div><strong id="profileSunlight">0</strong><span>Sunlight</span></div>
+            <div><strong id="profileGardeners">0</strong><span>Gardeners</span></div>
+          </div>
+          <div class="profile-interest-row"><span class="eyebrow">YOUR INTERESTS</span><div id="profileInterests" class="profile-interests"><span class="muted-copy">Your interests will grow here.</span></div></div>
+        </div>
+        <div class="section-line profile-plants-heading"><h2>Your Plants</h2><button id="profileCreateButton" class="text-button" type="button">＋ Create</button></div>
+        <div id="profilePlantGrid" class="plant-grid"></div>
+        <div class="market-teaser">
+          <span class="teaser-flower">✿</span>
+          <div><strong>Garden Market</strong><p>Coming Soon… A little space for lovely community finds.</p></div>
+          <span class="coming-soon">COMING SOON</span>
+        </div>
+      </section>
+    </main>
 
-  // Founder dashboard is intentionally on its separate, role-gated page.
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="nav-item active" type="button" data-nav="feed" aria-current="page"><span class="nav-glyph">⌂</span><span>Wild Feed</span></button>
+      <button class="nav-item" type="button" data-nav="greenhouse"><span class="nav-glyph">♧</span><span>Greenhouse</span></button>
+      <button id="createNavButton" class="create-nav-button" type="button" aria-label="Create a Plant"><span>＋</span></button>
+      <button class="nav-item" type="button" data-nav="notifications"><span class="nav-glyph">♡</span><span>Notifications</span><i id="notificationDot" class="notification-dot" hidden></i></button>
+      <button class="nav-item" type="button" data-nav="profile"><span class="nav-glyph">▦</span><span>Garden Grid</span></button>
+    </nav>
+  </div>
 
-  // Feed actions and double-tap flower burst.
-  const lastTap = new WeakMap();
-  function burst(post, x, y) {
-    const bounds = post.getBoundingClientRect();
-    const hint = post.querySelector('.post-hint');
-    hint.style.left = `${Math.max(0, Math.min(bounds.width - 70, x - bounds.left - 35))}px`;
-    hint.style.top = `${Math.max(0, Math.min(bounds.height - 70, y - bounds.top - 35))}px`;
-    hint.classList.add('show');
-    window.setTimeout(() => hint.classList.remove('show'), 500);
-    for (let i = 0; i < 12; i++) {
-      const p = document.createElement('span');
-      p.className = 'particle';
-      p.textContent = ['✿','✦','❀','♥'][i % 4];
-      p.style.left = `${x - bounds.left}px`; p.style.top = `${y - bounds.top}px`;
-      const angle = Math.PI * 2 * i / 12, distance = 55 + Math.random() * 65;
-      p.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
-      p.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
-      p.style.color = i % 2 ? '#F472B6' : '#10B981';
-      post.appendChild(p); window.setTimeout(() => p.remove(), 950);
-    }
-    const like = post.querySelector('.like-action');
-    if (!like.classList.contains('liked')) toggleLike(like);
-  }
-  function toggleLike(button) {
-    button.classList.toggle('liked');
-    const post = button.closest('.feed-post');
-    const raw = Number(post.dataset.likes || 0) + (button.classList.contains('liked') ? 1 : -1);
-    post.dataset.likes = raw;
-    button.querySelector('.like-count').textContent = raw >= 1000 ? `${(raw/1000).toFixed(1).replace('.0','')}k` : String(raw);
-    showToast(button.classList.contains('liked') ? 'A little sunlight sent ☀' : 'Sunlight taken back');
-  }
-  document.querySelectorAll('.feed-post').forEach(post => {
-    post.addEventListener('click', e => {
-      if (e.target.closest('button')) return;
-      const now = Date.now(), prev = lastTap.get(post) || 0;
-      if (now - prev < 330) burst(post, e.clientX, e.clientY);
-      lastTap.set(post, now);
-    });
-    post.querySelector('.like-action').addEventListener('click', e => { e.stopPropagation(); toggleLike(e.currentTarget); });
-    post.querySelector('.comment-action').addEventListener('click', e => { e.stopPropagation(); openRoom('Stanner Lounge'); });
-    post.querySelector('.share-action').addEventListener('click', e => {
-      e.stopPropagation();
-      if (navigator.share) navigator.share({title:'BLOOM community', text:'Found this little corner of the fandom garden ✿'}).catch(()=>{});
-      else showToast('Share this little moment ✿');
-    });
-  });
+  <div id="modalRoot" class="modal-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  // Chat preview rooms with working local demo messaging.
-  const roomOverlay = document.getElementById('roomOverlay');
-  const roomData = {
-    'Stanner Lounge': {emoji:'💬',online:18, messages:[['mira','who else is replaying the teaser?'],['you','it has been on loop all afternoon 🌱'],['sol','the tiny detail at 0:14!!']]},
-    'Comeback Central': {emoji:'🎤',online:42, messages:[['hana','theory thread is getting wild 👀'],['jules','I am not ready for the concept photos'],['you','manifesting a beautiful bridge ✨']]},
-    'Idol Updates': {emoji:'🌟',online:9, messages:[['ari','new schedule drop — check the pinned note'],['min','thank you for keeping everything in one place!'],['you','gardeners are the best 🌿']]}
-  };
-  let currentRoom = 'Stanner Lounge';
-  function renderMessages(name) {
-    const list = document.getElementById('messages'); list.innerHTML = '';
-    (roomData[name] || roomData['Stanner Lounge']).messages.forEach(([author, body]) => {
-      const el = document.createElement('div'); el.className = `message${author === 'you' ? ' mine' : ''}`;
-      if (author !== 'you') { const who = document.createElement('div'); who.className = 'text-[9px] text-emerald-300 mb-1'; who.textContent = author; el.appendChild(who); }
-      const content = document.createElement('div'); content.textContent = body; el.appendChild(content); list.appendChild(el);
-    });
-    list.scrollTop = list.scrollHeight;
-  }
-  window.openRoom = function(name) {
-    currentRoom = roomData[name] ? name : 'Stanner Lounge';
-    document.getElementById('roomTitle').textContent = currentRoom;
-    document.getElementById('roomAvatar').textContent = roomData[currentRoom].emoji;
-    document.getElementById('roomOnline').textContent = roomData[currentRoom].online;
-    renderMessages(currentRoom); roomOverlay.classList.add('open');
-    setTimeout(() => document.getElementById('messageInput').focus({preventScroll:true}), 180);
-  };
-  window.closeRoom = () => roomOverlay.classList.remove('open');
-  roomOverlay.addEventListener('click', e => { if (e.target === roomOverlay) closeRoom(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRoom(); });
-  document.getElementById('messageForm').addEventListener('submit', e => {
-    e.preventDefault(); const input = document.getElementById('messageInput'), value = input.value.trim();
-    if (!value) return;
-    roomData[currentRoom].messages.push(['you', value]); renderMessages(currentRoom); input.value = '';
-  });
-
-  // Profile follow interaction.
-  let grown = false;
-  window.toggleGrow = function() {
-    grown = !grown;
-    document.getElementById('growBtn').classList.toggle('grown', grown);
-    document.getElementById('growBtn').textContent = grown ? '✓ Growing Together' : '＋ Grow Together';
-    document.getElementById('followerCount').textContent = grown ? '865' : '864';
-    showToast(grown ? 'You’re growing together 🌱' : 'You unfollowed this garden');
-  };
-
-  let toastTimer;
-  window.showToast = function(message) {
-    const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.remove('opacity-0');
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.add('opacity-0'), 1800);
-  };
-})();
-</script>
-<script src="bloom-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="bloom-prototype-app.js"></script>
+  <script src="bloom-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="" crossorigin="anonymous"></script>
+  <script src="bloom-app.js"></script>
 </body>
 </html>
