@@ -298,7 +298,7 @@ as $
   );
 $;
 revoke all on function public.bloom_is_circle_member(uuid) from public, anon;
-grant execute on function public.bloom_is_circle_member(uuid) to authenticated;
+grant execute on function public.bloom_is_circle_member(uuid) to anon, authenticated;
 
 create or replace function public.bloom_is_blocked(target_user_id uuid)
 returns boolean
@@ -424,7 +424,13 @@ for insert to authenticated
 with check (
   user_id = (select auth.uid()) and author_id = (select auth.uid())
   and status = 'published'
-  and exists (select 1 from public.posts p where p.id = post_comments.post_id and p.status = 'published')
+  and exists (
+    select 1 from public.posts p
+    join public.profiles pr on pr.id = p.user_id
+    where p.id = post_comments.post_id and p.status = 'published'
+      and (pr.is_private = false or p.user_id = (select auth.uid()))
+      and not public.bloom_is_blocked(p.user_id)
+  )
 );
 drop policy if exists "post comments delete own or moderator" on public.post_comments;
 create policy "post comments delete own or moderator" on public.post_comments
@@ -475,7 +481,7 @@ for insert to authenticated
 with check (
   sender_id = (select auth.uid()) and author_id = (select auth.uid())
   and circle_id is not null and content is not null and body = content
-  and exists (select 1 from public.circle_members cm where cm.circle_id = messages.circle_id and cm.user_id = (select auth.uid()))
+  and public.bloom_is_circle_member(messages.circle_id)
   and not exists (
     select 1 from public.circle_members other
     where other.circle_id = messages.circle_id and other.user_id <> (select auth.uid())
@@ -556,8 +562,11 @@ for update to authenticated using (user_id = (select auth.uid())) with check (us
 
 -- 10) RLS and SQL grants.
 grant select on public.profiles, public.posts, public.post_comments, public.circles, public.sample_plants to anon, authenticated;
-grant select, update on public.profiles to authenticated;
-grant insert, update, delete on public.posts to authenticated;
+revoke update on public.profiles from authenticated;
+grant update(username, bio, avatar_url, interests, is_private) on public.profiles to authenticated;
+grant insert, delete on public.posts to authenticated;
+revoke update on public.posts from authenticated;
+grant update(title, body, fandom, link, status, media_url, media_type, image_url, filter_applied, caption, category) on public.posts to authenticated;
 grant insert, select, delete on public.post_comments to authenticated;
 grant select, insert, update, delete on public.circles to authenticated;
 grant select, insert, delete on public.circle_members to authenticated;
