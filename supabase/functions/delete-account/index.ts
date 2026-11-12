@@ -27,7 +27,7 @@ async function listUserObjects(admin: ReturnType<typeof createClient>, bucket: s
     });
     if (error) {
       const message = String(error.message || "").toLowerCase();
-      if (message.includes("bucket not found") || message.includes("not found")) continue;
+      if (message.includes("bucket not found") || message.includes("not found")) return [];
       throw new Error("Unable to inspect account media");
     }
     const rows = data ?? [];
