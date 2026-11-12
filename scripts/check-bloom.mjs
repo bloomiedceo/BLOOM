@@ -78,6 +78,7 @@ assert.match(schema, /alter table public\.profiles enable row level security/i, 
 assert.match(schema, /alter table public\.posts enable row level security/i, 'Plants must use RLS');
 assert.match(schema, /alter table public\.messages enable row level security/i, 'Messages must use RLS');
 assert.match(schema, /bloom_create_dm/, 'DM creation must be validated and server-side');
+assert.match(schema, /user_id = \(select auth\.uid\(\)\)[\s\S]*?c\.is_dm = false/, 'Users may only join public circles directly; DM members are added by the validated RPC');
 assert.match(schema, /revoke update on public\.profiles from authenticated/i, 'Server-maintained profile counters must not be user-editable');
 assert.match(schema, /grant update\(username, bio, avatar_url, interests, is_private\)/i, 'Profile writes must be column-restricted');
 assert.match(schema, /grant update\(title, body, fandom, link, status, media_url, media_type, image_url, filter_applied, caption, category\)/i, 'Post writes must not expose counters to clients');
