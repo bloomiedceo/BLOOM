@@ -1,126 +1,86 @@
-# BLOOM — your world, in full colour
+# BLOOM — Your world, in full colour
 
-BLOOM is an all-in-one social garden for posts and short videos, Stories, community chat, interest discovery, profiles, and community marketplace finds. The founder-uploaded premium prototype is the design source of truth: dark ink surfaces, emerald and orchid accents, the editorial desktop panel, and the phone-style Wild Feed / Greenhouse / Garden Grid are retained while live features are added inside that experience. K-pop remains one interest among many.
+BLOOM is a universal social garden for people to share what they love, find people with similar interests, and grow a personal Garden Grid. The default visual system is white, soft cream, nude, violet, and pink. The public app has four destinations—Wild Feed, The Greenhouse, Notifications, and Garden Grid—plus a prominent central Create button.
 
-## Main files
+## Current app files
 
-- `index.html` — GitHub Pages entry point, based directly on the premium prototype uploaded by the founder.
-- `bloom-prototype-live.css` / `bloom-prototype-app.js` — premium-styled auth, profile interests, shared feed, comments/likes, Stories, notifications, community chat, reporting, and marketplace integration inside the prototype UI. The feed interest filter uses querySelectorAll correctly, and public circles save an interest category.
-- `bloom-enhancements.css` / `bloom-enhancements.js` — legacy standalone enhancements retained for reference; they are not loaded into the premium prototype because their selectors target the previous layout.
-- `bloom-social-unification.css` / `bloom-social-unification.js` — previous all-interest layout iteration retained in Git history and source files, not loaded into the premium prototype.
-- `bloom-config.js` — public Supabase Project URL and publishable/anon key placeholders. It must never contain a service-role key.
-- `bloom-backend.js` — optional Supabase Auth, shared posts, public groups, real-time group messages, shared post likes/comments, reporting, and moderator queue UI.
-- `bloom-launch-upgrades.js` — vertical scrollable feed layout, fandom search/filter, preview-only local likes/comments, sharing controls, and marketplace links.
-- `supabase/schema.sql` — core database tables, indexes, triggers, grants, and row-level security (RLS) policies.
-- `supabase/feed-engagement.sql` — additional RLS-protected tables and RPC for shared post likes/comment counts; run after the core schema.
-- `supabase/circle-interests.sql` — additive interest category for public circles.
-- `supabase/feedback-booth.sql` — RLS-protected idea/bug/complaint submissions with founder/moderator-only inbox access.
-- `supabase/newsletter-signups.sql` — legacy signup table migration, now locked down.
-- `supabase/newsletter-provider.sql` — private, RLS-protected subscriber table for double-opt-in email.
-- `supabase/launch-hardening.sql` — restricts direct execution of trigger-only functions, optimizes moderator RLS expressions, and adds foreign-key indexes.
-- `supabase/functions/delete-account/index.ts` — server-side account deletion function; deployed with JWT verification enabled.
-- `supabase/functions/newsletter-subscribe/index.ts` — Resend-backed confirmation/unsubscribe endpoint.
-- `bloom_kpop_community_launch_preview (1).html` and `bloom_ceo_dashboard.html` — original files retained.
+- `index.html` — responsive, mobile-first application shell and five-position bottom navigation.
+- `bloom-app.css` — default cream/nude light theme, optional dark theme, responsive layouts, and modals.
+- `bloom-app.js` — guest feed, Supabase Auth, onboarding, photo studio and filters, Plants, reactions, comments, reporting, blocking, circles, DMs, realtime messages, notifications, profile settings, and feedback.
+- `bloom-config.js` — public Supabase project URL and publishable key. It must never contain a service-role or secret key.
+- `supabase/universal-social-platform.sql` — additive migration for the universal BLOOM schema, RLS, storage bucket, DM RPC, counters, notification triggers, and starter data.
+- `supabase/functions/delete-account/index.ts` — server-side account deletion with cleanup of user files in the BLOOM media buckets. Deploy after reviewing the function and configuring its server-side secrets.
+- `scripts/check-bloom.mjs` — static JavaScript, UX wiring, schema, and security regression checks.
 
-## Design direction and current feature stage
+## Universal BLOOM terminology
 
-The premium prototype is the active design foundation, not a reference to be replaced. The black/ink canvas, emerald-and-orchid bloom identity, splash animation, desktop editorial panel, and phone-style three-tab interface stay in place. Feature additions should extend these surfaces in the same visual language rather than swap in a different site layout.
+- **Wild Feed** — public and personalised Plants.
+- **The Greenhouse** — public Interest Circles and private one-to-one DMs.
+- **Plants** — user posts with a photo, filter, caption, and interest category.
+- **Sunlight** — a reaction that adds to the Plant owner's received Sunlight total.
+- **Gardeners** — followers of a public profile.
+- **Your Mix** — feed preferences stored on the profile and editable in Settings.
+- **Garden Market** — Coming Soon only; listing and checkout functionality is intentionally not enabled.
 
-The prototype integration uses the existing Supabase project and current schema for email/password accounts, profile privacy and saved interests, shared posts and media, likes/comments, 24-hour Stories, notifications, public community groups and live group messages, post reports, marketplace listings, and buyer requests. Sample posts and local sample rooms are labelled/handled as previews; they are not real community activity.
+Old fandom-specific and album showcase routes now redirect to the universal BLOOM entry point. They are not loaded by the current app.
 
-The current iteration is not a full production social network: checkout/payments, one-to-one direct messages, cross-device saves/follows, private groups, block/mute controls, creator monetization, and push notifications remain future work. Supabase Pro is not required for these code changes; no plan upgrade is assumed.
+## Supabase setup
 
-## Preview locally
+The current browser configuration points to the existing BLOOM Supabase project. The publishable key is expected to be visible in a static frontend; never use a service-role key in browser code.
 
-Open `index.html` in a modern browser. For a local HTTP preview, run:
+### Database migration
+
+The new migration is designed to be additive against the existing BLOOM schema. It keeps legacy columns (such as `author_id`, `body`, and the old group references) while adding the universal columns and tables, so existing records are not deliberately deleted.
+
+1. Open the BLOOM Supabase project and go to **SQL Editor**.
+2. Review `supabase/universal-social-platform.sql` in full.
+3. Run it once. The migration is written to be repeatable for the schema objects it creates.
+4. Verify that the following exist: `circles`, `circle_members`, `post_reactions`, `blocked_users`, `follows`, `feedback`, and `sample_plants`; that `bloom-media` exists as a public bucket; and that the new public/authenticated RLS policies are enabled.
+5. Verify that the four starter circles and five sample Plants appear.
+
+The existing `profiles`, `posts`, `post_comments`, `messages`, and `notifications` tables are extended rather than replaced. Legacy columns are populated for compatibility with the existing database and old triggers.
+
+### Important public-media privacy note
+
+The requested `bloom-media` bucket is public. That means an uploaded photo's public URL can be viewed by anyone who has the URL, even if the profile is marked private. Upload permissions are restricted to each signed-in user's own folder, but public downloads are not private. Do not use this bucket for sensitive or private-only photos. A fully private-media design would require a separate private bucket and signed URLs for private-account content.
+
+### Authentication and email
+
+In **Authentication → URL Configuration**, set the Site URL and allowed redirect URL to the published BLOOM URL. Confirm email/password sign-up works. For reliable production email, configure custom SMTP and enable leaked-password protection in Supabase Auth settings. A local browser preview is not proof that production email delivery works.
+
+### Storage
+
+The migration creates `bloom-media` with image MIME restrictions and a 15 MB bucket limit. Authenticated uploads must be stored under the signed-in user's UUID folder. The app compresses photos to WebP before upload. The public bucket is intentionally for social images only.
+
+### Direct messages and Realtime
+
+The migration creates `bloom_create_dm(target_user_id)`, a validated authenticated RPC that creates a private DM circle and adds the two participants. Messages are protected by circle-membership RLS. Enable `messages` and `notifications` in the `supabase_realtime` publication; the migration attempts to add them idempotently.
+
+### Account deletion
+
+Deploy the `delete-account` Edge Function with JWT verification enabled. Configure `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` as server-side function secrets only. The function removes the user's files from the BLOOM buckets before deleting the Auth user. Do not add these secrets to GitHub or `bloom-config.js`.
+
+## Local preview
+
+Serve the repository root with any static HTTP server, for example:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
+Then open `http://localhost:8000`. Camera access requires HTTPS or localhost and the user's browser permission.
 
-## Publish with GitHub Pages
+## What still needs launch verification
 
-1. Open **Settings → Pages**.
-2. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/(root)`, then save.
-3. Wait for the Pages deployment to finish and use the URL GitHub displays. The current project-site URL after the repository rename is `https://bloomiedceo.github.io/BLOOM/`.
-4. Check the **Actions** tab for failed deployments or validation checks.
+The app code and database migration are an integrated starter implementation, not a claim that the service has completed production acceptance. Before inviting the public, test:
 
-## Safety and reporting
+- Sign-up with email confirmation, sign-in, password reset, and the 3-interest onboarding with at least two separate accounts.
+- Guest feed browsing and login gates for each restricted action.
+- Camera permission, gallery upload, each Canvas filter, photo compression, public image retrieval, and upload-size enforcement on iOS and Android.
+- Plant publishing, Heart/Sunlight counters, comments, reporting, blocking/unblocking, and private-profile visibility.
+- Public circle joining, DM creation, both directions of live messaging, image messages, quick-share cards, and realtime reconnection.
+- Notifications for Heart, Sunlight, comments, and post shares.
+- Theme preference, profile editing, account privacy, password change, and full account deletion including file cleanup.
+- Unauthorized reads/writes against every RLS-protected table and Storage path.
 
-Signed-in users can report a live post into the existing Supabase moderation queue. That is not an emergency response service, and staff monitoring and an appeals workflow still need to be established. Do not rely on reporting for urgent safety support.
-
-## Music
-
-The current premium prototype keeps the original visual direction and sample music-oriented posts. The previous standalone Spotify embed implementation remains in the repository but is not loaded into this prototype page; Spotify player placement will be integrated as a separate design-matched step.
-
-## Connect the real backend (required before opening accounts/chat publicly)
-
-GitHub Pages is static hosting. It cannot run the database, authenticate users on its own, or deliver shared messages. The Supabase integration depends on the matching project being reachable and its schema, RLS policies, Auth redirects, and email delivery being configured correctly. A configured frontend URL/key alone does not prove every production feature is ready.
-
-1. Confirm that the Supabase project is active and reachable, and that the project URL in `bloom-config.js` is the project you intend to use. If the project is paused/inactive, restore it in the Supabase Dashboard before integration tests. A configured URL and public key do not prove the backend is online.
-2. Open the project's **SQL Editor** and run the complete `supabase/schema.sql` file, then `supabase/profile-interests.sql` (an idempotent upgrade for existing profiles), then `supabase/feed-engagement.sql` to enable shared likes and comments. Run complete files in order; do not copy partial snippets.
-3. In **Authentication → URL Configuration**, set the Site URL to your published GitHub Pages URL and add that exact URL to the allowed redirect URLs.
-4. In **Authentication → Providers / Email**, enable email sign-up and email confirmation. For production Auth mail, configure **Authentication → SMTP Settings** with your verified Resend sender: host `smtp.resend.com`, port `465`, username `resend`, and your Resend API key as the password. Set the sender email to an address on your verified domain. Set a suitable minimum password length (at least 10 characters) and enable leaked-password protection in the Auth password/security settings. The SMTP credentials and leaked-password toggle must be set in the Dashboard before launch.
-5. Run `supabase/newsletter-provider.sql` after the core schema. The public website calls the `newsletter-subscribe` Edge Function; it does not write email addresses directly from the browser. The function uses Resend for double opt-in and unsubscribe. Set the server-side secrets `RESEND_API_KEY`, `BLOOM_FROM_EMAIL` (a sender on a verified domain), and `BLOOM_SITE_URL`. Never place these values in `bloom-config.js` or GitHub.
-6. In **Project Settings → API**, confirm `bloom-config.js` contains that project's Project URL and public publishable/anon key. These are browser-visible values; RLS must be enabled as in the SQL files. **Never put a service-role/secret key in any frontend file or GitHub Pages.**
-7. The account-deletion and newsletter Edge Functions are deployed. Keep `SUPABASE_SERVICE_ROLE_KEY` only in Supabase's server-side function secrets. The newsletter function also needs the Resend/site secrets listed above.
-8. In a trusted admin workflow, assign `app_metadata.role = "moderator"` to approved moderator accounts. Never let users grant themselves moderator privileges through editable profile metadata.
-9. After reviewing the draft changes, merge the pull request into `main` and wait for GitHub Pages to redeploy. Do not treat the site as a production-ready community until the checks below pass.
-
-### What the starter backend includes
-
-- Supabase email/password sign-up, sign-in, email verification flow, password-reset email, and password update after recovery.
-- Profile display name, private-profile setting, and saved interest preferences for BLOOM Mix. Interests may be visible on public profiles; private profiles restrict profile-row visibility.
-- Shared posts with public/private profile visibility, reporting, and a moderator queue for hiding posts/resolving reports. Shared post likes/comments require `supabase/feed-engagement.sql`.
-- Public group discovery, group creation/membership, and Realtime group messages.
-- A server-side account deletion Edge Function.
-- RLS policies on profiles, posts, groups, group membership, messages, and reports.
-
-### Not included yet / do not advertise as finished
-
-- One-to-one direct messages, private-group invitations, durable cross-device follows/saves, block/mute, push notifications, a full appeals workflow, seller checkout, inventory, payments, and production affiliate tracking.
-- Formal legal advice or a final privacy policy. The current privacy notice and community guidelines are drafts that must be customized to the real operator, vendors, contact details, retention practices, age policy, and applicable Malaysian/privacy requirements.
-- Automated spam/abuse rate limiting, backups/restore drills, incident response, and full browser/device accessibility testing.
-- Verified Supabase project configuration, production email delivery, a deployed Edge Function, or a tested moderator account. These require owner-side setup and real-world tests.
-
-## Preview and live features
-
-When `bloom-config.js` is missing or Supabase cannot initialize, the prototype deliberately falls back to sample posts and local demo chat. Live account, post, media, Story, group, report, and marketplace features require Supabase policies and configuration to remain correct. Sample posts are not real user activity. Do not treat local sample interactions as shared data.
-
-## Automated checks
-
-GitHub Actions runs JavaScript syntax checks and `scripts/check-bloom.mjs`, which verifies the premium prototype remains the entry point, its connected feature wiring, and key database/RLS security invariants. Static checks are not a substitute for browser testing, Supabase RLS tests, accessibility review, or a two-account integration test.
-
-## Pre-launch smoke-test checklist
-
-- [ ] GitHub Pages deployment succeeds and there are no JavaScript console errors.
-- [ ] Test on desktop and a narrow mobile screen; check keyboard focus and reduced-motion settings.
-- [ ] Click Safety in the top navigation and Safety center in the footer; verify the Safety Center opens, closes, and opens the safety report preview.
-- [ ] Spotify section loads a valid official embed from a copied Spotify share link; verify invalid links show a helpful error.
-- [ ] Search the marketplace and test every category, wishlist, and reset button. Verify the in-BLOOM marketplace container is visible, publish a test listing, and send a request from a second test account. Payments are not connected yet.
-- [ ] Run `supabase/feed-engagement.sql`, then test shared post likes/comments with two accounts and confirm private-profile posts stay private.
-- [ ] With Supabase configured, create two test accounts and verify email confirmation works.
-- [ ] Test sign-in, wrong-password errors, password-reset email, and password update from the recovery link.
-- [ ] Test private-profile visibility from a separate signed-in account and a signed-out browser.
-- [ ] Create a post, report it from a second account, hide it as a moderator, and confirm it is no longer public.
-- [ ] Create a public group, join it from a second account/device, send messages both ways, and verify non-members cannot read messages.
-- [ ] Test account deletion using a disposable test account and confirm related data is removed.
-- [ ] Verify RLS for every table and test unauthorized reads/writes; never use the service-role key in the browser.
-- [ ] Customize and review the privacy notice, community rules, age policy, affiliate disclosures, contact route, and moderation/appeal process.
-- [ ] Set Resend API key, verified sender address, and published site URL as Edge Function secrets; then set `newsletterEnabled: true` in `bloom-config.js` and test confirmation, duplicate signup, and one-click unsubscribe.
-- [ ] Enable leaked-password protection, configure Supabase Auth custom SMTP, add abuse controls/CAPTCHA, verify backups/monitoring, and establish a real moderation rota before announcing launch.
-
-
-## Dedicated BLOOM spaces
-
-- `stanner-circles.html` — a dedicated, searchable space for communities, interest filters, joining, and chat.
-- `album-display.html` — collection and shelf inspiration with a route into Curated Finds.
-- `curated-finds.html` — a cross-interest inspiration feed with a real Create Post form.
-- `your-mix.html` — saves interest preferences locally and to `profiles.interests` for signed-in users, and keeps sample content visible when not personalized.
-- `feedback-booth.html` — collects ideas, bug reports, and complaints in the RLS-protected `feedback_submissions` table.
-- `ceo-dashboard.html` — a separate, role-gated dashboard; it is not embedded in the public app.
-- `bloom-platforms.css` / `bloom-platforms.js` — shared layout and behavior for platform pages.
-
-Feedback submissions can be sent while signed out, but the database only allows an authenticated submitter or founder/moderator to read them. The dashboard checks the trusted Supabase `app_metadata.role` claim. This is separate from a public frontend route and does not expose the inbox to ordinary visitors.
+The migration deliberately avoids Supabase Pro-only dependencies. Existing Supabase plan limits still apply. The Garden Market, payments, recommendations ranking, push notifications, content-moderation staffing, and advanced follow requests are not included in this phase.
