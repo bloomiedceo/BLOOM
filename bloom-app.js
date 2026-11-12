@@ -264,7 +264,11 @@ function initAuth() {
   client.auth.onAuthStateChange((event,session)=>{
     currentUser=session?.user||null;
     Promise.resolve().then(async()=>{
-      await loadOwnProfile(); updateSignedInUI();
+      await loadOwnProfile(); updateSignedInUI(); subscribeNotifications();
+      if(event==='SIGNED_OUT'){
+        closeActiveRealtime();
+        if(notificationChannel){client.removeChannel(notificationChannel).catch(()=>{});notificationChannel=null;}
+      }
       if(event==='SIGNED_IN'||event==='INITIAL_SESSION') {
         if(currentProfile && (currentProfile.interests||[]).length<3 && !sessionStorage.getItem('bloom-onboarding-shown-'+currentUser.id)) {
           sessionStorage.setItem('bloom-onboarding-shown-'+currentUser.id,'1'); openOnboarding();
@@ -275,7 +279,8 @@ function initAuth() {
   });
   client.auth.getSession().then(async({data,error})=>{
     if(error) console.warn('[BLOOM] session restore:',error.message);
-    await loadOwnProfile(); updateSignedInUI();
+    currentUser=data?.session?.user||currentUser||null;
+    await loadOwnProfile(); updateSignedInUI(); subscribeNotifications();
     if(currentUser && (currentProfile?.interests||[]).length<3 && !sessionStorage.getItem('bloom-onboarding-shown-'+currentUser.id)) {
       sessionStorage.setItem('bloom-onboarding-shown-'+currentUser.id,'1'); openOnboarding();
     }
@@ -474,6 +479,51 @@ async function handleReaction(post,type) {
   await loadFeed();
   if(type==='sunlight')toast(existing.data?'Sunlight taken back.':'You sent a little sunlight ☀');
   else toast(existing.data?'Heart removed.':'A little heart sent ♡');
+}
+async function openPublicGarden(userId,username) {
+  if(!userId)return;
+  if(!requireAuth(()=>openPublicGarden(userId,username)))return;
+  const r=await client.from('profiles').select('id,username,bio,avatar_url,is_private,sunlight_count').eq('id',userId).maybeSingle();
+  if(r.error||!r.data){toast('This garden is private or unavailable.');return;}
+  const profile=r.data;
+  const [plants,gardeners,following,publicPosts]=await Promise.all([
+    client.from('posts').select('id',{count:'exact',head:true}).eq('user_id',userId).eq('status','published'),
+    client.from('follows').select('follower_id',{count:'exact',head:true}).eq('user_id',userId),
+    client.from('follows').select('follower_id').eq('follower_id',currentUser.id).eq('user_id',userId).maybeSingle(),
+    client.from('posts').select('id,image_url,media_url,category,caption').eq('user_id',userId).eq('status','published').order('created_at',{ascending:false}).limit(30)
+  ]);
+  openModal('@'+profile.username,'A little public corner in the BLOOM garden.',body=>{
+    const row=document.createElement('div');row.className='profile-identity';
+    row.append(avatarNode(profile.username,profile.avatar_url,'profile-avatar'));
+    const copy=document.createElement('div');copy.className='profile-names';
+    const strong=document.createElement('strong');strong.textContent='@'+profile.username;
+    const bio=document.createElement('p');bio.textContent=profile.bio||'Growing a little world of interests.';
+    copy.append(strong,bio);row.append(copy);
+    const stats=document.createElement('div');stats.className='profile-stats';
+    [['Plants',plants.count||0],['Sunlight',profile.sunlight_count||0],['Gardeners',gardeners.count||0]].forEach(([label,value])=>{
+      const d=document.createElement('div');const s=document.createElement('strong');s.textContent=formatCount(value);
+      const l=document.createElement('span');l.textContent=label;d.append(s,l);stats.append(d);
+    });
+    const follow=button(following.data?'Following':'＋ Follow','button button-primary',async()=>{
+      if(following.data){
+        const del=await client.from('follows').delete().eq('follower_id',currentUser.id).eq('user_id',userId);
+        if(del.error){toast('Could not unfollow this gardener.');return;}
+        follow.textContent='＋ Follow';following.data=null;
+      }else{
+        const add=await client.from('follows').insert({follower_id:currentUser.id,user_id:userId});
+        if(add.error){toast(add.error.code==='23505'?'You already follow this gardener.':'Could not follow this gardener.');return;}
+        follow.textContent='Following';following.data={follower_id:currentUser.id};
+      }
+    });
+    const grid=document.createElement('div');grid.className='plant-grid';
+    (publicPosts.data||[]).forEach(post=>{
+      const tile=button('','',()=>openPlantViewer(post.id));const url=safeUrl(post.image_url||post.media_url);
+      if(url){const img=document.createElement('img');img.src=url;img.alt=post.caption||'Plant';tile.append(img);}
+      else{const art=document.createElement('span');art.className='grid-sample';art.textContent=categoryInfo(post.category).emoji;tile.append(art);}
+      grid.append(tile);
+    });
+    body.append(row,stats,follow,grid);
+  });
 }
 async function loadGardenGrid() {
   if(!currentUser){setStatus('#profileStatus','Sign in to grow your personal Garden Grid.');$('#profilePlants').textContent='—';$('#profileSunlight').textContent='—';$('#profileGardeners').textContent='—';$('#profilePlantGrid').replaceChildren(emptyState('Your Plants will appear here after you sign in.'));return;}
@@ -753,7 +803,12 @@ async function loadChatMessages(circle,holder,status) {
 async function appendChatMessage(message,holder,loadShared=false) {
   const mine=message.sender_id===currentUser?.id;
   const node=document.createElement('div');node.className='chat-message'+(mine?' mine':'');
-  const who=document.createElement('small');who.textContent=mine?'You': 'Gardener';
+  let senderName=mine?'You':'Gardener';
+  if(!mine && message.sender_id) {
+    const sender=await client.from('profiles').select('username').eq('id',message.sender_id).maybeSingle();
+    if(sender.data?.username)senderName='@'+sender.data.username;
+  }
+  const who=document.createElement('small');who.textContent=senderName;
   node.append(who);
   if(message.message_type==='post_share' && message.shared_post_id) {
     node.append(document.createTextNode(message.content||'Sent!'));
@@ -761,7 +816,9 @@ async function appendChatMessage(message,holder,loadShared=false) {
     if(data){
       const preview=document.createElement('button');preview.type='button';preview.className='shared-post-preview';
       const img=document.createElement('img');img.src=safeUrl(data.image_url||data.media_url)||'';img.alt='Shared Plant';img.loading='lazy';
-      const copy=document.createElement('span');const title=document.createElement('strong');title.textContent=data.caption||'A shared Plant';const small=document.createElement('small');small.textContent=categoryInfo(data.category).label+' · Tap to view';copy.append(title,small);preview.append(img,copy);
+      const copy=document.createElement('span');const title=document.createElement('strong');title.textContent=data.caption||'A shared Plant';
+      const creator=await client.from('profiles').select('username').eq('id',data.user_id).maybeSingle();
+      const small=document.createElement('small');small.textContent='@'+(creator.data?.username||'gardener')+' · '+categoryInfo(data.category).label+' · Tap to view';copy.append(title,small);preview.append(img,copy);
       preview.addEventListener('click',()=>openSharedPostViewer(message.shared_post_id));
       node.append(preview);
     }
