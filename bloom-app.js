@@ -482,7 +482,6 @@ async function handleReaction(post,type) {
 }
 async function openPublicGarden(userId,username) {
   if(!userId)return;
-  if(!requireAuth(()=>openPublicGarden(userId,username)))return;
   const r=await client.from('profiles').select('id,username,bio,avatar_url,is_private,sunlight_count').eq('id',userId).maybeSingle();
   if(r.error||!r.data){toast('This garden is private or unavailable.');return;}
   const profile=r.data;
@@ -505,6 +504,7 @@ async function openPublicGarden(userId,username) {
       const l=document.createElement('span');l.textContent=label;d.append(s,l);stats.append(d);
     });
     const follow=button(following.data?'Following':'＋ Follow','button button-primary',async()=>{
+      if(!requireAuth(()=>openPublicGarden(userId,username)))return;
       if(following.data){
         const del=await client.from('follows').delete().eq('follower_id',currentUser.id).eq('user_id',userId);
         if(del.error){toast('Could not unfollow this gardener.');return;}
