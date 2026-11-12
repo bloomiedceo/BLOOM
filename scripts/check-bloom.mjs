@@ -27,7 +27,7 @@ assert.match(html, /data-nav="notifications"/, 'Notifications navigation must ex
 assert.match(html, /data-nav="profile"/, 'Garden Grid navigation must exist');
 assert.match(html, /bloom-app\.css/, 'The universal theme stylesheet must be wired');
 assert.match(html, /bloom-app\.js/, 'The universal app logic must be wired');
-assert.match(html, /@2\.119\.0/, 'Supabase JS must be pinned to a known 2.x release');
+assert.match(html, /cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@2"/, 'Supabase JS must load from the official v2 CDN entry point');
 assert.doesNotMatch(html, /Stanner|K-pop|Photocard|Album Display|Curated Finds|CEO Dashboard|Garden Market.*grid/i, 'The public app shell must not expose retired fandom-specific areas');
 assert.match(html, /Garden Market/, 'The minimal Garden Market teaser must remain');
 assert.match(html, /Coming Soon/, 'The market teaser must not imply checkout is live');
