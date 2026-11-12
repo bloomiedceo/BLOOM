@@ -242,9 +242,9 @@ alter table public.notifications
 update public.notifications
 set user_id = coalesce(user_id, recipient_id),
     type = coalesce(type, case when kind = 'comment' then 'comment' when kind = 'like' then 'like' else 'share' end),
-    post_id = coalesce(post_id, entity_id),
+    post_id = coalesce(post_id, case when kind in ('like','comment') then entity_id else null end),
     is_read = coalesce(is_read, read_at is not null)
-where user_id is null or type is null or post_id is null;
+where user_id is null or type is null or (post_id is null and kind in ('like','comment'));
 
 update public.notifications set type = 'share' where type not in ('like','sunlight','comment','share');
 update public.notifications set is_read = (read_at is not null) where read_at is not null;
