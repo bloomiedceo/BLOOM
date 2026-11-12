@@ -1,4 +1,4 @@
-name: BLOOM quality checks
+name: BLOOM universal app checks
 
 on:
   push:
@@ -11,30 +11,24 @@ permissions:
   contents: read
 
 concurrency:
-  group: bloom-checks-${{ github.ref }}
+  group: bloom-universal-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   static-checks:
-    name: JavaScript syntax and BLOOM regression checks
+    name: Universal app syntax and security regressions
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Check frontend JavaScript syntax
+      - name: Check JavaScript syntax
         run: |
-          node --check bloom-enhancements.js
-          node --check bloom-backend.js
-          node --check bloom-launch-upgrades.js
-          node --check bloom-social-unification.js
-          node --check bloom-prototype-app.js
-          node --check bloom-platforms.js
-
-      - name: Run BLOOM regression and security invariants
+          node --check bloom-config.js
+          node --check bloom-app.js
+          node --check scripts/check-bloom.mjs
+      - name: Run BLOOM regression and security checks
         run: node scripts/check-bloom.mjs
