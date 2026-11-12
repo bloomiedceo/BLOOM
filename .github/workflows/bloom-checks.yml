@@ -1,9 +1,12 @@
-name: BLOOM validation
+name: BLOOM universal validation
 on:
   pull_request:
   push:
-    branches: [main, feature/bloom-launch-readiness, fix/safety-center-and-runtime-checks]
+    branches: [main, feature/universal-bloom-social]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   static-checks:
@@ -18,34 +21,20 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check bloom-config.js
-          node --check bloom-enhancements.js
-          node --check bloom-backend.js
-          node --check bloom-launch-upgrades.js
-          node --check bloom-social-unification.js
-          node --check bloom-prototype-app.js
-          node --check bloom-platforms.js
+          node --check bloom-app.js
           node --check scripts/check-bloom.mjs
-          node scripts/check-bloom.mjs
-      - name: Check expected feature wiring
+      - name: Run regression and security invariants
+        run: node scripts/check-bloom.mjs
+      - name: Check expected app wiring
         run: |
-          grep -q 'bloom-config.js' index.html
-          grep -q 'bloom-prototype-live.css' index.html
-          grep -q 'bloom-prototype-app.js' index.html
-          grep -q 'id="tab-feed"' index.html
-          grep -q 'id="tab-chat"' index.html
-          grep -q 'id="tab-profile"' index.html
-          grep -q 'href="stanner-circles.html"' index.html
-          grep -q 'href="album-display.html"' index.html
-          grep -q 'href="curated-finds.html?compose=1"' index.html
-          grep -q 'href="your-mix.html"' index.html
-          grep -q 'href="feedback-booth.html"' index.html
-          grep -q 'feedback_submissions' supabase/feedback-booth.sql
-          grep -q 'id="bpCreateFind"' curated-finds.html
-          grep -q 'id="bpMixPreview"' your-mix.html
-          grep -q 'feed-engagement.sql' README.md
-          grep -q 'bloom_post_engagement' supabase/feed-engagement.sql
-          grep -q 'open.spotify.com/embed' bloom-enhancements.js
-          grep -q 'enable row level security' supabase/schema.sql
+          grep -q 'bloom-app.css' index.html
+          grep -q 'bloom-app.js' index.html
+          grep -q 'id="createNavButton"' index.html
+          grep -q 'create table if not exists public.circles' supabase/universal-social-platform.sql
+          grep -q 'create table if not exists public.blocked_users' supabase/universal-social-platform.sql
+          grep -q 'bloom-media' supabase/universal-social-platform.sql
+          grep -q 'getUserMedia' bloom-app.js
+          grep -q 'message_type.*post_share' bloom-app.js
           if grep -Eiq 'service_role[[:space:]]*:' bloom-config.js; then
             echo 'Do not place service-role keys in browser configuration.'
             exit 1
