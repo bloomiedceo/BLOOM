@@ -462,6 +462,10 @@ create policy "circle members join or invite" on public.circle_members
 for insert to authenticated
 with check (
   user_id = (select auth.uid())
+  and exists (
+    select 1 from public.circles c
+    where c.id = circle_members.circle_id and c.is_dm = false
+  )
 );
 drop policy if exists "circle members leave own" on public.circle_members;
 create policy "circle members leave own" on public.circle_members
