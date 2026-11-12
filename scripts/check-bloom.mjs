@@ -62,7 +62,8 @@ assert.match(app, /from\('feedback'\)/, 'Feedback Booth must write to the feedba
 assert.match(app, /from\('follows'\)/, 'Gardeners follow counts and follow actions must be persisted');
 assert.match(app, /updateUser\(\{password:/, 'Users must be able to change their password');
 assert.match(app, /functions\.invoke\('delete-account'/, 'Account deletion must call the server-side function');
-assert.match(app, /Coming Soon/, 'Market functionality should remain a teaser only');
+assert.match(html, /Coming Soon/, 'Market functionality should remain a teaser only');
+assert.doesNotMatch(app, /marketplace_listings|marketplace_inquiries/, 'Marketplace functionality must not be loaded in this phase');
 assert.match(schema, /create table if not exists public\.circles/i, 'The universal circles table must exist');
 assert.match(schema, /create table if not exists public\.circle_members/i, 'Circle membership must be modelled separately');
 assert.match(schema, /create table if not exists public\.blocked_users/i, 'Blocked users must be persisted');
