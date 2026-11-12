@@ -267,11 +267,6 @@ on conflict (id) do update set
   file_size_limit = 15728640,
   allowed_mime_types = excluded.allowed_mime_types;
 
-drop policy if exists "BLOOM media public read" on storage.objects;
-create policy "BLOOM media public read" on storage.objects
-for select to anon, authenticated
-using (bucket_id = 'bloom-media');
-
 drop policy if exists "BLOOM upload own media" on storage.objects;
 create policy "BLOOM upload own media" on storage.objects
 for insert to authenticated
@@ -287,6 +282,60 @@ drop policy if exists "BLOOM delete own media" on storage.objects;
 create policy "BLOOM delete own media" on storage.objects
 for delete to authenticated
 using (bucket_id = 'bloom-media' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+-- SECURITY DEFINER membership helpers avoid recursive RLS on circle_members.
+create or replace function public.bloom_is_circle_member(target_circle_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $
+  select exists (
+    select 1 from public.circle_members cm
+    where cm.circle_id = target_circle_id
+      and cm.user_id = (select auth.uid())
+  );
+$;
+revoke all on function public.bloom_is_circle_member(uuid) from public, anon;
+grant execute on function public.bloom_is_circle_member(uuid) to authenticated;
+
+-- DM creation is a validated RPC: callers can only create a DM with themselves and
+-- a discoverable, non-blocked profile. Membership for both people is inserted atomically.
+create or replace function public.bloom_create_dm(target_user_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $
+declare
+  caller_id uuid := auth.uid();
+  pair_key text;
+  circle_id uuid;
+begin
+  if caller_id is null then raise exception 'Sign in required'; end if;
+  if target_user_id is null or target_user_id = caller_id then raise exception 'Choose another gardener'; end if;
+  if not exists (select 1 from public.profiles p where p.id = target_user_id and p.is_private = false) then
+    raise exception 'This profile is not available for direct messages';
+  end if;
+  if exists (
+    select 1 from public.blocked_users b
+    where (b.blocker_id = caller_id and b.blocked_id = target_user_id)
+       or (b.blocker_id = target_user_id and b.blocked_id = caller_id)
+  ) then raise exception 'This direct message is not available'; end if;
+  pair_key := least(caller_id::text, target_user_id::text) || ':' || greatest(caller_id::text, target_user_id::text);
+  insert into public.circles(name,category,description,is_dm,created_by,dm_pair_key)
+  values ('Direct message','general','A private conversation.',true,caller_id,pair_key)
+  on conflict (dm_pair_key) do update set dm_pair_key = excluded.dm_pair_key
+  returning id into circle_id;
+  insert into public.circle_members(circle_id,user_id,role)
+  values (circle_id,caller_id,'owner'),(circle_id,target_user_id,'member')
+  on conflict (circle_id,user_id) do nothing;
+  return circle_id;
+end;
+$;
+revoke all on function public.bloom_create_dm(uuid) from public, anon;
+grant execute on function public.bloom_create_dm(uuid) to authenticated;
 
 -- 9) Enable RLS and replace permissive legacy policies where the universal policy needs blocks/privacy.
 alter table public.profiles enable row level security;
@@ -383,7 +432,8 @@ create policy "circles read public or members" on public.circles
 for select to anon, authenticated
 using (
   (is_dm = false)
-  or exists (select 1 from public.circle_members cm where cm.circle_id = circles.id and cm.user_id = (select auth.uid()))
+  or created_by = (select auth.uid())
+  or public.bloom_is_circle_member(circles.id)
 );
 drop policy if exists "circles create own" on public.circles;
 create policy "circles create own" on public.circles
@@ -394,20 +444,13 @@ create policy "circle members read together" on public.circle_members
 for select to authenticated
 using (
   user_id = (select auth.uid())
-  or exists (
-    select 1 from public.circle_members mine
-    where mine.circle_id = circle_members.circle_id and mine.user_id = (select auth.uid())
-  )
+  or public.bloom_is_circle_member(circle_members.circle_id)
 );
 drop policy if exists "circle members join or invite" on public.circle_members;
 create policy "circle members join or invite" on public.circle_members
 for insert to authenticated
 with check (
   user_id = (select auth.uid())
-  or exists (
-    select 1 from public.circles c
-    where c.id = circle_members.circle_id and c.is_dm = true and c.created_by = (select auth.uid())
-  )
 );
 drop policy if exists "circle members leave own" on public.circle_members;
 create policy "circle members leave own" on public.circle_members
@@ -418,7 +461,7 @@ drop policy if exists "messages read members" on public.messages;
 create policy "messages read members" on public.messages
 for select to authenticated
 using (
-  exists (select 1 from public.circle_members cm where cm.circle_id = messages.circle_id and cm.user_id = (select auth.uid()))
+  public.bloom_is_circle_member(messages.circle_id)
   and not exists (
     select 1 from public.blocked_users b
     where (b.blocker_id = (select auth.uid()) and b.blocked_id = messages.sender_id)
@@ -528,7 +571,9 @@ grant select, insert, delete on public.post_reactions to authenticated;
 grant select, insert, delete on public.blocked_users to authenticated;
 grant select, insert, delete on public.follows to authenticated;
 grant insert, select on public.feedback to anon, authenticated;
-grant select, insert, update on public.notifications to authenticated;
+revoke insert, update on public.notifications from public, anon, authenticated;
+grant select on public.notifications to authenticated;
+grant update(is_read, read_at) on public.notifications to authenticated;
 
 -- 11) Trigger-maintained counters and notifications. These functions are trigger-only.
 create or replace function public.bloom_sync_reaction_counts()
