@@ -38,7 +38,7 @@ assert.match(css, /--violet:#a78bfa/, 'Light mode must use the requested violet 
 assert.match(css, /--pink:#f472b6/, 'Light mode must use the requested pink highlight');
 assert.match(css, /body\[data-theme=dark\]/, 'Dark mode must be supported');
 assert.match(app, /getUserMedia/, 'The creation studio must support live device camera access');
-assert.match(app, /captureInput\\.capture='environment'/, 'The creation studio must expose a device-camera picker fallback');
+assert.match(app, /captureInput\.capture='environment'/, 'The creation studio must expose a device-camera picker fallback');
 assert.match(app, /createImageBitmap/, 'Canvas photo processing must be implemented');
 assert.match(app, /FILTERS = \[/, 'Photo filter presets must exist');
 assert.match(app, /bloom-media/, 'The app must upload to the requested bloom-media bucket');
