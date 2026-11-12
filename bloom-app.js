@@ -442,6 +442,10 @@ function renderPlantCard(post) {
   const content=document.createElement('div');content.className='plant-content';
   const authorRow=document.createElement('div');authorRow.className='plant-author-row';
   authorRow.append(avatarNode(post.creator,post.avatar_url));
+  if(!post.isSample && (post.user_id||post.author_id)) {
+    authorRow.style.cursor='pointer';
+    authorRow.addEventListener('click',()=>openPublicGarden(post.user_id||post.author_id,post.creator));
+  }
   const names=document.createElement('div');const author=document.createElement('div');author.className='plant-author';author.textContent=post.creator||'BLOOM gardener';
   const when=document.createElement('div');when.className='plant-time';when.textContent=post.isSample?'Sample inspiration':ago(post.created_at);names.append(author,when);authorRow.append(names);
   const caption=document.createElement('p');caption.className='plant-caption';caption.textContent=post.caption||'A little moment from the garden.';
@@ -666,7 +670,8 @@ function renderCircleCard(circle,isMember) {
   const desc=document.createElement('small');desc.textContent=circle.description||categoryInfo(circle.category).label+' community';meta.append(title,desc);
   const actions=document.createElement('div');actions.className='circle-actions';
   const tag=document.createElement('span');tag.className='soft-count';tag.textContent=isMember?'Joined':'Open';
-  const action=button(isMember?'Open':'Join','button button-soft button-small',async()=>{
+  const action=button(circle.sample?'Preview':(isMember?'Open':'Join'),'button button-soft button-small',async()=>{
+    if(circle.sample){openSampleCircle(circle);return;}
     if(!requireAuth(()=>loadGreenhouse()))return;
     if(!isMember){const r=await client.from('circle_members').insert({circle_id:circle.id,user_id:currentUser.id,role:'member'});if(r.error&&r.error.code!=='23505'){toast('Could not join this circle.');return;}toast('Welcome to '+circle.name+' ✿');}
     await loadGreenhouse();openCircleChat(circle);
@@ -776,8 +781,13 @@ async function openSharedPostViewer(postId) {
   const image=document.createElement('img');image.src=safeUrl(data.image_url||data.media_url)||'';image.alt=data.caption||'Shared Plant';image.style.width='100%';image.style.maxHeight='55vh';image.style.objectFit='contain';image.style.borderRadius='16px';image.style.background='var(--nude)';
   const caption=document.createElement('p');caption.className='plant-caption';caption.style.marginTop='12px';caption.textContent=data.caption||'';
   const author=document.createElement('div');author.className='inline-status';author.textContent='@'+(profile.data?.username||'gardener');
-  const close=button('Back to chat','button button-soft',()=>overlay.remove());
-  sheet.append(head,author,image,caption,close);overlay.append(sheet);
+  const actions=document.createElement('div');actions.className='form-actions';
+  const sunlight=button('☀ Send sunlight','button button-soft',async()=>{if(!requireAuth(()=>openSharedPostViewer(postId)))return;const r=await client.from('post_reactions').insert({post_id:postId,user_id:currentUser.id,reaction_type:'sunlight'});if(r.error&&r.error.code!=='23505')toast('Could not send sunlight.');else toast('A little sunlight sent ☀');});
+  const heart=button('♡ Like','button button-soft',async()=>{if(!requireAuth(()=>openSharedPostViewer(postId)))return;const r=await client.from('post_reactions').insert({post_id:postId,user_id:currentUser.id,reaction_type:'heart'});if(r.error&&r.error.code!=='23505')toast('Could not like this Plant.');else toast('A little heart sent ♡');});
+  const comment=button('◌ Comment','button button-soft',()=>openComments({...data,isSample:false}));
+  const close=button('Back to chat','button button-primary',()=>overlay.remove());
+  actions.append(sunlight,heart,comment,close);
+  sheet.append(head,author,image,caption,actions);overlay.append(sheet);
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
   $('#modalRoot').append(overlay);
 }
@@ -964,10 +974,10 @@ async function openSettings() {
     });
     interests.append(grid,saveInterests);
     const privacy=document.createElement('section');privacy.className='settings-section';const h4=document.createElement('h3');h4.textContent='Privacy & Safety';privacy.append(h4);
-    privacy.append(settingsToggleRow('Private Garden','Only you can view your private Plants for now.',!currentProfile?.is_private,async publicValue=>{
-      const r=await client.from('profiles').update({is_private:!publicValue}).eq('id',currentUser.id);
+    privacy.append(settingsToggleRow('Private Garden','Only you can view your private Plants for now.',Boolean(currentProfile?.is_private),async isPrivate=>{
+      const r=await client.from('profiles').update({is_private:isPrivate}).eq('id',currentUser.id);
       if(r.error){toast('Privacy setting could not be saved.');return;}
-      currentProfile.is_private=!publicValue;toast(publicValue?'Your garden is public.':'Your garden is private.');loadFeed();
+      currentProfile.is_private=isPrivate;toast(isPrivate?'Your garden is private.':'Your garden is public.');loadFeed();
     }));
     privacy.append(settingsActionRow('Blocked gardeners','View or unblock accounts you have blocked.',()=>openBlockedUsers()));
     privacy.append(settingsToggleRow('Notification alerts','Show in-app alerts for new garden activity.',notificationAlertsEnabled,value=>{notificationAlertsEnabled=value;localStorage.setItem('bloom-notification-alerts',String(value));}));
