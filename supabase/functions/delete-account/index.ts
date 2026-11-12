@@ -25,7 +25,11 @@ async function listUserObjects(admin: ReturnType<typeof createClient>, bucket: s
       offset,
       sortBy: { column: "name", order: "asc" }
     });
-    if (error) throw new Error("Unable to inspect account media");
+    if (error) {
+      const message = String(error.message || "").toLowerCase();
+      if (message.includes("bucket not found") || message.includes("not found")) continue;
+      throw new Error("Unable to inspect account media");
+    }
     const rows = data ?? [];
     for (const item of rows) {
       const path = prefix ? prefix + "/" + item.name : item.name;
